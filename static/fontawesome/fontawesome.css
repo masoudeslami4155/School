@@ -1,0 +1,97 @@
+/* Font Awesome Free 7.3.1 - subset by this project. Icons: CC BY 4.0, Fonts: SIL OFL 1.1. See LICENSE.txt */
+@font-face {
+    font-family: 'Font Awesome 7 Free';
+    font-style: normal;
+    font-weight: 900;
+    font-display: block;
+    src: url('fa-solid.woff2') format('woff2');
+}
+
+.fa-solid, .fas {
+    font-family: 'Font Awesome 7 Free';
+    font-weight: 900;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.fa-fw { width: 1.25em; text-align: center; }
+.fa-lg { font-size: 1.25em; line-height: .05em; vertical-align: -.075em; }
+.fa-spin { animation: fa-spin 1.5s linear infinite; }
+@keyframes fa-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .fa-spin { animation: none; } }
+
+.fa-solid.fa-arrow-left::before, .fas.fa-arrow-left::before { content: "\f060"; }
+.fa-solid.fa-arrows-rotate::before, .fas.fa-arrows-rotate::before { content: "\f021"; }
+.fa-solid.fa-ban::before, .fas.fa-ban::before { content: "\f05e"; }
+.fa-solid.fa-bars::before, .fas.fa-bars::before { content: "\f0c9"; }
+.fa-solid.fa-bolt::before, .fas.fa-bolt::before { content: "\f0e7"; }
+.fa-solid.fa-book::before, .fas.fa-book::before { content: "\f02d"; }
+.fa-solid.fa-broom::before, .fas.fa-broom::before { content: "\f51a"; }
+.fa-solid.fa-building-columns::before, .fas.fa-building-columns::before { content: "\f19c"; }
+.fa-solid.fa-bus::before, .fas.fa-bus::before { content: "\f207"; }
+.fa-solid.fa-cake-candles::before, .fas.fa-cake-candles::before { content: "\f1fd"; }
+.fa-solid.fa-calendar-day::before, .fas.fa-calendar-day::before { content: "\f783"; }
+.fa-solid.fa-calendar-days::before, .fas.fa-calendar-days::before { content: "\f073"; }
+.fa-solid.fa-caret-down::before, .fas.fa-caret-down::before { content: "\f0d7"; }
+.fa-solid.fa-caret-up::before, .fas.fa-caret-up::before { content: "\f0d8"; }
+.fa-solid.fa-chalkboard::before, .fas.fa-chalkboard::before { content: "\f51b"; }
+.fa-solid.fa-chalkboard-user::before, .fas.fa-chalkboard-user::before { content: "\f51c"; }
+.fa-solid.fa-chart-column::before, .fas.fa-chart-column::before { content: "\e0e3"; }
+.fa-solid.fa-chart-line::before, .fas.fa-chart-line::before { content: "\f201"; }
+.fa-solid.fa-chart-simple::before, .fas.fa-chart-simple::before { content: "\e473"; }
+.fa-solid.fa-check::before, .fas.fa-check::before { content: "\f00c"; }
+.fa-solid.fa-circle-check::before, .fas.fa-circle-check::before { content: "\f058"; }
+.fa-solid.fa-circle-info::before, .fas.fa-circle-info::before { content: "\f05a"; }
+.fa-solid.fa-circle-notch::before, .fas.fa-circle-notch::before { content: "\f1ce"; }
+.fa-solid.fa-clipboard-list::before, .fas.fa-clipboard-list::before { content: "\f46d"; }
+.fa-solid.fa-clock::before, .fas.fa-clock::before { content: "\f017"; }
+.fa-solid.fa-credit-card::before, .fas.fa-credit-card::before { content: "\f09d"; }
+.fa-solid.fa-diamond::before, .fas.fa-diamond::before { content: "\f219"; }
+.fa-solid.fa-download::before, .fas.fa-download::before { content: "\f019"; }
+.fa-solid.fa-ellipsis::before, .fas.fa-ellipsis::before { content: "\f141"; }
+.fa-solid.fa-envelope-open::before, .fas.fa-envelope-open::before { content: "\f2b6"; }
+.fa-solid.fa-eye::before, .fas.fa-eye::before { content: "\f06e"; }
+.fa-solid.fa-file-invoice-dollar::before, .fas.fa-file-invoice-dollar::before { content: "\f571"; }
+.fa-solid.fa-file-lines::before, .fas.fa-file-lines::before { content: "\f15c"; }
+.fa-solid.fa-filter::before, .fas.fa-filter::before { content: "\f0b0"; }
+.fa-solid.fa-floppy-disk::before, .fas.fa-floppy-disk::before { content: "\f0c7"; }
+.fa-solid.fa-gear::before, .fas.fa-gear::before { content: "\f013"; }
+.fa-solid.fa-graduation-cap::before, .fas.fa-graduation-cap::before { content: "\f19d"; }
+.fa-solid.fa-hand-point-left::before, .fas.fa-hand-point-left::before { content: "\f0a5"; }
+.fa-solid.fa-handshake::before, .fas.fa-handshake::before { content: "\f2b5"; }
+.fa-solid.fa-hourglass-half::before, .fas.fa-hourglass-half::before { content: "\f252"; }
+.fa-solid.fa-house::before, .fas.fa-house::before { content: "\f015"; }
+.fa-solid.fa-id-card::before, .fas.fa-id-card::before { content: "\f2c2"; }
+.fa-solid.fa-inbox::before, .fas.fa-inbox::before { content: "\f01c"; }
+.fa-solid.fa-list-check::before, .fas.fa-list-check::before { content: "\f0ae"; }
+.fa-solid.fa-lock::before, .fas.fa-lock::before { content: "\f023"; }
+.fa-solid.fa-magnifying-glass::before, .fas.fa-magnifying-glass::before { content: "\f002"; }
+.fa-solid.fa-money-bill::before, .fas.fa-money-bill::before { content: "\f0d6"; }
+.fa-solid.fa-moon::before, .fas.fa-moon::before { content: "\f186"; }
+.fa-solid.fa-pen-to-square::before, .fas.fa-pen-to-square::before { content: "\f044"; }
+.fa-solid.fa-pencil::before, .fas.fa-pencil::before { content: "\f303"; }
+.fa-solid.fa-phone::before, .fas.fa-phone::before { content: "\f095"; }
+.fa-solid.fa-plus::before, .fas.fa-plus::before { content: "\f067"; }
+.fa-solid.fa-print::before, .fas.fa-print::before { content: "\f02f"; }
+.fa-solid.fa-puzzle-piece::before, .fas.fa-puzzle-piece::before { content: "\f12e"; }
+.fa-solid.fa-receipt::before, .fas.fa-receipt::before { content: "\f543"; }
+.fa-solid.fa-recycle::before, .fas.fa-recycle::before { content: "\f1b8"; }
+.fa-solid.fa-sack-dollar::before, .fas.fa-sack-dollar::before { content: "\f81d"; }
+.fa-solid.fa-scale-balanced::before, .fas.fa-scale-balanced::before { content: "\f24e"; }
+.fa-solid.fa-school::before, .fas.fa-school::before { content: "\f549"; }
+.fa-solid.fa-screwdriver-wrench::before, .fas.fa-screwdriver-wrench::before { content: "\f7d9"; }
+.fa-solid.fa-spinner::before, .fas.fa-spinner::before { content: "\f110"; }
+.fa-solid.fa-square-check::before, .fas.fa-square-check::before { content: "\f14a"; }
+.fa-solid.fa-sun::before, .fas.fa-sun::before { content: "\f185"; }
+.fa-solid.fa-thumbtack::before, .fas.fa-thumbtack::before { content: "\f08d"; }
+.fa-solid.fa-trash::before, .fas.fa-trash::before { content: "\f1f8"; }
+.fa-solid.fa-triangle-exclamation::before, .fas.fa-triangle-exclamation::before { content: "\f071"; }
+.fa-solid.fa-user::before, .fas.fa-user::before { content: "\f007"; }
+.fa-solid.fa-user-graduate::before, .fas.fa-user-graduate::before { content: "\f501"; }
+.fa-solid.fa-users::before, .fas.fa-users::before { content: "\f0c0"; }
+.fa-solid.fa-wand-magic-sparkles::before, .fas.fa-wand-magic-sparkles::before { content: "\e2ca"; }
+.fa-solid.fa-xmark::before, .fas.fa-xmark::before { content: "\f00d"; }

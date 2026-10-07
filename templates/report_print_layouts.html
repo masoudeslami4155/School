@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}طراحی چاپ گزارش‌ها{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='report_print_layouts.css') }}">{% endblock %}
+{% block page_title %}<i class="cil-settings" aria-hidden="true"></i> طراحی چاپ گزارش‌ها{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('features_hub') }}"><i class="cil-arrow-right" aria-hidden="true"></i> مرکز امکانات</a>{% endblock %}
+{% block content %}
+<div class="report-layout-app" id="reportLayoutApp" data-document="{{ document }}" data-kind="{{ document_kind }}" data-preview-url="{{ active_preview_url }}">
+    <script type="application/json" id="reportLayoutData">{{ layout_json|safe }}</script>
+    <section class="rpl-intro">
+        <div><span class="rpl-eyebrow">استودیو گزارش · واحد میلی‌متر و نقطه</span><h2>چاپ را دقیق برای مدرسه بچینید</h2><p>ستون‌ها و بخش‌های غیرضروری را مخفی کنید، اندازهٔ جدول و حاشیه را تنظیم کنید و چیدمان شخصی خود را برای حساب فعلی ذخیره کنید.</p></div>
+        <div class="rpl-badge"><strong>A4</strong><span>چاپ دقیق</span></div>
+    </section>
+
+    <nav class="rpl-tabs" aria-label="نوع گزارش">
+        {% for item in documents %}<a class="rpl-tab{% if item.key == document %} is-active{% endif %}" href="{{ item.url }}"><strong>{{ item.short_label }}</strong><small>{{ item.label }}</small></a>{% endfor %}
+        <a class="rpl-tab rpl-tab--external" href="{{ url_for('contact_book') }}"><strong>دفترچه تلفن</strong><small>طراح اختصاصی با ستون‌های قابل انتخاب</small></a>
+        <a class="rpl-tab rpl-tab--external" href="{{ url_for('print_layouts', document='service_receipt') }}"><strong>رسید و سرویس</strong><small>طراح چیدمان A4 موجود</small></a>
+    </nav>
+
+    <form id="reportLayoutForm" method="post" action="{{ url_for('report_print_layouts', document=document) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="document" value="{{ document }}">
+        <input type="hidden" name="action" id="reportLayoutAction" value="save">
+        <input type="hidden" name="layout_json" id="reportLayoutJson">
+        <div class="rpl-shell">
+            <section class="rpl-workspace">
+                <div class="rpl-workspace__bar"><div><strong>پیش‌نمایش زنده</strong><span>ستون‌ها و بخش‌های خاموش‌شده فقط از چاپ حذف می‌شوند.</span></div><div class="rpl-actions"><a class="btn btn--outline btn-sm" href="{{ active_preview_url }}" target="_blank" rel="noopener">مشاهده چاپ واقعی</a><button class="btn btn--primary btn-sm" type="submit">ذخیره چیدمان</button></div></div>
+                <div class="rpl-canvas-wrap"><div class="rpl-paper" id="rplPaper">
+                    {% if document_kind == 'table' %}
+                    <div class="rpl-sample-heading" data-report-section="hero"><strong>{{ config.SCHOOL_NAME }}</strong><span>گزارش نمونه · تاریخ چاپ و دامنه فیلتر</span></div>
+                    {% if document == 'attendance_teachers' %}
+                    <section class="rpl-sample-block" data-report-section="summary"><h3>خلاصه عملکرد معلمان</h3><table><thead><tr>{% for key,label in summary_columns %}<th data-report-column="{{ key }}">{{ label }}</th>{% endfor %}</tr></thead><tbody><tr>{% for key,label in summary_columns %}<td data-report-column="{{ key }}">{% if key == 'index' %}۱{% elif key == 'first_name' %}علی{% elif key == 'last_name' %}رضایی{% elif key == 'absent' %}۲{% elif key == 'late' %}۱{% else %}۱۵{% endif %}</td>{% endfor %}</tr></tbody></table></section>
+                    <section class="rpl-sample-block" data-report-section="detail"><h3>جزئیات روزانه</h3><table><thead><tr>{% for key,label in detail_columns %}<th data-report-column="{{ key }}">{{ label }}</th>{% endfor %}</tr></thead><tbody><tr>{% for key,label in detail_columns %}<td data-report-column="{{ key }}">{% if key == 'index' %}۱{% elif key == 'first_name' %}علی{% elif key == 'last_name' %}رضایی{% elif key == 'code' %}۱۰۱{% elif key == 'subject' %}ریاضی{% elif key == 'class_name' %}اول{% elif key == 'date' %}۱۴۰۵/۰۷/۰۱{% elif key == 'status' %}حاضر{% else %}۰{% endif %}</td>{% endfor %}</tr></tbody></table></section>
+                    {% else %}
+                    <section class="rpl-sample-block" data-report-section="detail"><h3>جزئیات حضور دانش‌آموزان</h3><table><thead><tr>{% for key,label in columns %}<th data-report-column="{{ key }}">{{ label }}</th>{% endfor %}</tr></thead><tbody><tr>{% for key,label in columns %}<td data-report-column="{{ key }}">{% if key == 'index' %}۱{% elif key == 'name' %}زهرا آزمونی{% elif key == 'code' %}S-1001{% elif key == 'grade' %}اول{% elif key == 'class_name' %}کلاس ۱{% elif key == 'sida_class' %}اول ۱{% elif key == 'teacher' %}علی رضایی{% elif key == 'date' %}۱۴۰۵/۰۷/۰۱{% else %}حاضر{% endif %}</td>{% endfor %}</tr><tr>{% for key,label in columns %}<td data-report-column="{{ key }}">{% if key == 'index' %}۲{% elif key == 'name' %}مریم نمونه{% elif key == 'code' %}S-1002{% elif key == 'status' %}غایب{% else %}—{% endif %}</td>{% endfor %}</tr></tbody></table></section>
+                    {% endif %}
+                    {% elif document_kind == 'cards' %}
+                    <div class="rpl-card-grid" data-report-section="cards"><article><header><strong data-report-column="teacher">علی رضایی</strong><span data-report-column="count">۹ نفر</span></header><small data-report-column="teacher_meta">ریاضی · کلاس اول</small><div class="rpl-students"><div><b data-report-column="student_number">۱</b><span data-report-column="student_name">زهرا آزمونی</span><em data-report-column="student_grade">اول</em><i data-report-column="student_photo">عکس</i></div><div><b data-report-column="student_number">۲</b><span data-report-column="student_name">مریم نمونه</span><em data-report-column="student_grade">اول</em><i data-report-column="student_photo">عکس</i></div><div><b data-report-column="student_number">۳</b><span data-report-column="student_name">حسین آزمون‌پور</span><em data-report-column="student_grade">دوم</em><i data-report-column="student_photo">عکس</i></div></div></article><article><header><strong data-report-column="teacher">محمد احمدی</strong><span data-report-column="count">۱۱ نفر</span></header><small data-report-column="teacher_meta">مینی‌بوس · سرویس</small><div class="rpl-students"><div><b data-report-column="student_number">۱</b><span data-report-column="student_name">علی نمونه</span><em data-report-column="student_grade">سوم</em><i data-report-column="student_photo">عکس</i></div></div></article></div>
+                    {% elif document_kind == 'profile' %}
+                    <div class="rpl-profile" data-report-section="header"><header><strong>پرونده کامل دانش‌آموز</strong><span>زهرا آزمونی · S-1001</span></header>{% for key,label in sections %}<section data-report-section="{{ key }}"><h3>{{ label }}</h3><div><span>نام و نام خانوادگی</span><b>زهرا آزمونی</b><span>پایه و کلاس</span><b>اول · کلاس ۱</b></div></section>{% endfor %}</div>
+                    {% else %}
+                    <div class="rpl-dashboard">{% for key,label in sections %}<section data-report-section="{{ key }}"><h3>{{ label }}</h3><div class="rpl-placeholder"><strong>{{ loop.index|fa_digits }}</strong><span>نمونهٔ کارت یا جدول آماری</span></div></section>{% endfor %}</div>
+                    {% endif %}
+                </div></div>
+                <p class="rpl-help">ⓘ در چاپ واقعی داده‌های فیلترشده جایگزین نمونه می‌شوند. برای چاپ همهٔ رکوردهای حضور دانش‌آموزان، گزینهٔ «چاپ همه» در لینک چاپ فعال است.</p>
+            </section>
+
+            <aside class="rpl-controls">
+                <fieldset class="rpl-card"><legend>صفحه A4 و خوانایی</legend><div class="rpl-grid rpl-grid--two"><label>جهت چاپ<select data-layout-field="orientation"><option value="portrait">عمودی</option><option value="landscape">افقی</option></select></label><label>اندازه قلم<input type="number" min="5" max="18" step="0.01" data-layout-field="font_size"></label><label>قلم عنوان<input type="number" min="6" max="24" step="0.01" data-layout-field="header_font_size"></label><label>ارتفاع ردیف<input type="number" min="3" max="25" step="0.01" data-layout-field="row_height"></label><label>ارتفاع سرتیتر<input type="number" min="4" max="30" step="0.01" data-layout-field="header_height"></label><label>فاصله خطوط<input type="number" min="1" max="2.5" step="0.01" data-layout-field="line_height"></label></div><div class="rpl-label">حاشیه کاغذ (میلی‌متر)</div><div class="rpl-grid rpl-grid--four">{% for side,label in [('top','بالا'),('right','راست'),('bottom','پایین'),('left','چپ')] %}<label>{{ label }}<input type="number" min="0" max="30" step="0.01" data-margin-side="{{ side }}"></label>{% endfor %}</div><div class="rpl-check-row"><label><input type="checkbox" data-layout-field="show_header"> سربرگ</label><label><input type="checkbox" data-layout-field="show_footer"> پابرگ</label><label><input type="checkbox" data-layout-field="repeat_header"> تکرار سرتیتر جدول</label></div></fieldset>
+
+                {% if columns %}<fieldset class="rpl-card"><legend>ستون‌های قابل چاپ</legend><p class="rpl-note">هر ستونی را که لازم ندارید خاموش کنید؛ فقط در چاپ پنهان می‌شود.</p><div class="rpl-column-list">{% for key,label in columns %}<label><input type="checkbox" data-column-field="{{ key }}"> <span>{{ label }}</span></label>{% endfor %}</div></fieldset>{% endif %}
+                {% if document == 'attendance_teachers' %}<fieldset class="rpl-card"><legend>ستون‌های گزارش معلمان</legend><div class="rpl-column-group"><strong>خلاصه عملکرد</strong>{% for key,label in summary_columns %}<label><input type="checkbox" data-column-field="{{ key }}"> {{ label }}</label>{% endfor %}</div><div class="rpl-column-group"><strong>جزئیات روزانه</strong>{% for key,label in detail_columns %}<label><input type="checkbox" data-column-field="{{ key }}"> {{ label }}</label>{% endfor %}</div></fieldset>{% endif %}
+                {% if sections %}<fieldset class="rpl-card"><legend>بخش‌های قابل چاپ</legend><p class="rpl-note">بخش‌های غیرضروری را خاموش کنید تا فضای چاپ بهتر استفاده شود.</p><div class="rpl-column-list">{% for key,label in sections %}<label><input type="checkbox" data-section-field="{{ key }}"> <span>{{ label }}</span></label>{% endfor %}</div></fieldset>{% endif %}
+                {% if document_kind == 'cards' %}<fieldset class="rpl-card"><legend>شبکه کارت‌های پشت پرونده</legend><div class="rpl-grid rpl-grid--two"><label>ستون در صفحه<input type="number" min="1" max="6" data-grid-field="columns"></label><label>ردیف در صفحه<input type="number" min="1" max="6" data-grid-field="rows"></label></div></fieldset>{% endif %}
+                <div class="rpl-card rpl-card--actions"><button class="btn btn--primary" type="submit">ذخیره تنظیمات</button><button class="btn btn--outline" type="button" id="resetReportLayout">بازگشت به پیش‌فرض</button></div>
+            </aside>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='report_print_layouts.js') }}" defer></script>{% endblock %}

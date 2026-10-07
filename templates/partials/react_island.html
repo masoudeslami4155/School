@@ -1,0 +1,10 @@
+{# جزیره React/shadcn — فقط وقتی بیلد frontend موجود باشد لود می‌شود.
+   استفاده: {% from 'partials/react_island.html' import react_island %}
+            {{ react_island('shadcn-demo') }}
+   نکته: این جزیره‌ها در static/frontend/main.js زندگی می‌کنند
+   (خروجی `npm run build` داخل پوشه frontend). #}
+{% macro react_island(name, extra='') %}
+<div data-react="{{ name }}" class="{{ extra }}" dir="rtl" data-nosnippet>
+  <noscript><p class="muted-text">برای مشاهده این بخش، جاوااسکریپت را فعال کنید.</p></noscript>
+</div>
+{% endmacro %}

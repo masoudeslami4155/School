@@ -1,0 +1,152 @@
+/* سربرگ یکپارچهٔ سامانه — اندازه‌های ثابت، راست‌چین و واکنش‌گرا */
+.topbar {
+  position: relative;
+  z-index: 20;
+  min-height: 76px;
+  align-items: center;
+  border-radius: 0 0 22px 22px;
+}
+.topbar .brand { min-width: 0; }
+.topbar .brand > div:last-child { min-width: 0; }
+.topbar .brand strong,
+.topbar .brand small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.topbar-context,
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.topbar-context { margin-inline-start: auto; }
+.topbar-tools { flex: 0 0 auto; }
+.date-chip,
+.user-chip,
+.topbar-link,
+.header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 11px;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+.topbar-separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, #667085);
+  font-size: 11px;
+  padding: 0 8px;
+  user-select: none;
+}
+.date-chip,
+.user-chip,
+.topbar-link {
+  background: var(--surface, #fff);
+  border: 1px solid var(--line, #e4eaf2);
+  font-size: 11px;
+}
+.date-chip { color: var(--muted, #667085); }
+.date-chip i,
+.user-chip i,
+.topbar-link i { flex: 0 0 auto; font-size: 15px; }
+.user-chip {
+  max-width: 245px;
+  overflow: hidden;
+  color: var(--ink, #14213d);
+  font-weight: 700;
+}
+.topbar-user__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar-link {
+  color: var(--ink, #14213d);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.topbar-link:hover {
+  border-color: var(--primary, #0b6374);
+  background: #f0f8fa;
+  transform: translateY(-1px);
+}
+.page-heading {
+  padding: 12px 16px;
+  border: 1px solid var(--line, #e4eaf2);
+  border-radius: 18px;
+  background: var(--surface, #fff);
+}
+.topbar-link--danger { color: var(--danger, #b42318); }
+.topbar-link--danger:hover {
+  border-color: #f3a6a0;
+  background: #fff1f0;
+}
+.topbar-tools > .inline-form { display: inline-flex; margin: 0; }
+.header-badge {
+  min-height: 38px;
+  border: 1px solid #b7e3ed;
+  background: #effbfc;
+  color: #075e72;
+  font-size: 11px;
+  font-weight: 800;
+}
+html[data-theme="dark"] .date-chip,
+html[data-theme="dark"] .user-chip,
+html[data-theme="dark"] .topbar-link {
+  background: #202c3d;
+  border-color: #3d4c62;
+  color: var(--ink);
+}
+html[data-theme="dark"] .date-chip { color: var(--muted); }
+html[data-theme="dark"] .header-badge {
+  background: #123c49;
+  border-color: #1d6878;
+  color: #a8edf3;
+}
+html[data-theme="dark"] .topbar-link--danger { color: var(--danger); }
+html[data-theme="dark"] .topbar-link--danger:hover { background: #462d35; border-color: #a85d69; }
+
+@media (max-width: 900px) {
+  .topbar { align-items: stretch; flex-direction: column; }
+  .topbar-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .topbar-context { margin-inline-start: 0; }
+}
+@media (max-width: 700px) {
+  .topbar-actions { width: 100%; align-items: stretch; flex-direction: column; gap: 8px; }
+  .topbar-context,
+  .topbar-tools { width: 100%; margin: 0; }
+  .topbar-context { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+  .topbar-tools { justify-content: flex-start; flex-wrap: wrap; }
+  .date-chip,
+  .user-chip,
+  .topbar-link,
+  .header-badge { min-height: 38px; }
+  .user-chip { max-width: none; min-width: 0; justify-content: flex-start; }
+}
+@media (max-width: 430px) {
+  .topbar-tools { gap: 6px; }
+  .topbar-link { padding-inline: 10px; }
+  .topbar-link span { display: none; }
+  .topbar-link i { margin: 0; font-size: 17px; }
+  .header-badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .topbar-link { transition: none; }
+}
+/* صفحهٔ داشبورد ویژه نیز فقط یک منوی سراسری داشته باشد. */
+.vdash--global-nav > .vdash__sidebar { display: none; }
+.vdash--global-nav > .vdash__main { width: 100%; }

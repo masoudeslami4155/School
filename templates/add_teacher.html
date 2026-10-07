@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}ثبت معلم جدید{% endblock %}
+{% block page_title %}➕ ثبت معلم جدید{% endblock %}
+{% block content %}
+{% if errors %}
+<div class="alert-danger"><ul>{% for e in errors %}<li>⚠️ {{ e }}</li>{% endfor %}</ul></div>
+{% endif %}
+<form method="POST">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-section">
+        <h4>👨‍🏫 اطلاعات معلم</h4>
+        <div class="form-row">
+            <div class="field-group"><label>نام <span class="required-star">*</span></label><input type="text" name="first_name" value="{{ form_data.first_name or '' }}" required></div>
+            <div class="field-group"><label>نام‌خانوادگی <span class="required-star">*</span></label><input type="text" name="last_name" value="{{ form_data.last_name or '' }}" required></div>
+        </div>
+        <div class="form-row">
+            <div class="field-group"><label>کد پرسنلی <span class="required-star">*</span></label><input type="text" name="code" value="{{ form_data.code or '' }}" required></div>
+            <div class="field-group"><label>درس</label><input type="text" name="subject" value="{{ form_data.subject or '' }}"></div>
+        </div>
+        <div class="form-row">
+            <div class="field-group"><label>کد ملی</label><input type="text" name="national_id" maxlength="10" inputmode="numeric" value="{{ form_data.national_id or '' }}" placeholder="۱۰ رقم"></div>
+            <div class="field-group"><label>شماره تماس</label><input type="tel" name="phone" maxlength="15" inputmode="tel" value="{{ form_data.phone or '' }}" placeholder="مثلاً ۰۹۱۲…"></div>
+        </div>
+        <div class="form-row">
+            <div class="field-group"><label>نقش دسترسی</label><select name="role"><option value="teacher">معلم</option><option value="manager">مدیر</option></select></div>
+            <div class="field-group"><label>کلاس مدرسه</label><input type="text" name="class_name" value="{{ form_data.class_name or '' }}" placeholder="مثلاً هفتم-الف"></div>
+            <div class="field-group"><label>کلاس سیدا</label><input type="text" name="sida_class" value="{{ form_data.sida_class or '' }}" placeholder="کد یا نام کلاس سیدا"></div>
+        </div>
+    </div>
+    <button type="submit" class="btn-submit">💾 ثبت معلم</button>
+</form>
+{% endblock %}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>گواهی اشتغال به تحصیل | {{ config.SCHOOL_NAME }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='student_certificate_print.css') }}">
+<style>@page{size:{{ layout.paper_size }} {{ layout.orientation }};margin:0}</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body class="certificate-print{% if studio_mode %} certificate-studio-preview{% endif %}">
+<main>
+  {% include 'partials/student_certificate_artwork.html' %}
+  {% if not studio_mode %}
+  <div class="no-print"><button onclick="window.print()">چاپ گواهی</button><a href="{{ url_for('student_certificate', student_id=request.form.get('student_id') or '') }}">بازگشت به فرم</a><a href="{{ url_for('report_print_layouts', document='student_certificate') }}">تنظیم چیدمان</a></div>
+  {% endif %}
+</main>
+{% if auto_print %}<script>
+window.addEventListener('load', async () => {
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  await Promise.all(Array.from(document.images, image => image.decode().catch(() => {})));
+  window.setTimeout(() => window.print(), 200);
+});
+</script>{% endif %}
+</body>
+</html>

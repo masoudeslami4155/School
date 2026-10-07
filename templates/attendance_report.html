@@ -1,0 +1,413 @@
+{% extends 'base.html' %}
+{% block title %}گزارش حضور و غیاب دانش‌آموزان{% endblock %}
+{% block page_title %}<i class="cil-list" aria-hidden="true"></i> گزارش حضور و غیاب دانش‌آموزان{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='attendance_report.css') }}">
+    <style>@media print { {{ attendance_layout|report_element_css|safe }}@page { size: A4 {{ attendance_layout.orientation }}; margin: {{ attendance_layout.margin.top }}mm {{ attendance_layout.margin.right }}mm {{ attendance_layout.margin.bottom }}mm {{ attendance_layout.margin.left }}mm; } .attendance-report{font-size:{{ attendance_layout.font_size }}pt;line-height:{{ attendance_layout.line_height }}}.ar-table{font-size:{{ attendance_layout.font_size }}pt}.ar-table th{height:{{ attendance_layout.header_height }}mm}.ar-table td{height:{{ attendance_layout.row_height }}mm}.ar-print-header h1{font-size:{{ attendance_layout.header_font_size }}pt}{% if not attendance_layout.repeat_header %}.ar-table thead{display:table-row-group!important}{% endif %} }</style>
+{% endblock %}
+{% block content %}
+{% set status_meta = {'حاضر': ('cil-check-circle', 'present'), 'غایب': ('cil-x', 'absent'), 'مرخصی': ('cil-sync', 'excused'), 'تاخیر': ('cil-clock', 'late')} %}
+<div class="attendance-report" data-autoprint="{{ 1 if auto_print else 0 }}">
+
+    <div class="ar-print-header{% if not attendance_layout.show_header %} print-layout-hidden{% endif %}" data-report-element="hero">
+        <h1>گزارش حضور و غیاب دانش‌آموزان</h1>
+        <div class="ar-print-sub">
+            {{ config.SCHOOL_NAME }} · {{ filters_description }} · تاریخ چاپ: {{ jalali_datetime }}
+        </div>
+    </div>
+
+    <section class="ar-toolbar no-print" aria-label="بازه‌های سریع">
+        <div class="ar-ranges" role="group" aria-label="انتخاب سریع بازه">
+            {% for link in range_links %}
+                <a class="ar-range{{ ' is-active' if link.active }}" href="{{ link.url }}"{% if link.active %} aria-current="true"{% endif %}>{{ link.label }}</a>
+            {% endfor %}
+        </div>
+        <div class="ar-toolbar__actions">
+            <button class="btn btn--primary" type="button" data-toggle-filters aria-expanded="false" aria-controls="arFilters"><i class="cil-search" aria-hidden="true"></i> فیلترها</button>
+            <a class="btn btn--muted" href="{{ export_url }}"><i class="cil-cloud-download" aria-hidden="true"></i> خروجی اکسل</a>
+            <a class="btn btn--muted" href="{{ print_landscape_url }}"><i class="cil-print" aria-hidden="true"></i> چاپ همه با چیدمان ذخیره‌شده</a>
+            <a class="btn btn--outline" href="{{ print_layout_url }}"><i class="cil-settings" aria-hidden="true"></i> طراحی ستون‌ها</a>
+        </div>
+    </section>
+
+    <details class="ar-filters no-print" id="arFilters"{% if filters.q or filters.statuses or filters.grade or filters.class_name or filters.sida_class or filters.gender or filters.teacher_code %} open{% endif %}>
+        <summary><i class="cil-search" aria-hidden="true"></i> فیلتر و جست‌وجو</summary>
+        <form method="GET" action="{{ url_for('attendance_report') }}">
+            <input type="hidden" name="range" value="custom">
+            <input type="hidden" name="sort" value="{{ filters.sort }}">
+            <input type="hidden" name="dir" value="{{ filters.dir }}">
+            <div class="ar-filter-grid">
+                <div class="ar-field">
+                    <label for="arDateFrom">از تاریخ (شمسی)</label>
+                    <input id="arDateFrom" name="date_from" type="text" inputmode="numeric" value="{{ filters.date_from or '' }}" placeholder="۱۴۰۵/۰۱/۰۱" autocomplete="off" data-jdate>
+                </div>
+                <div class="ar-field">
+                    <label for="arDateTo">تا تاریخ (شمسی)</label>
+                    <input id="arDateTo" name="date_to" type="text" inputmode="numeric" value="{{ filters.date_to or '' }}" placeholder="۱۴۰۵/۰۶/۳۱" autocomplete="off" data-jdate>
+                </div>
+                <div class="ar-field">
+                    <label for="arSearch">جست‌وجوی نام یا کد</label>
+                    <input id="arSearch" name="q" type="search" value="{{ filters.q or '' }}" placeholder="نام، نام خانوادگی یا کد" autocomplete="off">
+                </div>
+                <div class="ar-field">
+                    <label for="arTeacher">معلم</label>
+                    <select id="arTeacher" name="teacher_code">
+                        <option value="">همه معلمان</option>
+                        {% for t in teachers_list %}
+                            <option value="{{ t.code }}" {% if filters.teacher_code == t.code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ar-field">
+                    <label for="arGrade">پایه</label>
+                    <select id="arGrade" name="grade">
+                        <option value="">همه</option>
+                        {% for g in grades %}<option value="{{ g.grade }}" {% if filters.grade == g.grade %}selected{% endif %}>{{ g.grade }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ar-field">
+                    <label for="arClass">کلاس مدرسه</label>
+                    <select id="arClass" name="class_name">
+                        <option value="">همه</option>
+                        {% for c in classes %}<option value="{{ c.class_name }}" {% if filters.class_name == c.class_name %}selected{% endif %}>{{ c.class_name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ar-field">
+                    <label for="arSida">کلاس سیدا</label>
+                    <select id="arSida" name="sida_class">
+                        <option value="">همه</option>
+                        {% for s in sida_classes %}<option value="{{ s.sida_class }}" {% if filters.sida_class == s.sida_class %}selected{% endif %}>{{ s.sida_class }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ar-field">
+                    <label for="arGender">جنسیت</label>
+                    <select id="arGender" name="gender">
+                        <option value="">همه</option>
+                        {% for gender in ['پسر', 'دختر'] %}
+                            <option value="{{ gender }}" {% if filters.gender == gender %}selected{% endif %}>{{ gender }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ar-field">
+                    <label for="arPerPage">تعداد در صفحه</label>
+                    <select id="arPerPage" name="per_page">
+                        {% for option in per_page_options %}
+                            <option value="{{ option }}" {% if per_page == option %}selected{% endif %}>{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <fieldset class="ar-field ar-field--statuses">
+                    <legend>وضعیت (چندانتخابی)</legend>
+                    {% for status in statuses %}
+                        <label class="ar-check">
+                            <input type="checkbox" name="status" value="{{ status }}" {% if status in filters.statuses %}checked{% endif %}>
+                            <span><i class="{{ status_meta[status][0] }}" aria-hidden="true"></i> {{ status }}</span>
+                        </label>
+                    {% endfor %}
+                </fieldset>
+            </div>
+            <div class="ar-filter-actions">
+                <button class="btn btn--primary" type="submit"><i class="cil-search" aria-hidden="true"></i> اعمال فیلتر</button>
+                <a class="btn btn--muted" href="{{ url_for('attendance_report') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن فیلترها</a>
+            </div>
+        </form>
+    </details>
+
+    <div class="ar-chips no-print">
+        {% if filters.range != 'month' %}
+            <span class="ar-chip">بازه: {{ range_links|selectattr('active')|map(attribute='label')|first or 'دلخواه' }}</span>
+        {% endif %}
+        {% if filters.q %}<span class="ar-chip">جست‌وجو: {{ filters.q }}</span>{% endif %}
+        {% if filters.grade %}<span class="ar-chip">پایه: {{ filters.grade }}</span>{% endif %}
+        {% if filters.class_name %}<span class="ar-chip">کلاس: {{ filters.class_name }}</span>{% endif %}
+        {% if filters.sida_class %}<span class="ar-chip">سیدا: {{ filters.sida_class }}</span>{% endif %}
+        {% if filters.gender %}<span class="ar-chip">جنسیت: {{ filters.gender }}</span>{% endif %}
+        {% if filters.teacher_code %}<span class="ar-chip">معلم انتخاب‌شده</span>{% endif %}
+        {% for status in filters.statuses %}<span class="ar-chip">وضعیت: {{ status }}</span>{% endfor %}
+    </div>
+
+    <section class="ar-stats{% if not attendance_layout.sections.summary %} print-layout-hidden{% endif %}" aria-label="آمار کلی" data-report-element="summary" data-report-section="summary">
+        <div class="ar-stat ar-stat--total">
+            <span class="ar-stat__label">مجموع ثبت‌شده</span>
+            <strong class="ar-stat__value">{{ analytics.total_marks|format_number|fa_digits }}</strong>
+        </div>
+        {% for status in statuses %}
+            <div class="ar-stat ar-stat--{{ status_meta[status][1] }}">
+                <span class="ar-stat__label"><i class="{{ status_meta[status][0] }}" aria-hidden="true"></i> {{ status }}</span>
+                <strong class="ar-stat__value">{{ analytics.totals[status]|format_number|fa_digits }}</strong>
+            </div>
+        {% endfor %}
+        <div class="ar-stat ar-stat--rate">
+            <span class="ar-stat__label">نرخ حضور</span>
+            <strong class="ar-stat__value">{% if analytics.attendance_rate is not none %}{{ analytics.attendance_rate|fa_digits }}٪{% else %}—{% endif %}</strong>
+        </div>
+    </section>
+    <p class="ar-stats-note">
+        دانش‌آموزان دارای غیبت: <b>{{ analytics.absent_students|format_number|fa_digits }}</b>
+        · دارای تاخیر: <b>{{ analytics.late_students|format_number|fa_digits }}</b>
+        · آمارها مستقل از فیلتر وضعیت محاسبه می‌شوند.
+    </p>
+
+    {% if total_records == 0 %}
+        <div class="ar-empty">
+            <span aria-hidden="true"><i class="cil-inbox" aria-hidden="true"></i></span>
+            <strong>رکوردی با این فیلترها پیدا نشد</strong>
+            <p>بازه یا فیلترها را تغییر دهید.</p>
+            <a class="btn btn--primary" href="{{ url_for('attendance_report') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن فیلترها</a>
+        </div>
+    {% else %}
+
+    <details class="ar-panel no-print"{% if total_records <= 400 %} open{% endif %}>
+        <summary><i class="cil-chart" aria-hidden="true"></i> تحلیل و خلاصه ({% if analytics.month_trend %}{{ analytics.month_trend|length|fa_digits }} ماه{% endif %}{% if analytics.class_count %} · {{ analytics.class_count|fa_digits }} کلاس{% endif %} · {{ analytics.students|length|fa_digits }} دانش‌آموز)</summary>
+
+        <div class="ar-grid-2">
+            <div class="ar-card">
+                <h3>روند ماهانه</h3>
+                <div class="ar-bars">
+                    {% for month in analytics.month_trend %}
+                        <div class="ar-bar-row">
+                            <span class="ar-bar-label">{{ month.label }}</span>
+                            <span class="ar-bar-track">
+                                <span class="ar-bar ar-bar--total" style="width: {{ (month.total * 100 / analytics.max_month_total)|round(1) if analytics.max_month_total else 0 }}%"></span>
+                                <span class="ar-bar ar-bar--absent" style="width: {{ (month.absent * 100 / analytics.max_month_total)|round(1) if analytics.max_month_total else 0 }}%" title="غایب: {{ month.absent }}"></span>
+                            </span>
+                            <span class="ar-bar-value">{{ month.total|fa_digits }} <small>(غایب {{ month.absent|fa_digits }})</small></span>
+                        </div>
+                    {% else %}
+                        <p class="ar-muted">داده‌ای برای نمایش نیست.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="ar-card">
+                <h3>الگوی روزهای هفته (غیبت)</h3>
+                {% set max_weekday_absent = analytics.weekday_trend|map(attribute='absent')|max %}
+                <div class="ar-bars">
+                    {% for day in analytics.weekday_trend %}
+                        <div class="ar-bar-row">
+                            <span class="ar-bar-label">{{ day.label }}</span>
+                            <span class="ar-bar-track">
+                                <span class="ar-bar ar-bar--absent" style="width: {{ (day.absent * 100 / max_weekday_absent)|round(1) if max_weekday_absent else 0 }}%"></span>
+                            </span>
+                            <span class="ar-bar-value">{{ day.absent|fa_digits }} <small>از {{ day.total|fa_digits }}</small></span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="ar-card">
+            <h3>مقایسه کلاس‌ها <small class="ar-muted">(بر اساس بیشترین غیبت)</small></h3>
+            <div class="ar-table-scroll">
+                <table class="ar-mini-table">
+                    <caption class="visually-hidden">مقایسه غیبت و تاخیر کلاس‌ها</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">کلاس</th>
+                            <th scope="col">دانش‌آموز</th>
+                            <th scope="col">رکورد</th>
+                            <th scope="col">غایب</th>
+                            <th scope="col">تاخیر</th>
+                            <th scope="col">نرخ حضور</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for class in analytics.classes %}
+                            <tr>
+                                <td>{{ class.class_name }}</td>
+                                <td>{{ class.students|fa_digits }}</td>
+                                <td>{{ class.total|fa_digits }}</td>
+                                <td>{{ class.absent|fa_digits }}</td>
+                                <td>{{ class.late|fa_digits }}</td>
+                                <td>
+                                    {% if class.rate is not none %}
+                                        <span class="ar-rate{{ ' is-low' if class.rate < 90 }}">{{ class.rate|fa_digits }}٪</span>
+                                    {% else %}—{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="ar-card">
+            <h3>خلاصه هر دانش‌آموز</h3>
+            <div class="ar-table-scroll ar-table-scroll--tall">
+                <table class="ar-mini-table">
+                    <caption class="visually-hidden">خلاصه حضور هر دانش‌آموز</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">دانش‌آموز</th>
+                            <th scope="col">کد</th>
+                            <th scope="col">کلاس</th>
+                            <th scope="col">حاضر</th>
+                            <th scope="col">غایب</th>
+                            <th scope="col">تاخیر</th>
+                            <th scope="col">مرخصی</th>
+                            <th scope="col">درصد حضور</th>
+                            <th scope="col">بیشترین غیبت متوالی</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in analytics.students %}
+                            <tr>
+                                <td>{{ loop.index|fa_digits }}</td>
+                                <td class="ar-mini-table__name">{{ student.name }}</td>
+                                <td>{{ student.code }}</td>
+                                <td>{{ student.class_name }}</td>
+                                <td>{{ student.present|fa_digits }}</td>
+                                <td>{{ student.absent|fa_digits }}</td>
+                                <td>{{ student.late|fa_digits }}</td>
+                                <td>{{ student.excused|fa_digits }}</td>
+                                <td>
+                                    {% if student.rate is not none %}
+                                        <span class="ar-rate{{ ' is-low' if student.rate < 90 }}">{{ student.rate|fa_digits }}٪</span>
+                                    {% else %}—{% endif %}
+                                </td>
+                                <td>{{ student.streak|fa_digits }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </details>
+
+    <div class="ar-result-bar">
+        <span>
+            نمایش <b>{{ page_start|fa_digits }}</b> تا <b>{{ page_end|fa_digits }}</b>
+            از <b>{{ total_records|format_number|fa_digits }}</b> رکورد
+        </span>
+        <span class="ar-muted">صفحه {{ page|fa_digits }} از {{ total_pages|fa_digits }}</span>
+    </div>
+
+    <div class="ar-table-scroll ar-table-scroll--main{% if not attendance_layout.sections.detail %} print-layout-hidden{% endif %}" data-report-element="detail" data-report-section="detail">
+        <table class="ar-table">
+            <caption class="visually-hidden">جزئیات حضور و غیاب دانش‌آموزان</caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.index else '' }}">#</th>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.name else '' }}" aria-sort="{{ sort_links.name.state }}"><a href="{{ sort_links.name.url }}">نام{% if sort_links.name.state == 'ascending' %} <i class="cil-caret-top" aria-hidden="true"></i>{% elif sort_links.name.state == 'descending' %} <i class="cil-caret-bottom" aria-hidden="true"></i>{% endif %}</a></th>
+                    <th scope="col" class="ar-col--code {{ 'print-layout-hidden' if not attendance_layout.columns.code else '' }}">کد</th>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.grade else '' }}" aria-sort="{{ sort_links.grade.state }}"><a href="{{ sort_links.grade.url }}">پایه{% if sort_links.grade.state == 'ascending' %} <i class="cil-caret-top" aria-hidden="true"></i>{% elif sort_links.grade.state == 'descending' %} <i class="cil-caret-bottom" aria-hidden="true"></i>{% endif %}</a></th>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.class_name else '' }}" aria-sort="{{ sort_links.class.state }}"><a href="{{ sort_links.class.url }}">کلاس{% if sort_links.class.state == 'ascending' %} <i class="cil-caret-top" aria-hidden="true"></i>{% elif sort_links.class.state == 'descending' %} <i class="cil-caret-bottom" aria-hidden="true"></i>{% endif %}</a></th>
+                    <th scope="col" class="ar-col--sida {{ 'print-layout-hidden' if not attendance_layout.columns.sida_class else '' }}">سیدا</th>
+                    <th scope="col" class="ar-col--teacher {{ 'print-layout-hidden' if not attendance_layout.columns.teacher else '' }}">معلم</th>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.date else '' }}" aria-sort="{{ sort_links.date.state }}"><a href="{{ sort_links.date.url }}">تاریخ{% if sort_links.date.state == 'ascending' %} <i class="cil-caret-top" aria-hidden="true"></i>{% elif sort_links.date.state == 'descending' %} <i class="cil-caret-bottom" aria-hidden="true"></i>{% endif %}</a></th>
+                    <th scope="col" class="{{ 'print-layout-hidden' if not attendance_layout.columns.status else '' }}" aria-sort="{{ sort_links.status.state }}"><a href="{{ sort_links.status.url }}">وضعیت{% if sort_links.status.state == 'ascending' %} <i class="cil-caret-top" aria-hidden="true"></i>{% elif sort_links.status.state == 'descending' %} <i class="cil-caret-bottom" aria-hidden="true"></i>{% endif %}</a></th>
+                    <th scope="col" class="no-print">عملیات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set idx = namespace(n=page_start - 1) %}
+                {% for month in month_groups %}
+                    {% set month_total = month.present + month.absent + month.excused + month.late %}
+                    <tr class="ar-month">
+                        <th scope="colgroup" colspan="{{ attendance_layout.visible_count }}">
+                            <i class="cil-calendar" aria-hidden="true"></i> {{ month.label }}
+                            <span class="ar-month__stats">
+                                رکورد: {{ month.rows|length|fa_digits }}
+                                · حاضر: {{ month.present|fa_digits }}
+                                · غایب: {{ month.absent|fa_digits }}
+                                · مرخصی: {{ month.excused|fa_digits }}
+                                · تاخیر: {{ month.late|fa_digits }}
+                                {% if month_total %}· نرخ حضور: {{ (month.present * 100 // month_total)|fa_digits }}٪{% endif %}
+                            </span>
+                        </th>
+                    </tr>
+                    {% for r in month.rows %}
+                        {% set idx.n = idx.n + 1 %}
+                        <tr data-status="{{ r.status }}"{% if r.holiday %} class="is-holiday"{% endif %}>
+                            <td data-label="#" class="ar-cell--index {{ 'print-layout-hidden' if not attendance_layout.columns.index else '' }}">{{ idx.n|fa_digits }}</td>
+                            <td data-label="نام" class="ar-cell--name {{ 'print-layout-hidden' if not attendance_layout.columns.name else '' }}">
+                                <span>{{ r.first_name }} {{ r.last_name }}</span>
+                            </td>
+                            <td data-label="کد" class="ar-col--code {{ 'print-layout-hidden' if not attendance_layout.columns.code else '' }}">{{ r.code }}</td>
+                            <td data-label="پایه" class="{{ 'print-layout-hidden' if not attendance_layout.columns.grade else '' }}">{{ r.grade or '—' }}</td>
+                            <td data-label="کلاس" class="{{ 'print-layout-hidden' if not attendance_layout.columns.class_name else '' }}">{{ r.class_name or '—' }}</td>
+                            <td data-label="سیدا" class="ar-col--sida {{ 'print-layout-hidden' if not attendance_layout.columns.sida_class else '' }}">{{ r.sida_class or '—' }}</td>
+                            <td data-label="معلم" class="ar-col--teacher {{ 'print-layout-hidden' if not attendance_layout.columns.teacher else '' }}">{{ r.teacher_name or '—' }}</td>
+                            <td data-label="تاریخ" class="{{ 'print-layout-hidden' if not attendance_layout.columns.date else '' }}">
+                                <span class="ar-date">{{ r.date|fa_digits }}</span>
+                                {% if r.weekday %}<small class="ar-weekday">{{ r.weekday }}</small>{% endif %}
+                                {% if r.events %}<span class="ar-holiday-badge" title="{{ r.events|join('، ') }}">مناسبت</span>{% endif %}
+                            </td>
+                            <td data-label="وضعیت" class="{{ 'print-layout-hidden' if not attendance_layout.columns.status else '' }}">
+                                <span class="ar-status ar-status--{{ status_meta.get(r.status, ('', 'other'))[1] }}"><i class="{{ status_meta.get(r.status, ('cil-info', 'other'))[0] }}" aria-hidden="true"></i> {{ r.status }}</span>
+                            </td>
+                            <td data-label="عملیات" class="no-print">
+                                <span class="ar-row-actions">
+                                    <a class="ar-icon-btn" href="{{ url_for('student_profile', id=r.student_id) }}" title="پرونده دانش‌آموز" aria-label="پرونده {{ r.first_name }} {{ r.last_name }}"><i class="cil-file" aria-hidden="true"></i></a>
+                                    {% if current_role in ['admin', 'manager'] %}
+                                        <details class="ar-edit-record">
+                                            <summary class="ar-icon-btn" title="ویرایش رکورد" aria-label="ویرایش رکورد {{ r.date }}"><i class="cil-pencil" aria-hidden="true"></i></summary>
+                                            <form method="post" action="{{ url_for('update_student_attendance', id=r.id) }}" class="ar-edit-form">
+                                                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                                <input type="hidden" name="next" value="{{ request.full_path }}">
+                                                <label>تاریخ<input type="text" name="date" value="{{ r.date }}" data-jdate autocomplete="off"></label>
+                                                <label>وضعیت<select name="status">{% for option in statuses %}<option value="{{ option }}"{% if r.status == option %} selected{% endif %}>{{ option }}</option>{% endfor %}</select></label>
+                                                <button class="btn btn--primary btn-sm" type="submit">ذخیره</button>
+                                            </form>
+                                        </details>
+                                        <form method="post" action="{{ url_for('delete_student_attendance', id=r.id) }}" onsubmit="return confirm('این رکورد حضور و غیاب حذف شود؟')">
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="next" value="{{ request.full_path }}">
+                                            <button type="submit" class="ar-icon-btn ar-icon-btn--danger" title="حذف رکورد" aria-label="حذف رکورد {{ r.date }}"><i class="cil-trash" aria-hidden="true"></i></button>
+                                        </form>
+                                    {% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="ar-pagination no-print" aria-label="صفحه‌بندی نتایج">
+        {% if prev_url %}<a class="ar-page" href="{{ prev_url }}" rel="prev">‹ قبلی</a>{% endif %}
+        {% for item in page_numbers %}
+            {% if item.number %}
+                <a class="ar-page{{ ' is-active' if item.active }}" href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.number|fa_digits }}</a>
+            {% else %}
+                <span class="ar-page ar-page--gap">…</span>
+            {% endif %}
+        {% endfor %}
+        {% if next_url %}<a class="ar-page" href="{{ next_url }}" rel="next">بعدی ›</a>{% endif %}
+    </nav>
+    {% endif %}
+
+    <div class="ar-print-footer{% if not attendance_layout.show_footer %} print-layout-hidden{% endif %}" data-report-element="footer">
+        گزارش حضور و غیاب دانش‌آموزان · {{ config.SCHOOL_NAME }} · {{ jalali_datetime }}{% if attendance_print_all %} · همه رکوردهای فیلترشده{% endif %}
+    </div>
+    {% endif %}
+
+    {% if removable_absences is not none %}
+    <details class="ar-danger no-print">
+        <summary><i class="cil-brush" aria-hidden="true"></i> حذف غیبت‌های فیلترشده ({{ removable_absences|format_number|fa_digits }} رکورد)</summary>
+        <p>این عملیات تمام غیبت‌های مطابق فیلترهای فعلی (صرف‌نظر از فیلتر وضعیت و صفحه) را حذف می‌کند. پیش از حذف، نسخه پشتیبان گرفته می‌شود و عملیات در گزارش رویدادها ثبت می‌گردد.</p>
+        <form method="post" action="{{ url_for('delete_filtered_student_absences') }}"
+              onsubmit="return confirm('{{ removable_absences|format_number|fa_digits }} رکورد غیبت مطابق فیلترها حذف شود؟ این کار قابل بازگشت نیست.')">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="next" value="{{ request.full_path }}">
+            <input type="hidden" name="range" value="custom">
+            <input type="hidden" name="date_from" value="{{ filters.date_from or '' }}">
+            <input type="hidden" name="date_to" value="{{ filters.date_to or '' }}">
+            <input type="hidden" name="q" value="{{ filters.q or '' }}">
+            <input type="hidden" name="grade" value="{{ filters.grade or '' }}">
+            <input type="hidden" name="class_name" value="{{ filters.class_name or '' }}">
+            <input type="hidden" name="sida_class" value="{{ filters.sida_class or '' }}">
+            <input type="hidden" name="gender" value="{{ filters.gender or '' }}">
+            <input type="hidden" name="teacher_code" value="{{ filters.teacher_code or '' }}">
+            <button class="btn btn--danger" type="submit"{% if not removable_absences %} disabled{% endif %}><i class="cil-brush" aria-hidden="true"></i> حذف غیبت‌های فیلترشده</button>
+        </form>
+    </details>
+    {% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='attendance_report.js') }}" defer></script>
+{% endblock %}

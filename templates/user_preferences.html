@@ -1,0 +1,351 @@
+{% extends 'base.html' %}
+{% block title %}تنظیمات نمایش و رابط کاربری{% endblock %}
+{% block page_title %}تنظیمات نمایش و رابط کاربری{% endblock %}
+{% block page_actions %}
+<a class="btn btn--outline" href="{{ url_for('index') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به صفحهٔ اصلی</a>
+{% endblock %}
+{% block content %}
+<div class="ui-preferences-page">
+    <div class="up-intro">
+        <span class="up-intro__icon" aria-hidden="true"><i class="cil-settings"></i></span>
+        <div>
+            <strong>سامانه را مطابق نیاز خود تنظیم کنید</strong>
+            <p>این انتخاب‌ها فقط برای حساب شما ذخیره می‌شوند؛ نام دانش‌آموزان و دسترسی‌های امنیتی قابل مخفی‌کردن نیستند.</p>
+        </div>
+    </div>
+
+    <form class="up-form" method="post" action="{{ url_for('ui_preferences') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" id="colorPaletteValue" name="color_palette" value="{{ ui_preferences.color_palette }}">
+
+        <section class="up-section" aria-labelledby="up-presets-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۱</span>
+                <div><h2 id="up-presets-heading">الگوهای آماده</h2><p>یک شروع سریع انتخاب کنید؛ می‌توانید بعد از آن همهٔ گزینه‌ها را تغییر دهید.</p></div>
+            </div>
+            <div class="up-presets">
+                {% for preset_key, preset_label in preset_labels %}
+                <button class="up-preset" type="submit" name="apply_preset" value="{{ preset_key }}">
+                    <strong>{{ preset_label }}</strong>
+                    <span>{% if preset_key == 'simple' %}کارت و موبایل خلاصه، صفحهٔ فشرده{% elif preset_key == 'teacher' %}اطلاعات پرکاربرد کلاس و فهرست جمع‌وجور{% else %}آمار و اطلاعات کامل، جدول در رایانه{% endif %}</span>
+                    <small>اعمال الگو <i class="cil-arrow-left" aria-hidden="true"></i></small>
+                </button>
+                {% endfor %}
+            </div>
+            <p class="up-help">الگو بلافاصله ذخیره می‌شود، تنظیم رنگ‌های روز و شب شما را حفظ می‌کند و به‌هیچ‌وجه مجوز دسترسی را تغییر نمی‌دهد.</p>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-card-fields-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۲</span>
+                <div><h2 id="up-card-fields-heading">اطلاعات کارت دانش‌آموز</h2><p>این انتخاب فقط روی کارت‌ها و نمای کارتی اعمال می‌شود.</p></div>
+                <span class="up-count" id="cardFieldCount" role="status" aria-live="polite">{{ ui_preferences.student_card_fields|length|fa_digits }} مورد</span>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="student_card_fields">بازنشانی این بخش</button>
+            </div>
+            <div class="up-options up-options--fields">
+                {% for field_key, field_label in preference_fields %}
+                <label class="up-option{% if field_key == 'name' %} up-option--required{% endif %}" for="card-field-{{ field_key }}">
+                    {% if field_key == 'name' %}
+                    <input id="card-field-{{ field_key }}" type="checkbox" checked disabled>
+                    <input type="hidden" name="student_card_fields" value="name">
+                    {% else %}
+                    <input id="card-field-{{ field_key }}" type="checkbox" name="student_card_fields" value="{{ field_key }}" data-card-field {% if field_key in ui_preferences.student_card_fields %}checked{% endif %}>
+                    {% endif %}
+                    <span>{{ field_label }}{% if field_key == 'name' %}<small>الزامی</small>{% endif %}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <p class="up-help">نام همیشه برای تشخیص دانش‌آموز نمایش داده می‌شود. این انتخاب، ستون‌های جدول را تغییر نمی‌دهد.</p>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-table-fields-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۳</span>
+                <div><h2 id="up-table-fields-heading">ستون‌های جدول</h2><p>مستقل از کارت، ستون‌های نمای جدولی را انتخاب کنید.</p></div>
+                <span class="up-count" id="tableFieldCount" role="status" aria-live="polite">{{ ui_preferences.student_table_fields|length|fa_digits }} مورد</span>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="student_table_fields">بازنشانی این بخش</button>
+            </div>
+            <div class="up-options up-options--fields">
+                {% for field_key, field_label in preference_fields %}
+                <label class="up-option{% if field_key == 'name' %} up-option--required{% endif %}" for="table-field-{{ field_key }}">
+                    {% if field_key == 'name' %}
+                    <input id="table-field-{{ field_key }}" type="checkbox" checked disabled>
+                    <input type="hidden" name="student_table_fields" value="name">
+                    {% else %}
+                    <input id="table-field-{{ field_key }}" type="checkbox" name="student_table_fields" value="{{ field_key }}" data-table-field {% if field_key in ui_preferences.student_table_fields %}checked{% endif %}>
+                    {% endif %}
+                    <span>{{ field_label }}{% if field_key == 'name' %}<small>الزامی</small>{% endif %}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="up-table-settings">
+                <div class="up-table-settings__heading">
+                    <div><h3>ترتیب، عرض و ستون‌های ثابت</h3><p>برای جابه‌جایی، از دکمه‌های بالا و پایین استفاده کنید؛ نام همیشه ثابت می‌ماند.</p></div>
+                    <span class="up-count" id="tablePinnedCount" role="status" aria-live="polite">{{ ui_preferences.student_table_pinned|length|fa_digits }} ستون ثابت</span>
+                </div>
+                <div class="up-table-order-list" data-table-order-list data-pin-limit="{{ table_pin_limit }}">
+                    {% for field_key, field_label in table_order_fields %}
+                    <div class="up-table-order-item" data-table-order-item data-field-key="{{ field_key }}">
+                        <input type="hidden" name="student_table_order" value="{{ field_key }}">
+                        <span class="up-table-order-item__number" data-table-order-number>{{ loop.index|fa_digits }}</span>
+                        <div class="up-table-order-item__label"><strong>{{ field_label }}</strong>{% if field_key == 'name' %}<small>الزامی و ثابت</small>{% endif %}</div>
+                        <div class="up-table-order-item__width">
+                            <label for="table-width-{{ field_key }}">عرض</label>
+                            <select id="table-width-{{ field_key }}" name="student_table_width_{{ field_key }}">
+                                {% for width_key, width_label in table_column_widths %}<option value="{{ width_key }}" {% if ui_preferences.student_table_column_widths[field_key] == width_key %}selected{% endif %}>{{ width_label }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <label class="up-table-pin{% if field_key == 'name' %} is-required{% endif %}" for="table-pin-{{ field_key }}">
+                            {% if field_key == 'name' %}
+                            <input id="table-pin-{{ field_key }}" type="checkbox" checked disabled data-table-pin-required>
+                            <input type="hidden" name="student_table_pinned" value="name">
+                            {% else %}
+                            <input id="table-pin-{{ field_key }}" type="checkbox" name="student_table_pinned" value="{{ field_key }}" data-table-pin {% if field_key in ui_preferences.student_table_pinned %}checked{% endif %}>
+                            {% endif %}
+                            <span>ثابت</span>
+                        </label>
+                        <div class="up-table-order-item__moves">
+                            <button type="button" data-table-move="up" aria-label="جابجایی {{ field_label }} به بالا" title="به بالا">▲</button>
+                            <button type="button" data-table-move="down" aria-label="جابجایی {{ field_label }} به پایین" title="به پایین">▼</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <p class="up-help">حداکثر {{ table_pin_limit|fa_digits }} ستون را ثابت کنید؛ نام دانش‌آموز همیشه ثابت است. ثابت‌کردن فقط نحوهٔ پیمایش جدول را تغییر می‌دهد.</p>
+            </div>
+            <div class="up-select-grid up-table-select-grid">
+                <div class="up-control">
+                    <label for="student_table_sort">مرتب‌سازی پیش‌فرض</label>
+                    <select id="student_table_sort" name="student_table_sort">
+                        {% for field_key, field_label in table_sort_fields %}<option value="{{ field_key }}" {% if ui_preferences.student_table_sort == field_key %}selected{% endif %}>{{ field_label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="student_table_sort_direction">جهت مرتب‌سازی</label>
+                    <select id="student_table_sort_direction" name="student_table_sort_direction">
+                        {% for direction_key, direction_label in table_sort_directions %}<option value="{{ direction_key }}" {% if ui_preferences.student_table_sort_direction == direction_key %}selected{% endif %}>{{ direction_label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="student_table_page_size">تعداد ردیف در هر صفحه</label>
+                    <select id="student_table_page_size" name="student_table_page_size">
+                        {% for size, size_label in table_page_sizes %}<option value="{{ size }}" {% if ui_preferences.student_table_page_size == size %}selected{% endif %}>{{ size_label }}</option>{% endfor %}
+                    </select>
+                </div>
+            </div>
+            <p class="up-help">مرتب‌سازی و صفحه‌بندی جدول فقط ترتیب نمایش را عوض می‌کنند؛ فهرست محدودشده به نقش و مجوز فعلی دست‌نخورده می‌ماند.</p>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-mobile-fields-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۴</span>
+                <div><h2 id="up-mobile-fields-heading">نمای موبایل</h2><p>در نمایشگر کوچک، کارت‌های خلاصه با اطلاعات انتخابی جای جدول عریض را می‌گیرند.</p></div>
+                <span class="up-count" id="mobileFieldCount" role="status" aria-live="polite">{{ ui_preferences.student_mobile_fields|length|fa_digits }} مورد</span>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="student_mobile_fields">بازنشانی این بخش</button>
+            </div>
+            <div class="up-options up-options--fields">
+                {% for field_key, field_label in mobile_fields %}
+                <label class="up-option{% if field_key == 'name' %} up-option--required{% endif %}" for="mobile-field-{{ field_key }}">
+                    {% if field_key == 'name' %}
+                    <input id="mobile-field-{{ field_key }}" type="checkbox" checked disabled>
+                    <input type="hidden" name="student_mobile_fields" value="name">
+                    {% else %}
+                    <input id="mobile-field-{{ field_key }}" type="checkbox" name="student_mobile_fields" value="{{ field_key }}" data-mobile-field {% if field_key in ui_preferences.student_mobile_fields %}checked{% endif %}{% if field_key not in ui_preferences.student_card_fields %} disabled{% endif %}>
+                    {% endif %}
+                    <span>{{ field_label }}{% if field_key == 'name' %}<small>الزامی</small>{% endif %}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <p class="up-help">نمای موبایل از فیلدهای انتخاب‌شده برای کارت استفاده می‌کند؛ برای عکس، انتخاب بخش «اطلاعات کارت» ملاک است. اگر «جدول کامل» را برگزینید، در موبایل همچنان کارت‌های خلاصه نشان داده می‌شوند.</p>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-cards-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۵</span>
+                <div><h2 id="up-cards-heading">کارت‌های صفحهٔ اصلی</h2><p>نمایش بخش‌های فرعی داشبورد را روشن یا خاموش کنید.</p></div>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="dashboard_cards">بازنشانی این بخش</button>
+            </div>
+            <div class="up-options up-options--cards">
+                {% for card_key, card_label in dashboard_cards %}
+                <label class="up-option" for="dashboard-card-{{ card_key }}">
+                    <input id="dashboard-card-{{ card_key }}" type="checkbox" name="dashboard_cards" value="{{ card_key }}" {% if card_key in ui_preferences.dashboard_cards %}checked{% endif %}>
+                    <span>{{ card_label }}</span>
+                </label>
+                {% endfor %}
+            </div>
+            <p class="up-help">فهرست اصلی و کنترل‌های جست‌وجو/فیلتر پنهان نمی‌شوند؛ یادآور فوری هم در صورت وجود باقی می‌ماند.</p>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-quick-actions-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۶</span>
+                <div><h2 id="up-quick-actions-heading">اقدام‌های سریع داشبورد</h2><p>اقدام‌ها را انتخاب و مرتب کنید؛ فقط پیوندهای مجاز برای حساب شما نمایش داده می‌شوند.</p></div>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="quick_actions">بازنشانی این بخش</button>
+            </div>
+            {% if quick_action_options %}
+            <div class="up-quick-actions-list" data-quick-action-list>
+                {% for action in quick_action_options %}
+                <div class="up-quick-action-item" data-quick-action-item>
+                    <label class="up-quick-action-item__pick" for="quick-action-{{ action.key }}">
+                        <input id="quick-action-{{ action.key }}" type="checkbox" name="quick_actions" value="{{ action.key }}" data-quick-action-toggle {% if action.key in ui_preferences.quick_actions %}checked{% endif %}>
+                        <span class="quick-action__icon" aria-hidden="true"><i class="{{ action.icon }}"></i></span>
+                        <span class="up-quick-action-item__copy"><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span>
+                    </label>
+                    <div class="up-table-order-item__moves">
+                        <button type="button" data-quick-action-move="up" aria-label="جابجایی {{ action.label }} به بالا" title="به بالا">▲</button>
+                        <button type="button" data-quick-action-move="down" aria-label="جابجایی {{ action.label }} به پایین" title="به پایین">▼</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <p class="up-help">ترتیب بالا به پایین، ترتیب نمایش در داشبورد است. گزینه‌های این فهرست با مجوزهای نقش شما محدود شده‌اند و انتخاب آن‌ها هیچ مجوزی ایجاد یا تغییر نمی‌دهد.</p>
+            {% else %}
+            <p class="up-empty-actions">برای نقش و مجوزهای فعلی، اقدام سریعی در دسترس نیست.</p>
+            {% endif %}
+        </section>
+
+        <section class="up-section" aria-labelledby="up-layout-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۷</span>
+                <div><h2 id="up-layout-heading">چیدمان و دسترس‌پذیری</h2><p>نمای پیش‌فرض فهرست، تراکم رابط و گزینه‌های خوانایی را تنظیم کنید.</p></div>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="layout">بازنشانی این بخش</button>
+            </div>
+            <div class="up-select-grid">
+                <div class="up-control">
+                    <label for="student_view">نمای پیش‌فرض فهرست در رایانه</label>
+                    <select id="student_view" name="student_view">
+                        {% for value, label in student_view_choices %}<option value="{{ value }}" {% if student_view == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                    <small>تنظیم «جدول کامل» در موبایل به کارت‌های خلاصه تبدیل می‌شود.</small>
+                </div>
+                <div class="up-control">
+                    <label for="ui_density">فشردگی صفحات</label>
+                    <select id="ui_density" name="ui_density" data-ui-setting="density">
+                        {% for value, label in ui_densities %}<option value="{{ value }}" {% if ui_preferences.ui_density == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                    <small>فاصلهٔ بخش‌ها و اندازهٔ کنترل‌ها.</small>
+                </div>
+                <div class="up-control">
+                    <label for="card_size">اندازهٔ کارت‌های دانش‌آموز</label>
+                    <select id="card_size" name="card_size" data-ui-setting="card-size">
+                        {% for value, label in card_sizes %}<option value="{{ value }}" {% if ui_preferences.card_size == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="visual_style">سبک دیداری</label>
+                    <select id="visual_style" name="visual_style" data-ui-setting="style">
+                        {% for value, label in visual_styles %}<option value="{{ value }}" {% if ui_preferences.visual_style == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="font_family">قلم رابط کاربری</label>
+                    <select id="font_family" name="font_family" data-ui-setting="font">
+                        {% for value, label in font_families %}<option value="{{ value }}" {% if ui_preferences.font_family == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="text_scale">اندازهٔ نوشته‌ها</label>
+                    <select id="text_scale" name="text_scale" data-ui-setting="text-scale">
+                        {% for value, label in text_scales %}<option value="{{ value }}" {% if ui_preferences.text_scale == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                    <small>اندازهٔ متن را بدون تغییر مجوزها افزایش دهید.</small>
+                </div>
+                <div class="up-control">
+                    <label for="line_spacing">فاصلهٔ خطوط</label>
+                    <select id="line_spacing" name="line_spacing" data-ui-setting="line-spacing">
+                        {% for value, label in line_spacings %}<option value="{{ value }}" {% if ui_preferences.line_spacing == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="up-control">
+                    <label for="motion">حرکت‌های رابط</label>
+                    <select id="motion" name="motion" data-ui-setting="motion">
+                        {% for value, label in motion_options %}<option value="{{ value }}" {% if ui_preferences.motion == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                    </select>
+                    <small>در حالت «حرکت کمتر»، انیمیشن‌های غیرضروری کاهش می‌یابند.</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="up-section" aria-labelledby="up-colors-heading">
+            <div class="up-section__heading">
+                <span class="up-section__number">۸</span>
+                <div><h2 id="up-colors-heading">پالت‌های آماده و رنگ‌های شخصی</h2><p>یک طرح را برای تمام صفحه‌های سامانه انتخاب کنید؛ رنگ‌های روز و شب با هم هماهنگ می‌شوند.</p></div>
+            </div>
+
+            <div class="up-palette-grid" role="group" aria-label="پالت‌های آمادهٔ سراسری">
+                {% for palette_key, palette_label in color_palette_choices %}
+                {% set palette = color_palettes[palette_key] %}
+                <button class="up-palette-card{% if ui_preferences.color_palette == palette_key %} is-active{% endif %}" type="submit" name="apply_color_palette" value="{{ palette_key }}" aria-pressed="{{ 'true' if ui_preferences.color_palette == palette_key else 'false' }}" data-palette-card="{{ palette_key }}">
+                    <span class="up-palette-card__swatches" aria-hidden="true">
+                        <i style="--swatch:{{ palette.light.button }}"></i><i style="--swatch:{{ palette.light.background }}"></i><i style="--swatch:{{ palette.light.table_header }}"></i>
+                        <i style="--swatch:{{ palette.dark.button }}"></i><i style="--swatch:{{ palette.dark.background }}"></i><i style="--swatch:{{ palette.dark.table_header }}"></i>
+                    </span>
+                    <span class="up-palette-card__gradient" style="--palette-a:{{ palette.light.table_header }};--palette-b:{{ palette.swatches[1] if palette.swatches else palette.dark.button }};--palette-c:{{ palette.swatches[2] if palette.swatches else palette.light.background }}" aria-hidden="true"></span>
+                    <strong>{{ palette_label }}</strong>
+                    <span class="up-palette-card__description">{{ palette.description }}</span>
+                    <small>{% if ui_preferences.color_palette == palette_key %}پالت فعلی{% else %}اعمال روی همهٔ صفحه‌ها{% endif %}</small>
+                </button>
+                {% endfor %}
+            </div>
+            <p class="up-palette-status" id="colorPaletteStatus" role="status" aria-live="polite">{% if ui_preferences.color_palette == 'custom' %}رنگ‌های فعلی شخصی‌سازی شده‌اند.{% else %}پالت فعال: {{ color_palettes[ui_preferences.color_palette].label }}{% endif %}</p>
+            <p class="up-help">انتخاب پالت فقط رنگ‌ها را تغییر می‌دهد و چیدمان، داده‌ها یا مجوزها دست‌نخورده می‌مانند. برای تغییر جزئی، رنگ‌های روز و شب را در ادامه ویرایش کنید.</p>
+
+            <div class="up-palette-heading">
+                <div><strong>حالت روز</strong><small>رنگ‌ها در رابط روشن استفاده می‌شوند.</small></div>
+                <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="light_colors">بازنشانی رنگ‌های روز</button>
+            </div>
+            <div class="up-color-grid">
+                {% for color_key, color_label in color_fields %}
+                <label class="up-color-control" for="color-light-{{ color_key }}">
+                    <span>{{ color_label }}</span>
+                    <input id="color-light-{{ color_key }}" type="color" name="color_{{ color_key }}" value="{{ ui_preferences.colors[color_key] }}" data-color-palette="light" data-color-key="{{ color_key }}">
+                    <code>{{ ui_preferences.colors[color_key] }}</code>
+                </label>
+                {% endfor %}
+            </div>
+            <div class="up-preview up-preview--light" aria-label="پیش‌نمایش رنگ‌های روز">
+                <strong class="up-preview__label">پیش‌نمایش حالت روز</strong>
+                <div class="up-preview__sample-card"><strong>کارت نمونه</strong><span>متن روی سطح باکس</span></div>
+                <button class="up-preview__primary" type="button">دکمهٔ اصلی</button>
+                <button class="up-preview__secondary" type="button">دکمهٔ فرعی</button>
+                <div class="up-preview__table"><span>سرستون</span><span>ردیف نمونه</span><span>ردیف دوم</span></div>
+            </div>
+
+            <details class="up-dark-palette">
+                <summary>تنظیم پالت حالت شب</summary>
+                <div class="up-palette-heading">
+                    <div><strong>حالت شب</strong><small>این پالت هنگام روشن‌بودن حالت شب استفاده می‌شود.</small></div>
+                    <button class="btn btn--outline up-reset-section" type="submit" name="reset_section" value="dark_colors">بازنشانی رنگ‌های شب</button>
+                </div>
+                <div class="up-color-grid">
+                    {% for color_key, color_label in color_fields %}
+                    <label class="up-color-control" for="color-dark-{{ color_key }}">
+                        <span>{{ color_label }}</span>
+                        <input id="color-dark-{{ color_key }}" type="color" name="dark_color_{{ color_key }}" value="{{ ui_preferences.dark_colors[color_key] }}" data-color-palette="dark" data-color-key="{{ color_key }}">
+                        <code>{{ ui_preferences.dark_colors[color_key] }}</code>
+                    </label>
+                    {% endfor %}
+                </div>
+                <div class="up-preview up-preview--dark" aria-label="پیش‌نمایش رنگ‌های شب">
+                    <strong class="up-preview__label">پیش‌نمایش حالت شب</strong>
+                    <div class="up-preview__sample-card"><strong>کارت نمونه</strong><span>متن روی سطح باکس</span></div>
+                    <button class="up-preview__primary" type="button">دکمهٔ اصلی</button>
+                    <button class="up-preview__secondary" type="button">دکمهٔ فرعی</button>
+                    <div class="up-preview__table"><span>سرستون</span><span>ردیف نمونه</span><span>ردیف دوم</span></div>
+                </div>
+            </details>
+            <div class="up-contrast-status" id="contrastStatus" role="status" aria-live="polite"></div>
+            <p class="up-help">بررسی کنتراست یک هشدار راهنماست و ذخیره را مسدود نمی‌کند. برای خوانایی متن معمولی، نسبت کنتراست ۴٫۵ به ۱ یا بیشتر توصیه می‌شود.</p>
+        </section>
+
+        <div class="up-form__actions">
+            <button class="btn btn--primary btn-lg" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیرهٔ تنظیمات</button>
+            <button class="btn btn--outline" type="submit" name="reset_preferences" value="1"><i class="cil-reload" aria-hidden="true"></i> بازنشانی همهٔ تنظیمات</button>
+            <a class="btn btn--link" href="{{ url_for('index') }}"><i class="cil-home" aria-hidden="true"></i> مشاهدهٔ صفحهٔ اصلی</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='user_preferences.js') }}" defer></script>
+{% endblock %}

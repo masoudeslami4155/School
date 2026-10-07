@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}کیفیت داده‌ها{% endblock %}
+{% block page_title %}گزارش کیفیت داده‌ها{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <style>
+        .dq-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:18px}
+        .dq-summary span{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--ink);text-align:center}
+        .dq-group{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}
+        .dq-group h2{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:8px;color:var(--ink)}
+        .dq-group p{margin:0 0 12px;color:var(--muted);font-size:12px}
+        .dq-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px}
+        .dq-table{width:100%;min-width:620px;border-collapse:collapse;font-size:12px}
+        .dq-table th,.dq-table td{border:1px solid var(--line);padding:7px 9px;text-align:center;color:var(--ink)}
+        .dq-table th{background:var(--soft);font-weight:700}
+        .dq-empty{color:#067647;font-size:12px;background:#ecfdf3;border:1px solid #bbf0d0;border-radius:10px;padding:10px 14px}
+        .dq-actions{text-align:center}
+        .dq-actions a{font-size:11px;text-decoration:none;color:var(--primary);font-weight:700}
+        @media (max-width:640px){
+            .dq-group{padding:12px}
+            .dq-summary span{font-size:11px;padding:7px 10px}
+            .dq-table{font-size:11px;min-width:560px}
+            .dq-table th,.dq-table td{padding:6px 6px}
+        }
+        @media print{.dq-scroll{overflow:visible}.dq-table{min-width:0}}
+    </style>
+{% endblock %}
+{% block content %}
+<div class="dq-summary">
+    <span>👨‍🎓 کل دانش‌آموزان فعال: {{ total_active|format_number }}</span>
+    <span>🧩 دانش‌آموزان با داده ناقص: {{ incomplete_count|format_number }}</span>
+    <span>⚧ جنسیت ثبت‌نشده: {{ gender_missing|length|format_number }}</span>
+    <span>🏷️ کلاس سیدا ثبت‌نشده: {{ sida_missing|length|format_number }}</span>
+    <span>🏫 کلاس مدرسه ثبت‌نشده: {{ class_missing|length|format_number }}</span>
+    <span>👩‍🏫 معلم منتسب‌نشده: {{ teacher_missing|length|format_number }}</span>
+</div>
+
+{% macro student_table(rows, extra_col=None) %}
+{% if rows %}
+<div class="dq-scroll">
+<table class="dq-table">
+    <thead>
+        <tr>
+            <th>کد</th>
+            <th>نام و نام‌خانوادگی</th>
+            <th>پایه</th>
+            <th>کلاس مدرسه</th>
+            <th>کلاس سیدا</th>
+            <th>جنسیت</th>
+            <th>معلم</th>
+            <th>عملیات</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.code or '—' }}</td>
+            <td>{{ (row.first_name or '') ~ ' ' ~ (row.last_name or '') }}</td>
+            <td>{{ row.grade or 'ثبت نشده' }}</td>
+            <td>{{ row.class_name or 'ثبت نشده' }}</td>
+            <td>{{ row.sida_class or 'ثبت نشده' }}</td>
+            <td>{{ row.gender or 'ثبت نشده' }}</td>
+            <td>{{ (row.teacher_first ~ ' ' ~ row.teacher_last) if row.teacher_first else 'ثبت نشده' }}</td>
+            <td class="dq-actions"><a href="{{ url_for('edit_student', id=row.id) }}">✏️ تکمیل اطلاعات</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<div class="dq-empty">✅ همه دانش‌آموزان فعال در این مورد کامل هستند.</div>
+{% endif %}
+{% endmacro %}
+
+<div class="dq-group">
+    <h2>⚧ جنسیت ثبت نشده</h2>
+    <p>دانش‌آموزانی که فیلد جنسیت آن‌ها خالی است.</p>
+    {{ student_table(gender_missing) }}
+</div>
+
+<div class="dq-group">
+    <h2>🏷️ کلاس سیدا ثبت نشده</h2>
+    <p>دانش‌آموزانی که فیلد کلاس سیدا آن‌ها خالی است.</p>
+    {{ student_table(sida_missing) }}
+</div>
+
+<div class="dq-group">
+    <h2>🏫 کلاس مدرسه ثبت نشده</h2>
+    <p>دانش‌آموزانی که فیلد کلاس مدرسه آن‌ها خالی است.</p>
+    {{ student_table(class_missing) }}
+</div>
+
+<div class="dq-group">
+    <h2>👩‍🏫 معلم منتسب نشده / نامعتبر</h2>
+    <p>دانش‌آموزانی که کد معلم آن‌ها خالی است یا به معلمی در فهرست کارکنان اشاره نمی‌کند.</p>
+    {{ student_table(teacher_missing) }}
+</div>
+{% endblock %}

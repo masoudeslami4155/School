@@ -1,0 +1,23 @@
+Flask>=3.0,<4
+Werkzeug>=3.0,<4
+openpyxl>=3.1,<4
+qrcode>=8.0,<9
+bleach[css]>=6.2,<7
+cryptography>=42,<47
+# Optional desktop window:
+# pywebview>=5.0,<6
+# Optional (better Persian rendering in the classic Windows console):
+# arabic-reshaper>=3.0,<4
+# python-bidi>=0.6,<1
+
+# IANA zones for Jalali relative-date context on Windows too:
+tzdata>=2024.1
+# Document archive, independent editable Word and Persian PDF exports:
+beautifulsoup4>=4.12,<5
+python-docx>=1.1,<2
+reportlab>=4.2,<5
+arabic-reshaper>=3.0,<4
+python-bidi>=0.6,<1
+
+# Pixel-faithful HTML/CSS PDF export; install browser: python -m playwright install chromium
+playwright>=1.49,<2

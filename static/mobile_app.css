@@ -1,0 +1,639 @@
+/* ==========================================================================
+   سامانه جامع مدرسه — بهینهسازی پیشرفته تجربه کاربری موبایل (Mobile App Mode)
+   نسخه ۴.۳۳ - کاملاً آفلاین، واکنشگرا و سازگار با دسکتاپ و موبایل
+   ========================================================================== */
+
+/* Every table gets a bounded scroll container when a page did not provide one. */
+.table-scroll--auto,
+.profile-table-scroll {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --------------------------------------------------------------------------
+   ۱. بهبود عمومی لمس (Touch-Friendly) و ارگونومی موبایل
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  :root {
+    --mobile-nav-clearance: calc(76px + env(safe-area-inset-bottom));
+  }
+
+  /* جلوگیری از اسکرول ناخواسته و بهبود فاصلهٔ پایین برای نوار ناوبری موبایل */
+  body {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+  }
+  
+  /* اندازه استاندارد دکمهها و فیلدهای ورودی برای لمس راحت (حداقل ۴۲ تا ۴۶ پیکسل) */
+  .btn, 
+  button, 
+  .topbar-link,
+  input[type="text"],
+  input[type="number"],
+  input[type="search"],
+  input[type="password"],
+  input[type="date"],
+  select,
+  .form-control,
+  .form-select {
+    min-height: 44px;
+    font-size: 14px;
+  }
+
+  /* فاصلهگذاری مناسب بین ردیفهای فرم */
+  .form-group, 
+  .form-row,
+  .form-grid > div {
+    margin-bottom: 14px;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۲. فشردهسازی و نظمدهی به سربرگ (Topbar) در موبایل
+     ------------------------------------------------------------------------ */
+  .topbar {
+    padding: 10px 14px !important;
+    gap: 8px !important;
+  }
+
+  .topbar,
+  .page-heading {
+    border-radius: 0 0 18px 18px;
+  }
+  
+  .topbar .brand {
+    gap: 8px !important;
+  }
+  
+  .topbar .brand-mark {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 18px !important;
+  }
+  
+  .topbar .brand small,
+  .topbar .brand .brand-credit {
+    display: none !important; /* مخفی کردن توضیحات برای صرفهجویی فضا در موبایل */
+  }
+  
+  .topbar .brand strong {
+    font-size: 14px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+
+  .topbar-actions {
+    gap: 6px !important;
+  }
+
+  .topbar-context .date-chip span,
+  .topbar-context .user-chip span.topbar-user__text {
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 11px !important;
+  }
+
+  .topbar-tools {
+    gap: 5px !important;
+  }
+
+  .topbar-tools .topbar-link span {
+    display: none !important; /* فقط آیکون نمایش داده شود */
+  }
+
+  .topbar-tools .topbar-link {
+    width: 38px !important;
+    height: 38px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+  }
+
+  /* مخفی کردن دکمهٔ تغییر تم در موبایل — چون هدر را خراب می‌کند */
+  .topbar-tools .theme-control {
+    display: none !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۳. سایدبار موبایل: باز/بسته شدن انیمیشند
+     ------------------------------------------------------------------------ */
+  /* در حالت عادی (موبایل) سایدبار مخفی است */
+  .dashboard-nav:not(.is-expanded) {
+    display: none !important;
+  }
+
+  /* وقتی باز است، به صورتFixedOverlay نمایش داده شود */
+  .dashboard-nav.is-expanded {
+    display: flex !important;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: auto !important;
+    width: 82vw !important;
+    max-width: 310px !important;
+    height: 100dvh !important;
+    border-radius: 16px 0 0 16px !important;
+    z-index: 1050 !important;
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.25) !important;
+  }
+
+  /* جابجایی محتوای اصلی هنگام باز بودن سایدبار */
+  .topbar,
+  .page-container,
+  .app-footer {
+    padding-inline-start: 12px !important;
+    padding-inline-end: 12px !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۴. جدول‌های واکنشگرا در موبایل
+     ------------------------------------------------------------------------ */
+  /* اسکرول لمسی روان برای جداول */
+  .table-responsive,
+  .table-container,
+  .table-wrapper,
+  .table-wrap,
+  .table-scroll,
+  .profile-table-scroll,
+  div[style*="overflow-x:auto"] {
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+    overflow-x: auto;
+    border-radius: 10px;
+    border: 1px solid var(--line, #e2e8f0);
+    margin-bottom: 16px;
+  }
+
+  .table-scroll--auto > table,
+  .profile-table-scroll > table {
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+  }
+
+  /* کاهش پدینگ و فونت در سلول‌ها */
+  table th, 
+  table td {
+    padding: 8px 6px !important;
+    font-size: 12px !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۵. کارت‌های دانشآموز در موبایل
+     ------------------------------------------------------------------------ */
+  /* یک ستون در موبایل */
+  .student-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .student-card {
+    border-radius: 14px !important;
+    padding: 12px !important;
+    border: 1px solid var(--line, #e2e8f0) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .student-card__meta {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    background: var(--surface-soft, #f8fafc) !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+  }
+
+  .student-card__actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+  }
+
+  .student-card__actions .btn {
+    min-height: 38px !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+    justify-content: center !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۶. دکمه‌های وضعیت حضور و غیاب در موبایل
+     ------------------------------------------------------------------------ */
+  .status-buttons {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+  }
+
+  .status-buttons button {
+    min-height: 42px !important;
+    padding: 4px !important;
+    font-size: 12px !important;
+    border-radius: 8px !important;
+  }
+
+  /* ------------------------------------------------------------------------
+     ۷. نوار چسبنده دکمههای عملیات و ذخیره در پایین فرمها (Sticky Form Actions)
+     ------------------------------------------------------------------------ */
+  .form-actions,
+  .sticky-mobile-actions,
+  .actions-row {
+    position: fixed !important;
+    right: 12px !important;
+    left: 12px !important;
+    bottom: var(--mobile-nav-clearance) !important;
+    z-index: 1001 !important;
+    background: var(--surface, #ffffff) !important;
+    padding: 10px 14px !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--line, #e2e8f0) !important;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08) !important;
+    display: flex !important;
+    gap: 10px !important;
+    justify-content: stretch !important;
+  }
+
+  .sticky-mobile-actions button,
+  .sticky-mobile-actions a,
+  .form-actions button,
+  .form-actions a {
+    flex: 1 !important;
+    min-height: 44px !important;
+    font-size: 14px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  /* داشبورد موبایل: سربرگ کوتاه بماند و فضای محتوا را نبلعد. */
+  html.dashboard-page .topbar {
+    min-height: 0 !important;
+    padding: 7px 10px !important;
+    gap: 5px !important;
+    flex-direction: row !important;
+    align-items: center !important;
+  }
+  html.dashboard-page .topbar-actions {
+    width: auto !important;
+    flex: 0 1 auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 4px !important;
+  }
+  html.dashboard-page .topbar-context,
+  html.dashboard-page .topbar-tools {
+    width: auto !important;
+    margin: 0 !important;
+    gap: 4px !important;
+  }
+  html.dashboard-page .topbar-context { display: flex !important; }
+  html.dashboard-page .topbar-context .date-chip,
+  html.dashboard-page .topbar-context .user-chip {
+    width: 31px !important;
+    min-width: 31px !important;
+    height: 31px !important;
+    min-height: 31px !important;
+    padding: 0 !important;
+    border-radius: 9px !important;
+  }
+  html.dashboard-page .topbar-context .date-chip span,
+  html.dashboard-page .topbar-context .user-chip .topbar-user__text,
+  html.dashboard-page .topbar-context .topbar-separator { display: none !important; }
+  html.dashboard-page .topbar-tools .topbar-link,
+  html.dashboard-page .topbar-tools .theme-control {
+    width: 31px !important;
+    height: 31px !important;
+    min-height: 31px !important;
+    padding: 0 !important;
+    border-radius: 9px !important;
+  }
+  html.dashboard-page .topbar-tools .theme-control { width: 54px !important; }
+  html.dashboard-page .topbar-tools .topbar-link i { font-size: 15px !important; }
+}
+
+/* --------------------------------------------------------------------------
+   ۸. نوار ابزار پایین صفحه (Mobile Bottom Navigation Bar)
+   -------------------------------------------------------------------------- */
+.mobile-bottom-nav {
+  display: none; /* در حالت دسکتاپ کاملاً مخفی است */
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-nav {
+    display: flex !important;
+    position: fixed !important;
+    bottom: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    height: 64px !important;
+    padding-bottom: env(safe-area-inset-bottom) !important;
+    background: var(--surface, #ffffff) !important;
+    border-top: 1px solid var(--line, #e2e8f0) !important;
+    z-index: 1000 !important;
+    box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.07) !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    padding: 0 4px !important;
+    backdrop-filter: blur(8px);
+  }
+
+  .mobile-bottom-nav__item {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 1 !important;
+    height: 100% !important;
+    color: var(--muted, #64748b) !important;
+    text-decoration: none !important;
+    font-size: 11px !important;
+    gap: 3px !important;
+    border: none !important;
+    background: transparent !important;
+    cursor: pointer !important;
+    border-radius: 8px !important;
+    transition: color 0.15s ease, transform 0.1s ease;
+    padding: 4px 0 !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-bottom-nav__item i {
+    font-size: 20px !important;
+    line-height: 1 !important;
+  }
+
+  .mobile-bottom-nav__item.is-active,
+  .mobile-bottom-nav__item:active {
+    color: var(--primary, #0b6374) !important;
+    font-weight: 600 !important;
+  }
+
+  .mobile-bottom-nav__item:active {
+    transform: scale(0.94);
+  }
+
+  /* تم تیره برای نوار پایین */
+  html[data-theme="dark"] .mobile-bottom-nav {
+    background: #111a24 !important;
+    border-top-color: #263544 !important;
+    box-shadow: 0 -3px 16px rgba(0, 0, 0, 0.4) !important;
+  }
+  
+  html[data-theme="dark"] .mobile-bottom-nav__item {
+    color: #94a3b8 !important;
+  }
+
+  html[data-theme="dark"] .mobile-bottom-nav__item.is-active {
+    color: #2dd4bf !important;
+  }
+
+  html[data-theme="dark"] .form-actions,
+  html[data-theme="dark"] .sticky-mobile-actions {
+    background: #111a24 !important;
+    border-color: #263544 !important;
+    box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  html[data-theme="dark"] .student-card__meta {
+    background: #1a2533 !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   ۹. لایه پوشش (Overlay) و منوی کناری در موبایل
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .sidebar-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    z-index: 1040 !important;
+  }
+
+  .sidebar-overlay[hidden] {
+    display: none !important;
+  }
+
+  /* نوار انتخاب باید روی موبایل قابل دسترس بماند؛ فرم عملیات فقط هنگام انتخاب شناور می‌شود. */
+  .bulk-actions,
+  #bulkActions { display: block !important; }
+  .bulk-actions__bar { display: flex !important; }
+  .bulk-actions__form { display: none !important; }
+  .bulk-actions__form.bulk-float.is-floating { display: flex !important; }
+
+  /* مخفی کردن quick-actionهای ثانویه در موبایل (فقط primary نمایش داده میشود) */
+  .quick-action:not(.quick-action--primary) {
+    display: none !important;
+  }
+
+  /* جلوگیری از اسکرول بدنه هنگام باز بودن منو */
+  body.nav-open {
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width:768px){.mobile-form-save{position:fixed!important;right:12px!important;left:12px!important;bottom:var(--mobile-nav-clearance)!important;z-index:1001!important;display:flex!important;gap:8px!important;padding:8px!important;background:var(--surface,#fff)!important;border:1px solid var(--line,#e2e8f0)!important;border-radius:12px!important;box-shadow:0 -4px 18px rgba(0,0,0,.14)!important}.mobile-form-save button,.mobile-form-save .btn{flex:1!important;min-height:44px!important}html[data-theme="dark"] .mobile-form-save{background:#111a24!important;border-color:#263544!important}}
+
+/* دکمهٔ ذخیرهٔ فرم ثبت/ویرایش دانش‌آموز همیشه در دسترس می‌ماند. */
+.student-form-float-actions {
+  position: fixed;
+  right: 12px;
+  bottom: 18px;
+  z-index: 1002;
+  display: flex;
+  padding: 7px;
+  border: 1px solid var(--line, #dbe3ee);
+  border-radius: 15px;
+  background: var(--surface, #fff);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, .22);
+}
+.student-form-float-actions .btn-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 11px;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.student-form-float-actions .btn-submit i { font-size: 17px; }
+@media (min-width: 769px) {
+  .student-form-float-actions { right: auto; left: 28px; bottom: 24px; }
+}
+@media (max-width: 768px) {
+  .student-form-float-actions {
+    right: 12px;
+    left: 12px;
+    bottom: var(--mobile-nav-clearance);
+    z-index: 1001;
+    justify-content: stretch;
+  }
+  .student-form-float-actions .btn-submit { flex: 1; }
+}
+@media print { .student-form-float-actions { display: none !important; } }
+@media print {
+  .table-scroll--auto,
+  .profile-table-scroll { width: 100% !important; max-width: none !important; overflow: visible !important; }
+}
+
+/* --------------------------------------------------------------------------
+   انتقال آیتمهای سربرگ به منوی کناری در حالت موبایل
+   -------------------------------------------------------------------------- */
+
+/* پيش‌فرض: مخفي روی دسکتاپ */
+.mobile-nav__items,
+.mobile-nav__row,
+.mobile-nav__action,
+.dashboard-nav__separator {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  /* مخفی کردن اقلام سربرگ در موبایل */
+  .topbar-context,
+  .topbar-tools {
+    display: none !important;
+  }
+
+  /* استایل آیتم‌های منتقل‌شده به سایدبار */
+  .dashboard-nav__bottom {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    padding: 10px 9px 12px !important;
+  }
+
+  .mobile-nav__items {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    margin-bottom: 4px !important;
+  }
+
+  .mobile-nav__row {
+    display: flex !important;
+    align-items: center !important;
+    gap: 7px !important;
+    padding: 7px 10px !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    color: var(--muted, #667085) !important;
+    background: var(--surface-soft, #f5f7fa) !important;
+    border: 1px solid var(--line, #e4eaf2) !important;
+  }
+
+  html[data-theme="dark"] .mobile-nav__row {
+    background: #1b2636 !important;
+    border-color: #344256 !important;
+    color: var(--muted, #a7b4c7) !important;
+  }
+
+  .mobile-nav__row i { font-size: 14px; flex: 0 0 auto; }
+
+  .mobile-nav__action {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 7px !important;
+    min-height: 36px !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    color: var(--ink, #14213d) !important;
+    text-decoration: none !important;
+    cursor: pointer !important;
+    border: 1px solid var(--line, #e4eaf2) !important;
+    background: var(--surface, #fff) !important;
+    transition: background .2s ease, border-color .2s ease !important;
+  }
+
+  .mobile-nav__action:hover {
+    background: #e8f3f5 !important;
+    border-color: var(--primary, #0b6374) !important;
+  }
+
+  html[data-theme="dark"] .mobile-nav__action {
+    background: #202c3d !important;
+    border-color: #3d4c62 !important;
+    color: var(--ink, #e6edf7) !important;
+  }
+
+  html[data-theme="dark"] .mobile-nav__action:hover {
+    background: #29384c !important;
+    border-color: var(--primary, #5dd6e4) !important;
+  }
+
+  .mobile-nav__action i { font-size: 14px; flex: 0 0 auto; }
+
+  .mobile-nav__action--pwd { margin-bottom: 2px !important; }
+
+  .mobile-nav__action--logout { color: var(--danger, #b42318) !important; }
+
+  html[data-theme="dark"] .mobile-nav__action--logout { color: var(--danger, #ff8f86) !important; }
+
+  /* دکمه تم — نمایش آیکون خورشید/ماه در موبایل */
+  .dashboard-nav__theme {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    min-height: 36px !important;
+    border-radius: 8px !important;
+    border: 1px solid var(--line, #e4eaf2) !important;
+    background: var(--surface, #fff) !important;
+    color: var(--ink, #14213d) !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    margin-top: 2px !important;
+    padding: 0 10px !important;
+    transition: background .2s ease, border-color .2s ease !important;
+  }
+
+  .dashboard-nav__theme:hover {
+    background: #e8f3f5 !important;
+    border-color: var(--primary, #0b6374) !important;
+  }
+
+  html[data-theme="dark"] .dashboard-nav__theme {
+    background: #202c3d !important;
+    border-color: #3d4c62 !important;
+    color: var(--ink, #e6edf7) !important;
+  }
+
+  html[data-theme="dark"] .dashboard-nav__theme:hover {
+    background: #29384c !important;
+    border-color: var(--primary, #5dd6e4) !important;
+  }
+
+  .dashboard-nav__theme > span:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .dashboard-nav__theme > span:first-child i { font-size: 14px; }
+
+  /* مخفی کردن بج تم در نوار پایین دسکتاپ */
+  .dashboard-nav__switch { display: none !important; }
+}
+
+/* وقتی سایدبار باز است، نوار ناوبری پایین را پنهان کن */
+@media (max-width: 768px) {
+  body.nav-open .mobile-bottom-nav {
+    display: none !important;
+  }
+}

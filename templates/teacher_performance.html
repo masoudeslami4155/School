@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+{% block title %}گزارش عملکرد معلم{% endblock %}
+{% block page_title %}📊 گزارش عملکرد معلم{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block header_buttons %}
+    <span style="background:#2c3e50; color:white; padding:6px 16px; border-radius:20px;">📄 {{ performances|length }}</span>
+{% endblock %}
+{% block content %}
+
+<style>
+    .form-card {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        border-right: 4px solid #8e44ad;
+    }
+    .form-card h4 { margin-bottom: 15px; color: #2c3e50; }
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+    .form-row .field-group { flex: 1; min-width: 180px; }
+    label {
+        display: block;
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: #34495e;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+        background: #fafafa;
+        font-family: inherit;
+        transition: 0.3s;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #8e44ad;
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(142,68,173,0.2);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    .btn-submit {
+        background: #8e44ad; color: white; padding: 12px 30px;
+        border: none; border-radius: 8px; font-size: 16px; font-weight: bold;
+        cursor: pointer; transition: 0.3s; width: 100%;
+    }
+    .btn-submit:hover { background: #732d91; }
+
+    /* ===== تقویم شمسی ===== */
+    .day-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+        gap: 5px;
+        margin: 8px 0;
+        max-width: 450px;
+    }
+    .day-grid button {
+        padding: 6px 0; border: none; border-radius: 4px;
+        font-size: 13px; font-weight: bold; cursor: pointer;
+        background: #ecf0f1; color: #2c3e50;
+        transition: 0.2s; border: 2px solid transparent;
+    }
+    .day-grid button:hover { background: #bdc3c7; }
+    .day-grid button.selected {
+        background: #8e44ad; color: white; border-color: #2c3e50;
+    }
+    .day-grid button.today { border-color: #e74c3c; }
+    .date-confirm-btn {
+        background: #27ae60; color: white; border: none;
+        padding: 6px 16px; border-radius: 4px; font-size: 13px;
+        font-weight: bold; cursor: pointer; transition: 0.2s;
+    }
+    .date-confirm-btn:hover { background: #219150; }
+    .selected-date {
+        font-weight: bold; font-size: 15px; color: #2c3e50;
+        background: white; padding: 4px 14px; border-radius: 6px;
+        border: 2px solid #8e44ad; min-width: 100px; text-align: center;
+        display: inline-block;
+    }
+
+    /* ===== فیلتر و جستجو ===== */
+    .search-box {
+        margin: 10px 0;
+    }
+    .search-box input {
+        width: 100%; padding: 10px 14px; border-radius: 8px;
+        border: 1px solid #ccc; font-size: 15px; background: #fafafa;
+    }
+    .search-box input:focus {
+        border-color: #8e44ad; outline: none; background: white;
+        box-shadow: 0 0 0 3px rgba(142,68,173,0.15);
+    }
+    .filter-bar {
+        display: flex; flex-wrap: wrap; gap: 10px;
+        align-items: center; margin: 10px 0;
+        padding: 10px 15px; background: #f8f9fa; border-radius: 10px;
+    }
+    .filter-bar select {
+        padding: 6px 12px; border-radius: 6px; border: 1px solid #ccc;
+        font-size: 14px; background: white;
+    }
+    .filter-bar button {
+        padding: 6px 16px; border: none; border-radius: 6px;
+        background: #3498db; color: white; cursor: pointer;
+        font-size: 14px;
+    }
+    .filter-bar button:hover { background: #2980b9; }
+    .filter-bar .reset-btn { background: #95a5a6; }
+    .filter-bar .reset-btn:hover { background: #7f8c8d; }
+
+    .table-wrapper { overflow-x: auto; margin-top: 10px; }
+    table {
+        width: 100%; border-collapse: collapse; min-width: 800px;
+        font-size: 13px;
+    }
+    th {
+        background: #8e44ad; color: white; padding: 10px 8px;
+        text-align: center; white-space: nowrap;
+    }
+    td {
+        padding: 8px 6px; border-bottom: 1px solid #ecf0f1;
+        text-align: center; vertical-align: middle;
+    }
+    td .report-text {
+        max-width: 300px; white-space: normal; word-break: break-word;
+        text-align: right;
+    }
+    .teacher-name { color: #8e44ad; font-weight: bold; }
+    .student-name { color: #2980b9; font-weight: bold; }
+    .empty-state { text-align: center; padding: 40px 20px; color: #7f8c8d; }
+    .empty-state .icon { font-size: 50px; margin-bottom: 10px; }
+    .btn-danger-sm {
+        background: #e74c3c; color: white; border: none;
+        padding: 4px 10px; border-radius: 4px; cursor: pointer;
+        font-size: 13px;
+    }
+    .btn-danger-sm:hover { background: #c0392b; }
+    .btn-warning-sm {
+        background: #f39c12; color: white; border: none;
+        padding: 4px 10px; border-radius: 4px; cursor: pointer;
+        font-size: 13px;
+    }
+    .btn-warning-sm:hover { background: #e67e22; }
+    .event-actions { display: flex; gap: 4px; justify-content: center; }
+    .event-actions form { display: inline; }
+
+    @media (max-width:600px) {
+        .form-row .field-group { min-width: 100%; }
+        .day-grid { grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); }
+        table { min-width: 550px; }
+        th, td { padding: 6px 4px; font-size: 12px; }
+        td .report-text { max-width: 120px; }
+        .filter-bar { flex-direction: column; align-items: stretch; }
+    }
+</style>
+
+<!-- ===== فرم ثبت عملکرد ===== -->
+<div class="form-card no-print">
+    <h4>➕ ثبت عملکرد جدید برای دانش‌آموز</h4>
+    <form method="POST" action="/teacher_performance">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="date" id="selectedDate" value="">
+        <div class="form-row">
+            <div class="field-group">
+                <label>معلم <span style="color:#e74c3c;">*</span></label>
+                <select name="teacher_code" required>
+                    <option value="">-- انتخاب معلم --</option>
+                    {% for t in teachers %}
+                        <option value="{{ t.code }}">{{ t.first_name }} {{ t.last_name }} ({{ t.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field-group">
+                <label>دانش‌آموز <span style="color:#e74c3c;">*</span></label>
+                <select name="student_code" required>
+                    <option value="">-- انتخاب دانش‌آموز --</option>
+                    {% for s in students %}
+                        <option value="{{ s.code }}">{{ s.first_name }} {{ s.last_name }} ({{ s.code }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- ===== تقویم شمسی ===== -->
+        <div style="background:#f8f9fa; padding:12px; border-radius:8px; border:1px solid #ddd; margin:10px 0;">
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-bottom:8px;">
+                <select id="monthSelect" onchange="updateDays()" style="width:auto; padding:6px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+                    <option value="1">فروردین</option><option value="2">اردیبهشت</option>
+                    <option value="3">خرداد</option><option value="4">تیر</option>
+                    <option value="5">مرداد</option><option value="6">شهریور</option>
+                    <option value="7">مهر</option><option value="8">آبان</option>
+                    <option value="9">آذر</option><option value="10">دی</option>
+                    <option value="11">بهمن</option><option value="12">اسفند</option>
+                </select>
+                <select id="yearSelect" onchange="updateDays()" style="width:auto; padding:6px 10px; border-radius:6px; border:1px solid #ccc; font-size:14px;">
+                    {% for y in range([1, jalali_year - 150]|max, jalali_year + 26) %}
+                        <option value="{{ y }}" {% if y == jalali_year %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+                <span style="font-weight:bold; color:#7f8c8d; font-size:13px;">روز:</span>
+            </div>
+            <div id="dayGrid" class="day-grid"></div>
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:8px;">
+                <span style="font-weight:bold; font-size:13px;">تاریخ انتخاب‌شده:</span>
+                <span id="selectedDateDisplay" class="selected-date">انتخاب نشده</span>
+                <button type="button" class="date-confirm-btn" id="confirmDateBtn">✅ ثبت تاریخ</button>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="field-group">
+                <label>گزارش عملکرد <span style="color:#e74c3c;">*</span></label>
+                <textarea name="report" placeholder="توضیحات کامل عملکرد..." required></textarea>
+            </div>
+        </div>
+        <button type="submit" id="submitBtn" disabled class="btn-submit">💾 ثبت عملکرد (تاریخ را انتخاب کنید)</button>
+    </form>
+</div>
+
+<!-- ===== فیلتر و جستجو ===== -->
+<div class="filter-bar no-print">
+    <label style="font-weight:bold;">فیلتر:</label>
+    <select id="filterTeacher" onchange="applyFilters()">
+        <option value="">همه معلمان</option>
+        {% for t in teachers %}
+            <option value="{{ t.code }}">{{ t.first_name }} {{ t.last_name }}</option>
+        {% endfor %}
+    </select>
+    <select id="filterStudent" onchange="applyFilters()">
+        <option value="">همه دانش‌آموزان</option>
+        {% for s in students %}
+            <option value="{{ s.code }}">{{ s.first_name }} {{ s.last_name }}</option>
+        {% endfor %}
+    </select>
+    <button onclick="applyFilters()">🔍 اعمال</button>
+    <button class="reset-btn" onclick="resetFilters()">🔄 لغو</button>
+</div>
+
+<div class="search-box no-print">
+    <input type="text" id="searchReport" placeholder="🔍 جستجو در گزارش‌ها..." onkeyup="applyFilters()">
+</div>
+
+<!-- ===== جدول عملکردها ===== -->
+<h4 style="margin:20px 0 10px;">📋 تاریخچه عملکرد معلمان</h4>
+<div class="table-wrapper">
+    <table>
+        <thead>
+            <tr>
+                <th>ردیف</th>
+                <th>تاریخ</th>
+                <th>معلم</th>
+                <th>دانش‌آموز</th>
+                <th>گزارش</th>
+                <th class="no-print">عملیات</th>
+            </tr>
+        </thead>
+        <tbody id="performancesBody">
+            {% for p in performances %}
+            <tr data-teacher="{{ p.teacher_code }}" data-student="{{ p.student_code }}" data-report="{{ p.report|lower }}">
+                <td>{{ loop.index }}</td>
+                <td>{{ p.date }}</td>
+                <td><span class="teacher-name">{{ p.teacher_first }} {{ p.teacher_last }}</span></td>
+                <td><span class="student-name">{{ p.student_first }} {{ p.student_last }}</span></td>
+                <td class="report-text">{{ p.report }}</td>
+                <td class="no-print">
+                    <div class="event-actions">
+                        <a href="/edit_teacher_performance/{{ p.id }}" class="btn-warning-sm" style="text-decoration:none;">✏️</a>
+                        <form method="POST" action="/delete_teacher_performance/{{ p.id }}" onsubmit="return confirm('آیا از حذف این گزارش مطمئن هستید؟')">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn-danger-sm">🗑️</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <div class="icon">📭</div>
+                        <p>هیچ گزارشی ثبت نشده است.</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top:20px; padding:15px; background:#f4ecf7; border-radius:8px; border-right:4px solid #8e44ad; font-size:14px;">
+    <strong>💡 راهنما:</strong>
+    در این بخش می‌توانید برای هر دانش‌آموز به‌صورت جداگانه، گزارش عملکرد معلم را ثبت کنید.
+    این گزارش می‌تواند شامل پیشرفت تحصیلی، وضعیت انضباطی، یا هر نکته‌ی دیگری باشد.
+</div>
+
+<script>
+    // ===== تقویم شمسی =====
+    var todayJalali = {
+        year: {{ jalali_year }},
+        month: {{ jalali_month }},
+        day: {{ jalali_day }}
+    };
+
+    function isLeapYear(year) {
+        return [1,5,9,13,17,21,25,29].includes(year % 33);
+    }
+
+    function getDaysInMonth(month, year) {
+        if (month >= 1 && month <= 6) return 31;
+        if (month >= 7 && month <= 11) return 30;
+        if (month === 12) return isLeapYear(year) ? 30 : 29;
+        return 30;
+    }
+
+    function updateDays() {
+        var month = parseInt(document.getElementById('monthSelect').value);
+        var year = parseInt(document.getElementById('yearSelect').value);
+        var grid = document.getElementById('dayGrid');
+        var days = getDaysInMonth(month, year);
+        grid.innerHTML = '';
+        for (var i = 1; i <= days; i++) {
+            var btn = document.createElement('button');
+            btn.textContent = i;
+            btn.dataset.day = i;
+            btn.type = 'button';
+            if (i === todayJalali.day && month === todayJalali.month && year === todayJalali.year) {
+                btn.classList.add('today');
+            }
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectDay(this);
+            });
+            grid.appendChild(btn);
+        }
+        var selectedDay = document.querySelector('.day-grid button.selected');
+        if (!selectedDay) {
+            if (todayJalali.month === month && todayJalali.year === year) {
+                var todayBtn = document.querySelector('.day-grid button[data-day="' + todayJalali.day + '"]');
+                if (todayBtn) selectDay(todayBtn);
+            }
+        }
+    }
+
+    function selectDay(btn) {
+        if (btn) {
+            document.querySelectorAll('.day-grid button').forEach(function(b) {
+                b.classList.remove('selected');
+            });
+            btn.classList.add('selected');
+            setDateFromSelection();
+        }
+    }
+
+    function setDateFromSelection() {
+        var selectedBtn = document.querySelector('.day-grid button.selected');
+        if (!selectedBtn) {
+            alert('لطفاً ابتدا یک روز را انتخاب کنید.');
+            return false;
+        }
+        var day = parseInt(selectedBtn.dataset.day);
+        var month = parseInt(document.getElementById('monthSelect').value);
+        var year = parseInt(document.getElementById('yearSelect').value);
+        var dateStr = year + '/' + String(month).padStart(2, '0') + '/' + String(day).padStart(2, '0');
+        document.getElementById('selectedDate').value = dateStr;
+        document.getElementById('selectedDateDisplay').textContent = dateStr;
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('submitBtn').textContent = '💾 ثبت عملکرد';
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var confirmBtn = document.getElementById('confirmDateBtn');
+        if (confirmBtn) {
+            confirmBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                setDateFromSelection();
+            });
+        }
+        document.getElementById('monthSelect').value = todayJalali.month;
+        document.getElementById('yearSelect').value = todayJalali.year;
+        updateDays();
+        var todayBtn = document.querySelector('.day-grid button[data-day="' + todayJalali.day + '"]');
+        if (todayBtn && todayJalali.month === parseInt(document.getElementById('monthSelect').value) && todayJalali.year === parseInt(document.getElementById('yearSelect').value)) {
+            selectDay(todayBtn);
+        }
+    });
+
+    // ===== فیلتر و جستجو =====
+    function applyFilters() {
+        var teacherFilter = document.getElementById('filterTeacher').value;
+        var studentFilter = document.getElementById('filterStudent').value;
+        var searchText = document.getElementById('searchReport').value.toLowerCase();
+        var rows = document.querySelectorAll('#performancesBody tr[data-teacher]');
+
+        rows.forEach(function(row) {
+            var show = true;
+            if (teacherFilter && row.dataset.teacher !== teacherFilter) show = false;
+            if (studentFilter && row.dataset.student !== studentFilter) show = false;
+            if (searchText && !row.dataset.report.includes(searchText)) show = false;
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    function resetFilters() {
+        document.getElementById('filterTeacher').value = '';
+        document.getElementById('filterStudent').value = '';
+        document.getElementById('searchReport').value = '';
+        applyFilters();
+    }
+</script>
+
+{% endblock %}

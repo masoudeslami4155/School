@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}حضور و غیاب معلمان{% endblock %}
+{% block page_title %}<i class="cil-briefcase" aria-hidden="true"></i> حضور و غیاب معلمان{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('teacher_attendance_report') }}"><i class="cil-chart-line" aria-hidden="true"></i> گزارش کارکنان</a>{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='attendance_workspace.css') }}">
+{% endblock %}
+{% block content %}
+{% set status_meta = {'حاضر': ('present', 'cil-check-circle'), 'غایب': ('absent', 'cil-x'), 'مرخصی': ('excused', 'cil-sync'), 'تاخیر': ('late', 'cil-clock')} %}
+<div class="attendance-workspace" data-marked='{{ marked_dates|tojson }}' data-today='{{ today_jalali|tojson }}' data-today-index="{{ today_weekday_index }}">
+    <header class="aw-hero">
+        <div class="aw-hero__copy">
+            <div class="aw-kicker">ثبت روزانه · کارکنان</div>
+            <h2>حضور و غیاب معلمان</h2>
+            <p>ثبت وضعیت همه معلمان در یک صفحه؛ تاریخ را انتخاب کنید، تغییرات را اعمال کنید و یک‌جا ذخیره کنید.</p>
+        </div>
+        <div class="aw-hero__meta">
+            <span class="aw-date-chip"><i class="cil-calendar" aria-hidden="true"></i> <span>{{ date_value|fa_digits }}</span></span>
+            <small>{{ teachers|length|fa_digits }} نفر در فهرست</small>
+        </div>
+    </header>
+
+    <div class="aw-print-header">
+        <h2>حضور و غیاب روزانه معلمان</h2>
+        <p>{{ config.SCHOOL_NAME }} · تاریخ: {{ date_value|fa_digits }} · تاریخ چاپ: {{ jalali_datetime }}</p>
+    </div>
+
+    <section class="aw-panel aw-date-panel no-print" aria-label="انتخاب تاریخ">
+        <div class="aw-date-top">
+            <div><div class="aw-panel__heading" style="margin-bottom:3px"><h3>تاریخ ثبت</h3></div><p class="aw-date-note">روزهای دارای نقطه، سابقه ثبت دارند.</p></div>
+            <div class="aw-date-actions"><a class="aw-quick{% if date_value == today_value %} is-active{% endif %}" href="{{ url_for('attendance_teachers', date=today_value) }}">امروز</a><a class="aw-quick{% if date_value == yesterday_value %} is-active{% endif %}" href="{{ url_for('attendance_teachers', date=yesterday_value) }}">دیروز</a></div>
+        </div>
+        <div class="aw-date-controls">
+            <label class="aw-visually-hidden" for="awMonthSelect">ماه</label>
+            <select id="awMonthSelect">{% for name in ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'] %}<option value="{{ loop.index }}" {% if date_value[5:7]|int == loop.index %}selected{% endif %}>{{ name }}</option>{% endfor %}</select>
+            <label class="aw-visually-hidden" for="awYearSelect">سال</label>
+            <select id="awYearSelect">{% for y in years %}<option value="{{ y }}" {% if date_value[:4]|int == y %}selected{% endif %}>{{ y|fa_digits }}</option>{% endfor %}</select>
+        </div>
+        <div class="aw-calendar" id="awCalendar" role="group" aria-label="روزهای ماه"></div>
+        <div class="aw-selected-date"><span>تاریخ انتخابی:</span><strong data-selected-date>{{ date_value|fa_digits }}</strong><span class="aw-weekday">{{ date_weekday }}</span>{% if date_stats.values()|sum %}<span class="aw-record-pill">{{ date_stats.values()|sum|fa_digits }} رکورد ثبت‌شده</span>{% else %}<span class="aw-empty-pill">هنوز ثبت نشده</span>{% endif %}</div>
+    </section>
+
+    <section class="aw-stat-grid" aria-label="خلاصه وضعیت" aria-live="polite">
+        {% for status in statuses %}<div class="aw-stat aw-stat--{{ status_meta[status][0] }}"><span class="aw-stat__label"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i>{{ status }}</span><strong class="aw-stat__value" data-stat="{{ status }}">{{ date_stats.get(status, 0)|fa_digits }}</strong></div>{% endfor %}
+        <div class="aw-stat aw-stat--total"><span class="aw-stat__label"><i class="cil-users" aria-hidden="true"></i>کل معلمان</span><strong class="aw-stat__value" data-stat-total>{{ teachers|length|fa_digits }}</strong></div>
+        <div class="aw-stat aw-stat--unchanged"><span class="aw-stat__label"><i class="cil-check" aria-hidden="true"></i>بدون تغییر</span><strong class="aw-stat__value" data-stat-unchanged>۰</strong></div>
+    </section>
+
+    <form method="POST" action="{{ url_for('attendance_teachers') }}" data-attendance-form>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="date" id="awDateInput" value="{{ date_value }}">
+        <section class="aw-panel aw-toolbar no-print" aria-label="ابزارهای سریع">
+            <div class="aw-toolbar__left">
+                <span class="aw-toolbar__label">ثبت گروهی</span>
+                <div class="aw-bulk-actions">{% for status in statuses %}<button type="button" class="aw-bulk aw-bulk--{{ status_meta[status][0] }}" data-set-all="{{ status }}"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i> همه {{ status }}</button>{% endfor %}</div>
+                <div class="aw-tabs" role="group" aria-label="فیلتر فهرست"><button type="button" class="aw-tab is-active" data-filter="all">همه</button><button type="button" class="aw-tab" data-filter="changed">تغییرکرده</button><button type="button" class="aw-tab" data-filter="unmarked">ثبت‌نشده</button><button type="button" class="aw-tab" data-filter="attention">غایب و تاخیر</button></div>
+            </div>
+            <div class="aw-search"><i class="cil-search" aria-hidden="true"></i><label class="aw-visually-hidden" for="awSearch">جست‌وجوی معلم</label><input id="awSearch" type="search" placeholder="جست‌وجوی نام یا کد معلم..." autocomplete="off"></div>
+        </section>
+        <div class="aw-people" id="awPeople">
+            {% for t in teachers %}
+                {% set initial = t.current_status or '' %}{% set resolved = initial or 'حاضر' %}
+                <article class="aw-person-card" data-code="{{ t.code }}" data-name="{{ t.first_name }} {{ t.last_name }}" data-initial="{{ initial }}" data-initial-late="{{ t.current_late_duration or 0 }}" data-status="{{ resolved }}">
+                    <div class="aw-person-card__top"><span class="aw-avatar" aria-hidden="true">{{ (t.first_name or 'م')[:1] }}</span><div class="aw-person-title"><strong class="aw-person-name">{{ t.first_name }} {{ t.last_name }}</strong><span class="aw-person-code">{{ t.code|fa_digits }}</span></div><span class="aw-person-state {{ 'is-saved' if initial else 'is-new' }}">{{ 'ثبت‌شده' if initial else 'بدون سابقه' }}</span></div>
+                    <div class="aw-person-detail">درس: {{ t.subject or '—' }} · کلاس: {{ t.class_name or '—' }}{% if t.sida_class %} · سیدا: {{ t.sida_class }}{% endif %}</div>
+                    <div class="aw-status-grid" role="group" aria-label="وضعیت {{ t.first_name }} {{ t.last_name }}">
+                        {% for status in statuses %}<button type="button" class="aw-status-btn{% if resolved == status %} is-active{% endif %}" data-status="{{ status }}" aria-pressed="{{ 'true' if resolved == status else 'false' }}"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i> {{ status }}</button>{% endfor %}
+                    </div>
+                    <input type="hidden" name="status_{{ t.code }}" class="aw-status-input" value="{{ resolved }}">
+                    <div class="aw-late-field"><label for="late_{{ t.code }}">مدت تأخیر (دقیقه)</label><input id="late_{{ t.code }}" type="number" name="late_duration_{{ t.code }}" min="0" max="180" value="{{ t.current_late_duration or 0 }}"><span>دقیقه</span></div>
+                    <span class="aw-print-status">وضعیت: <strong class="aw-print-status-value">{{ resolved }}</strong><span class="aw-print-late"> · تأخیر: <strong class="aw-print-late-value">{{ (t.current_late_duration or 0)|fa_digits }}</strong> دقیقه</span></span>
+                </article>
+            {% endfor %}
+        </div>
+        <div class="aw-empty-filter" hidden>معلمی با این جست‌وجو یا فیلتر پیدا نشد.</div>
+        <div class="aw-savebar no-print"><div class="aw-savebar__summary"><span data-save-summary>—</span><small class="aw-savebar__hint" data-dirty-hint hidden>تغییرات ذخیره‌نشده دارید.</small></div><button type="submit" class="aw-btn aw-submit"><i class="cil-save" aria-hidden="true"></i> ذخیره حضور و غیاب</button></div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='attendance_workspace.js') }}" defer></script>{% endblock %}

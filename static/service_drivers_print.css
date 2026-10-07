@@ -1,0 +1,27 @@
+@font-face { font-family: VazirmatnPrint; src: url('/static/Vazirmatn-Regular.woff2') format('woff2'); font-weight: 400; font-display: block; }
+@font-face { font-family: VazirmatnPrint; src: url('/static/Vazirmatn-Bold.woff2') format('woff2'); font-weight: 700; font-display: block; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #111; font-family: VazirmatnPrint, Vazirmatn, Tahoma, Arial, sans-serif; font-size: 8pt; }
+.print-toolbar { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; background: #0b4f6c; color: #fff; font-size: 12px; font-weight: 700; }
+.print-toolbar button, .print-toolbar a { display: inline-block; margin-inline-start: 5px; padding: 8px 13px; border: 0; border-radius: 8px; background: #fff; color: #0b4f6c; font-family: inherit; font-size: 11px; font-weight: 800; text-decoration: none; cursor: pointer; }
+.destination-group { margin-bottom: 3mm; break-inside: auto; }
+.destination-heading { display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 1.2mm 2mm; border: 1px solid #31556f; background: #e8f1f7; color: #173b53; font-size: 10pt; break-after: avoid; }
+.destination-heading small { font-size: 7pt; font-weight: 400; }
+.driver-print-document table { border: 1px solid #555; }
+.driver-print-document th, .driver-print-document td { border: 1px solid #555; vertical-align: top; text-align: right; overflow-wrap: anywhere; }
+.driver-print-document th { background: #e9eef2; text-align: center; }
+.driver-print-document td { line-height: 1.25; }
+.col-driver { width: 12%; }
+.col-contact { width: 10%; }
+.col-vehicle { width: 11%; }
+.col-students { width: 67%; }
+.student-list { display: grid; gap: 1mm; }
+.student { display: flex; align-items: center; gap: 1mm; min-width: 0; break-inside: avoid; }
+.student-photo, .student-placeholder { flex: 0 0 var(--driver-photo-size, 9mm); border: 1px solid #777; border-radius: 1mm; object-fit: cover; background: #f1f1f1; }
+.student-placeholder { display: grid; place-items: center; color: #31556f; font-size: 10pt; font-weight: 700; }
+.student-info { min-width: 0; }
+.student-name { display: block; font-weight: 700; }
+.student-meta { display: block; color: #444; font-size: 6.5pt; }
+.student-teacher { display: block; color: #0b4f6c; font-size: 6.5pt; font-weight: 700; }
+.empty { color: #777; }
+@media print { body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }

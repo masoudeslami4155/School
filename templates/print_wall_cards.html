@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>کارت‌های دیواری دانش‌آموزان | {{ config.SCHOOL_NAME }}</title>
+<style>{{ wall_layout|report_element_css|safe }}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+@page{size:A4 {{ wall_layout.orientation }};margin:{{ wall_layout.margin.top }}mm {{ wall_layout.margin.right }}mm {{ wall_layout.margin.bottom }}mm {{ wall_layout.margin.left }}mm}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:#111;font-family:Vazirmatn,Tahoma,"Segoe UI",Arial,sans-serif}
+.print-container{width:100%;margin:0 auto}
+.wall-page{break-after:page;page-break-after:always}
+.wall-page:last-child{break-after:auto;page-break-after:auto}
+.print-header{display:flex;align-items:center;justify-content:space-between;gap:5px;padding-bottom:1.5mm;margin-bottom:2mm;border-bottom:1px solid #0b6374}
+.print-header .title{font-size:9pt;font-weight:900;color:#0b4f6c}
+.print-header .subtitle,.print-header .meta{font-size:6pt;color:#667085}
+.print-header .meta{text-align:left;white-space:nowrap}
+.wall-grid{display:grid;grid-template-columns:repeat({{ wall_layout.grid.columns }},minmax(0,1fr));grid-template-rows:repeat({{ wall_layout.grid.rows }},{{ wall_layout.card.height }}mm);gap:{{ wall_layout.grid.gap_y }}mm {{ wall_layout.grid.gap_x }}mm}
+.wall-card{position:relative;display:flex;height:{{ wall_layout.card.height }}mm;min-width:0;flex-direction:column;border:1px solid #333;border-radius:2mm;overflow:hidden;background:#fff;break-inside:avoid;page-break-inside:avoid}
+.wall-card__accent{height:1mm;flex:0 0 1mm;background:repeating-linear-gradient(135deg,#111 0 1mm,#777 1mm 2mm,#eee 2mm 3mm)}
+.wall-card__header{padding:.7mm 1.2mm 0;text-align:center}
+.wall-card__school{font-size:6pt;font-weight:800;color:#0b6374}
+.wall-card__year{font-size:5pt;color:#667085;margin-top:.2mm}
+.wall-card__photo-wrap{display:flex;justify-content:center;padding:.6mm 1mm .3mm}
+.wall-card__photo{width:{{ wall_layout.card.photo_size }}mm;height:{{ wall_layout.card.photo_size }}mm;border-radius:50%;object-fit:cover;border:1px solid #333;background:#f1f1f1}
+.wall-card__photo--ph{width:{{ wall_layout.card.photo_size }}mm;height:{{ wall_layout.card.photo_size }}mm;border-radius:50%;display:grid;place-items:center;background:#f1f1f1;color:#111;font-size:7pt;font-weight:900;border:1px solid #333}
+.wall-card__name{margin:.4mm 1.2mm .2mm;padding:.6mm .5mm;text-align:center;font-size:{{ wall_layout.card.name_font_size }}pt;font-weight:900;color:#111;line-height:1.1;border:1px solid #555;border-radius:1mm}
+.wall-card__info{display:grid;grid-template-columns:1fr 1fr;gap:.1mm .8mm;margin:.4mm 1.2mm .4mm;min-height:0}
+.wall-card__field{display:flex;min-width:0;flex-direction:column;gap:.1mm;padding:.2mm 0;border-bottom:1px dotted #aaa}
+.wall-card__field b{font-size:{{ wall_layout.card.font_size }}pt;color:#555;font-weight:700}
+.wall-card__field span{font-size:{{ wall_layout.card.font_size }}pt;color:#111;font-weight:700;word-break:break-word;line-height:1.1}
+.wall-card__driver{grid-column:1/-1;border:1px solid #777;border-radius:1mm;padding:.4mm .6mm;text-align:center;background:#f1f1f1;font-size:{{ wall_layout.card.font_size }}pt;font-weight:900}
+.wall-card__driver span{font-weight:700}
+.wall-card__footer{margin-top:auto;padding:.4mm 1.2mm;text-align:center;font-size:5pt;color:#555;border-top:1px dashed #777;background:#f7f7f7}
+.empty{text-align:center;padding:15mm;color:#555;font-size:10pt}
+.no-print{text-align:center;margin:5mm 0}
+.no-print button,.no-print a{display:inline-block;border:0;border-radius:2mm;padding:2mm 5mm;margin:0 1mm;color:#fff;background:#0b6374;font:inherit;font-weight:700;text-decoration:none;cursor:pointer}
+.no-print .close{background:#666}
+.print-layout-hidden{display:none!important}.wall-print-footer{margin-top:2mm;padding-top:1mm;border-top:1px solid #777;text-align:center;font-size:6pt;color:#555}
+@media print{.no-print{display:none!important}}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+<main class="print-container">
+{% if pages %}
+{% for page in pages %}
+<section class="wall-page">
+  <header class="print-header{% if not wall_layout.show_header %} print-layout-hidden{% endif %}" data-report-element="hero">
+    <div><div class="title">کارت‌های دیواری مشخصات دانش‌آموزان</div><div class="subtitle">{{ config.SCHOOL_NAME }} · {{ count }} کارت</div></div>
+    <div class="meta">تاریخ چاپ<br><strong>{{ jalali_datetime }}</strong></div>
+  </header>
+  <div class="wall-grid" data-report-element="cards">
+  {% for c in page %}
+  <article class="wall-card">
+    <div class="wall-card__accent"></div>
+    {% if wall_layout.card.show_school or wall_layout.card.show_year %}
+    <header class="wall-card__header">
+      {% if wall_layout.card.show_school %}<div class="wall-card__school">{{ config.SCHOOL_NAME }}</div>{% endif %}
+      {% if wall_layout.card.show_year %}<div class="wall-card__year">سال تحصیلی {{ jalali_year }}–{{ jalali_year + 1 }}</div>{% endif %}
+    </header>
+    {% endif %}
+    {% if wall_layout.card.show_photo %}<div class="wall-card__photo-wrap">
+      {% if c.photo %}<img class="wall-card__photo" src="{{ url_for('static', filename='uploads/' ~ c.photo) }}" alt="عکس {{ c.full_name }}">
+      {% else %}<div class="wall-card__photo--ph">{{ (c.first_name or '؟')[:1] }}</div>{% endif %}
+    </div>{% endif %}
+    <div class="wall-card__name">{{ c.full_name }}</div>
+    <div class="wall-card__info">
+      {% if wall_layout.card.show_driver %}<div class="wall-card__driver">راننده سرویس: <span>{{ c.driver or 'ثبت نشده' }}</span></div>{% endif %}
+      {% if wall_layout.card.show_grade %}<div class="wall-card__field"><b>پایه</b><span>{{ c.grade or 'ثبت نشده' }}</span></div>{% endif %}
+      {% if wall_layout.card.show_class_name %}<div class="wall-card__field"><b>کلاس مدرسه</b><span>{{ c.class_name or 'ثبت نشده' }}</span></div>{% endif %}
+      {% if wall_layout.card.show_sida_class %}<div class="wall-card__field"><b>کلاس سیدا</b><span>{{ c.sida_class or 'ثبت نشده' }}</span></div>{% endif %}
+      {% if wall_layout.card.show_gender %}<div class="wall-card__field"><b>جنسیت</b><span>{{ c.gender or 'ثبت نشده' }}</span></div>{% endif %}
+      {% if wall_layout.card.show_teacher %}<div class="wall-card__field"><b>معلم</b><span>{{ c.teacher or 'ثبت نشده' }}</span></div>{% endif %}
+    </div>
+    {% if wall_layout.card.show_school %}<footer class="wall-card__footer">{{ config.SCHOOL_NAME }}</footer>{% endif %}
+  </article>
+  {% endfor %}
+  </div>
+  {% if wall_layout.show_footer %}<footer class="wall-print-footer" data-report-element="footer">{{ config.SCHOOL_NAME }} · کارت‌های دیواری · {{ jalali_datetime }}</footer>{% endif %}
+</section>
+{% endfor %}
+{% else %}<p class="empty">دانش‌آموزی برای ساخت کارت پیدا نشد.</p>{% endif %}
+<div class="no-print"><button onclick="window.print()">چاپ کارت‌ها</button><a class="close" href="javascript:window.close()">بستن</a></div>
+</main>
+{% if autoprint %}<script>window.addEventListener('load',()=>window.setTimeout(()=>window.print(),250));</script>{% endif %}
+</body>
+</html>

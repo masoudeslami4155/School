@@ -1,0 +1,44 @@
+{% macro letter_element(key) -%}
+{%- set item = layout.elements.get(key, {}) -%}
+position:absolute;left:{{ item.x }}%;top:{{ item.y }}%;width:{{ item.w }}%;height:{{ item.h }}%;font-size:{{ item.font }}em;overflow:visible;
+{%- endmacro %}
+<div class="letter-canvas" dir="rtl" style="position:relative;width:100%;height:100%;direction:rtl;font-family:Vazirmatn,Tahoma,Arial,sans-serif;line-height:2.2;color:#111;background:#fff;font-size:{{ layout.font_size }}pt;">
+  <div class="letter-element" data-letter-element="header" style="{{ letter_element('header') }}">
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="width:33%;text-align:right;vertical-align:top;padding:2px 6px;"><span style="font-weight:bold;color:#333;">تاریخ:</span> {{ values.today }}</td>
+        <td style="width:33%;text-align:center;vertical-align:top;padding:2px 6px;"><span style="font-weight:bold;color:#333;">شماره:</span>&nbsp;</td>
+        <td style="width:33%;text-align:left;vertical-align:top;padding:2px 6px;"><span style="font-weight:bold;color:#333;">پیوست:</span> {{ values.attachments or 'ندارد' }}</td>
+      </tr>
+    </table>
+    <hr style="border:none;border-top:1px solid #ccc;margin:4px 0 8px;">
+  </div>
+  <div class="letter-element" data-letter-element="school" style="{{ letter_element('school') }}">
+    <p style="text-align:center;font-weight:bold;margin:0;">{{ values.school_name or 'مدرسه' }}</p>
+  </div>
+  <div class="letter-element" data-letter-element="office" style="{{ letter_element('office') }}">
+    <p style="text-align:center;font-weight:bold;margin:0;">دفتر مدیریت</p>
+  </div>
+  <div class="letter-element" data-letter-element="subject" style="{{ letter_element('subject') }}">
+    <p style="font-weight:bold;margin:0;">موضوع: <span style="font-weight:normal;">{{ values.subject }}</span></p>
+  </div>
+  <div class="letter-element" data-letter-element="greeting" style="{{ letter_element('greeting') }}">
+    <p style="margin:0;font-weight:bold;">جناب آقای / سرکار خانم {{ values.recipient or values.student_name }}،</p>
+  </div>
+  <div class="letter-element" data-letter-element="body" style="{{ letter_element('body') }}">
+    <p style="margin:0;text-align:justify;">{{ values.body|escape|replace('\n', '<br>')|safe }}</p>
+  </div>
+  <div class="letter-element" data-letter-element="closing" style="{{ letter_element('closing') }}">
+    <p style="margin:0;text-align:justify;">با تشکر و سپاس — {{ values.school_name or 'مدرسه' }}</p>
+  </div>
+  <div class="letter-element" data-letter-element="student_info" style="{{ letter_element('student_info') }}">
+    <p style="margin:0;font-weight:bold;">مشخصات دانش‌آموز:</p>
+    <p style="margin:2px 0;">نام: {{ values.student_name }}</p>
+    <p style="margin:2px 0;">پایه: {{ values.grade or '—' }} &nbsp;|&nbsp; کلاس: {{ values.class_name or '—' }}</p>
+  </div>
+  <div class="letter-element" data-letter-element="signature" style="{{ letter_element('signature') }}">
+    <p style="margin:0;font-weight:bold;text-align:center;">امضای مدیر مدرسه</p>
+    <div style="height:50px;width:100%;max-width:140px;margin:4px auto 0;"></div>
+    <p style="margin:4px 0 0;font-size:0.92em;color:#666;text-align:center;">مهر و امضا</p>
+  </div>
+</div>

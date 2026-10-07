@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>چاپ برگه‌های سرویس ماهانه{% if settings.school_account_name %} — {{ settings.school_account_name }}{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='coreui-icons/css/free.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='print_slips.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='print_layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='design_system.css') }}">
+    <style>
+        {% for batch in print_batches %}
+        @page {{ batch.page_name }} { size: A4 {{ batch.layout.orientation }}; margin: 0; }
+        {% endfor %}
+    </style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+<div class="print-toolbar no-print">
+    <span>
+        {{ slip_count|fa_digits }} برگه در {{ total_pages|fa_digits }} صفحه A4
+        · {{ filters_description }}
+        · چیدمان قابل تنظیم از صفحه طراحی چاپ
+    </span>
+    <button type="button" onclick="window.print()"><i class="cil-print" aria-hidden="true"></i> چاپ برگه‌ها</button>
+    <button type="button" onclick="window.close()">بستن صفحه</button>
+</div>
+
+{% for batch in print_batches %}
+    {% for page in batch.pages %}
+    <div class="a4-page" style="{{ batch.layout.page_style|safe }}page:{{ batch.page_name }};">
+        {% for slip in page %}
+            {% set row = slip.row %}
+            {% set elements = batch.layout.elements %}
+            {% if slip.kind == 'request' %}
+            <article class="slip slip--request" style="{{ slip.style|safe }}">
+                <div class="layout-element slip__type-badge" style="{{ elements.badge.style|safe }}">درخواست پرداخت</div>
+                <header class="layout-element slip__header" style="{{ elements.header.style|safe }}">
+                    <h1>{{ config.SCHOOL_NAME }}</h1>
+                    <span>اعلامیه مانده حساب و درخواست پرداخت هزینه سرویس دانش‌آموزی</span>
+                </header>
+                <div class="layout-element slip__routing" style="{{ elements.routing.style|safe }}"><span>معلم: {{ row.teacher_name }}</span><span>کلاس: {{ row.teacher_class }}</span></div>
+                <p class="layout-element slip__lead" style="{{ elements.lead.style|safe }}">
+                    ولی گرامی دانش‌آموز <strong>{{ row.first_name }} {{ row.last_name }}</strong>؛ با سلام و احترام،
+                    به استحضار می‌رساند بابت استفاده از خدمات سرویس ایاب‌وذهاب دانش‌آموز در دوره
+                    <strong>{{ row.month }} {{ row.year|fa_digits }}</strong> و نوع خدمت <strong>{{ row.service_type }}</strong>،
+                    مبلغ <strong>{{ row.remaining|format_number|fa_digits }} تومان</strong> به‌عنوان مانده قابل پرداخت در حساب مالی ثبت شده است.
+                    خواهشمند است نسبت به تسویه مبلغ مذکور اقدام فرمایید. از توجه و همکاری شما سپاسگزاریم.
+                </p>
+                <table class="layout-element slip__table" style="{{ elements.table.style|safe }}">
+                    <thead><tr><th>کد دانش‌آموز</th><th>مبلغ مصوب</th><th>مبلغ پرداخت‌شده</th><th>مانده قابل پرداخت</th><th>وضعیت پرداخت</th><th>تاریخ پرداخت</th></tr></thead>
+                    <tbody><tr><td>{{ row.code }}</td><td>{{ row.amount|format_number|fa_digits }}</td><td>{{ row.paid_amount|format_number|fa_digits }}</td><td class="is-due">{{ row.remaining|format_number|fa_digits }}</td><td>{{ row.status }}</td><td>{{ (row.payment_date or '—')|fa_digits }}</td></tr></tbody>
+                </table>
+                <div class="layout-element slip__bank" style="{{ elements.bank.style|safe }}">
+                    <span><i class="cil-credit-card" aria-hidden="true"></i> شماره کارت جهت واریز: <strong>{{ settings.school_card or 'ثبت نشده' }}</strong></span>
+                    <span><i class="cil-building" aria-hidden="true"></i> شماره حساب جهت واریز: <strong>{{ settings.school_account or 'ثبت نشده' }}</strong></span>
+                    <span>نام صاحب حساب: {{ settings.school_account_name or config.SCHOOL_NAME }}</span>
+                </div>
+                <footer class="layout-element slip__footer" style="{{ elements.footer.style|safe }}"><span>تاریخ صدور: {{ jalali_date|fa_digits }}</span><span>واحد مالی {{ config.SCHOOL_NAME }}</span></footer>
+            </article>
+            {% else %}
+            <article class="slip slip--receipt" style="{{ slip.style|safe }}">
+                <div class="layout-element slip__type-badge" style="{{ elements.badge.style|safe }}">رسید دریافت</div>
+                <header class="layout-element slip__header" style="{{ elements.header.style|safe }}">
+                    <h1>{{ config.SCHOOL_NAME }}</h1>
+                    <span>رسید رسمی دریافت وجه بابت هزینه خدمات سرویس دانش‌آموزی</span>
+                </header>
+                <div class="layout-element slip__routing" style="{{ elements.routing.style|safe }}"><span>معلم: {{ row.teacher_name }}</span><span>کلاس: {{ row.teacher_class }}</span></div>
+                <p class="layout-element slip__lead" style="{{ elements.lead.style|safe }}">
+                    بدین‌وسیله گواهی می‌شود مبلغ <strong>{{ row.paid_amount|format_number|fa_digits }} تومان</strong>
+                    از ولی گرامی دانش‌آموز <strong>{{ row.first_name }} {{ row.last_name }}</strong>
+                    بابت هزینه خدمات سرویس ایاب‌وذهاب، از نوع خدمت <strong>{{ row.service_type }}</strong>، در دوره
+                    <strong>{{ row.month }} {{ row.year|fa_digits }}</strong> دریافت و در حساب مالی آموزشگاه ثبت گردید.
+                    این رسید جهت تأیید دریافت وجه و نگهداری صادر می‌شود.
+                </p>
+                <table class="layout-element slip__table" style="{{ elements.table.style|safe }}">
+                    <thead><tr><th>کد دانش‌آموز</th><th>مبلغ مصوب</th><th>مبلغ پرداخت‌شده</th><th>مانده قابل پرداخت</th><th>وضعیت پرداخت</th><th>تاریخ پرداخت</th></tr></thead>
+                    <tbody><tr><td>{{ row.code }}</td><td>{{ row.amount|format_number|fa_digits }}</td><td>{{ row.paid_amount|format_number|fa_digits }}</td><td>{{ row.remaining|format_number|fa_digits }}</td><td>{{ row.status }}</td><td>{{ (row.payment_date or '—')|fa_digits }}</td></tr></tbody>
+                </table>
+                <div class="layout-element slip__signatures" style="{{ elements.signatures.style|safe }}"><span>امضاء ولی یا نماینده قانونی دانش‌آموز</span><span>مهر و امضاء آموزشگاه</span></div>
+                <footer class="layout-element slip__footer" style="{{ elements.footer.style|safe }}"><span>تاریخ چاپ: {{ jalali_date|fa_digits }}</span><span>{{ config.SCHOOL_NAME }}</span></footer>
+            </article>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+{% else %}
+    <p class="print-note">رکوردی برای چاپ پیدا نشد.</p>
+{% endfor %}
+
+<script>
+window.addEventListener('load', function () {
+    var fontReady = document.fonts ? document.fonts.ready : Promise.resolve();
+    fontReady.then(function () { window.setTimeout(function () { window.print(); }, 300); });
+});
+</script>
+</body>
+</html>

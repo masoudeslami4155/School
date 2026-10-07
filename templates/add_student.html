@@ -1,0 +1,1132 @@
+﻿{% extends 'base.html' %}
+{% block title %}ثبت دانش‌آموز{% endblock %}
+{% block page_title %}➕ ثبت دانش‌آموز جدید{% endblock %}
+{% block content %}
+
+<style>
+    /* ===== استایل‌های عمومی ===== */
+    .form-container {
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+    .form-section {
+        background: #f8f9fa;
+        padding: 18px 20px;
+        border-radius: 10px;
+        margin: 15px 0;
+        border-right: 4px solid #3498db;
+    }
+    .form-section-student {
+        border-right-color: #2c3e50;
+        background: #f0f4f8;
+    }
+    .form-section-father {
+        border-right-color: #2980b9;
+        background: #e8f4fd;
+    }
+    .form-section-mother {
+        border-right-color: #e74c3c;
+        background: #fde8e8;
+    }
+    .form-section-id {
+        border-right-color: #8e44ad;
+        background: #f4ecf7;
+    }
+    .form-section-education {
+        border-right-color: #27ae60;
+        background: #eafaf1;
+    }
+    .form-section-family {
+        border-right-color: #f39c12;
+        background: #fef9e7;
+    }
+    .form-section-health {
+        border-right-color: #e74c3c;
+        background: #fdedec;
+    }
+    .form-section-behavior {
+        border-right-color: #1abc9c;
+        background: #e8f8f5;
+    }
+    .form-section-photo {
+        border-right-color: #3498db;
+        background: #ebf5fb;
+    }
+    .form-section-membership {
+        border-right-color: #8e44ad;
+        background: #f4ecf7;
+    }
+    
+    .form-section h4 {
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 16px;
+        color: #2c3e50;
+        border-bottom: 2px solid rgba(0,0,0,0.08);
+        padding-bottom: 8px;
+    }
+    .form-section .section-subtitle {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: -8px;
+        margin-bottom: 10px;
+    }
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 4px;
+    }
+    .form-row .field-group {
+        flex: 1;
+        min-width: 180px;
+    }
+    .field-group-full {
+        flex: 0 0 100%;
+    }
+    .field-group-half {
+        flex: 0 0 calc(50% - 6px);
+    }
+    label {
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 3px;
+        color: #34495e;
+    }
+    label .required-star {
+        color: #e74c3c;
+        margin-right: 2px;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        transition: 0.3s;
+        background: #fafafa;
+        font-family: inherit;
+    }
+    input:focus, select:focus, textarea:focus {
+        border-color: #3498db;
+        outline: none;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    }
+    .btn-submit {
+        background: #27ae60;
+        color: white;
+        padding: 14px 30px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+        width: 100%;
+    }
+    .btn-submit:hover {
+        background: #219150;
+    }
+    .alert-danger {
+        background: #e74c3c;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    .alert-danger ul {
+        margin: 0;
+        padding-right: 20px;
+    }
+    .alert-danger li {
+        list-style: none;
+        padding: 3px 0;
+    }
+
+    /* ===== تقویم شمسی ===== */
+.repeats-grid-modern{display:grid;grid-template-columns:1.1fr 3fr .9fr 1.2fr;gap:6px;align-items:center}.repeat-row{display:contents}.repeat-row .grade-label,.repeat-row .year-label{padding:7px;background:#ecf0f1;border-radius:4px;font-size:11px;font-weight:bold;text-align:center}.repeats-grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        margin: 6px 0;
+    }
+    .repeats-grid .grade-label {
+        font-weight: bold;
+        font-size: 11px;
+        color: #2c3e50;
+        text-align: center;
+        padding: 3px 0;
+        background: #ecf0f1;
+        border-radius: 4px;
+    }
+    .repeats-grid .grade-buttons {
+        display: flex;
+        gap: 3px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .repeats-grid .grade-buttons button {
+        padding: 3px 8px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        background: white;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        transition: 0.2s;
+        color: #2c3e50;
+        min-width: 32px;
+    }
+    .repeats-grid .grade-buttons button:hover { background: #ecf0f1; }
+    .repeats-grid .grade-buttons button.selected { border-color: #3498db; background: #3498db; color: white; }
+    .repeats-grid .grade-buttons button.zero { border-color: #27ae60; background: #27ae60; color: white; }
+    .repeats-grid .grade-buttons button.zero.selected { border-color: #27ae60; background: #1e8449; color: white; }
+    .repeats-grid .year-input {
+        padding: 3px 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 11px;
+        width: 65px;
+        text-align: center;
+        background: white;
+    }
+    .repeats-grid .year-input:focus {
+        border-color: #3498db;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+                /* ===== طراحی مجدد: تعداد توقف و سال ورود پایه‌ها (جایگزین نسخه‌های ناسازگار قبلی) ===== */
+    .repeats-grid.repeats-grid-modern { grid-template-columns: 1fr; gap: 8px; }
+    .repeat-row {
+        display: block;
+        padding: 10px 11px;
+        border: 1px solid #e3e8ee;
+        border-radius: 10px;
+        background: #fbfdff;
+    }
+    .repeat-row .grade-label {
+        display: block;
+        background: none;
+        padding: 0 0 8px;
+        text-align: right;
+        font-size: 12px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .repeat-row .grade-buttons { gap: 5px; }
+    .repeat-row .grade-buttons button {
+        flex: 1 1 0;
+        min-width: 42px;
+        min-height: 40px;
+        padding: 8px 0;
+        font-size: 13px;
+        border-radius: 7px;
+    }
+    .repeat-row .grade-buttons button.selected { border-color: #0b6374; background: #0b6374; color: #fff; }
+    .repeat-row .grade-buttons button.zero { border-color: #27ae60; background: #27ae60; color: #fff; }
+    .repeat-row .grade-buttons button.zero.selected { border-color: #27ae60; background: #1e8449; }
+    .repeat-row .year-label {
+        display: inline-block;
+        background: none;
+        padding: 10px 0 0;
+        text-align: right;
+        font-size: 11.5px;
+        font-weight: bold;
+        color: #2c3e50;
+    }
+    .repeat-row .year-input {
+        display: inline-block;
+        width: 120px;
+        margin-top: 8px;
+        margin-inline-start: 8px;
+        padding: 8px 8px;
+        font-size: 13px;
+    }
+/* ===== چک‌باکس‌ها ===== */
+    .checkbox-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px 14px;
+        padding: 6px 0;
+    }
+    .checkbox-group label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: normal;
+        font-size: 13px;
+        cursor: pointer;
+        color: #2c3e50;
+    }
+    .checkbox-group input[type="checkbox"],
+    .checkbox-group input[type="radio"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        accent-color: #3498db;
+        flex-shrink: 0;
+    }
+
+    /* ===== Drop Zone عکس ===== */
+    #drop-zone {
+        border: 2px dashed #ccc;
+        padding: 15px;
+        text-align: center;
+        border-radius: 8px;
+        cursor: pointer;
+        background: #fafafa;
+        transition: border-color 0.3s;
+    }
+    #drop-zone:hover { border-color: #3498db; }
+    #preview img {
+        max-width: 130px;
+        max-height: 130px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-top: 8px;
+    }
+
+    /* ===== برچسب بخش‌ها ===== */
+    .section-badge {
+        display: inline-block;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: bold;
+        color: white;
+        margin-right: 8px;
+    }
+    .badge-blue { background: #3498db; }
+    .badge-dark { background: #2c3e50; }
+    .badge-gold { background: #f39c12; }
+    .badge-green { background: #27ae60; }
+    .badge-purple { background: #8e44ad; }
+    .badge-red { background: #e74c3c; }
+    .badge-teal { background: #1abc9c; }
+
+    @media (max-width: 600px) {
+        .form-row .field-group { min-width: 100%; }
+        .field-group-half { flex: 0 0 100%; }
+    }
+</style>
+
+{% if errors %}
+<div class="alert-danger">
+    <ul>{% for e in errors %}<li>⚠️ {{ e }}</li>{% endfor %}</ul>
+</div>
+{% endif %}
+
+<div class="form-container">
+<form method="POST" id="studentForm">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۱: اطلاعات دانش‌آموز ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-student">
+        <h4><span class="section-badge badge-dark">۱</span> 👤 اطلاعات دانش‌آموز</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>نام <span class="required-star">*</span></label>
+                <input type="text" name="first_name" value="{{ form_data.first_name or '' }}" required>
+            </div>
+            <div class="field-group">
+                <label>نام‌خانوادگی <span class="required-star">*</span></label>
+                <input type="text" name="last_name" value="{{ form_data.last_name or '' }}" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>کد ملی (۱۰ رقم) <span class="required-star">*</span></label>
+                <input type="text" name="code" value="{{ form_data.code or '' }}" required maxlength="10" pattern="\d{10}" placeholder="۱۲۳۴۵۶۷۸۹۰">
+            </div>
+            <div class="field-group">
+                <label>تاریخ تولد <span class="required-star">*</span></label>
+                <input type="text" name="birth_date" id="birth_date" value="{{ form_data.birth_date or '' }}" required placeholder="مثلاً ۱۳۹۰/۰۴/۱۹" data-jdate></div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>محل تولد</label>
+                <input type="text" name="student_birth_place" value="{{ form_data.student_birth_place or '' }}" placeholder="شهر محل تولد">
+            </div>
+            <div class="field-group">
+                <label>جنسیت</label>
+                <select name="gender">
+                    <option value="">-- انتخاب --</option>
+                    <option value="پسر" {% if form_data.gender == 'پسر' %}selected{% endif %}>پسر</option>
+                    <option value="دختر" {% if form_data.gender == 'دختر' %}selected{% endif %}>دختر</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>مذهب</label>
+                <select name="religion">
+                    <option value="">-- انتخاب مذهب --</option>
+                    <option value="شیعه" {% if form_data.religion == 'شیعه' %}selected{% endif %}>شیعه</option>
+                    <option value="سنی" {% if form_data.religion == 'سنی' %}selected{% endif %}>سنی</option>
+                    <option value="مسیحی" {% if form_data.religion == 'مسیحی' %}selected{% endif %}>مسیحی</option>
+                    <option value="زرتشتی" {% if form_data.religion == 'زرتشتی' %}selected{% endif %}>زرتشتی</option>
+                    <option value="سایر" {% if form_data.religion == 'سایر' %}selected{% endif %}>سایر</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>نوع بیمه</label>
+                <select name="insurance_type">
+                    <option value="">-- انتخاب بیمه --</option>
+                    <option value="بیمه درمان تامین اجتماعی" {% if form_data.insurance_type == 'بیمه درمان تامین اجتماعی' %}selected{% endif %}>بیمه درمان تامین اجتماعی</option>
+                    <option value="بیمه درمان تکمیلی" {% if form_data.insurance_type == 'بیمه درمان تکمیلی' %}selected{% endif %}>بیمه درمان تکمیلی</option>
+                    <option value="بیمه عمر" {% if form_data.insurance_type == 'بیمه عمر' %}selected{% endif %}>بیمه عمر</option>
+                    <option value="بیمه نیروهای مسلح" {% if form_data.insurance_type == 'بیمه نیروهای مسلح' %}selected{% endif %}>بیمه نیروهای مسلح</option>
+                    <option value="بیمه خدمات درمانی" {% if form_data.insurance_type == 'بیمه خدمات درمانی' %}selected{% endif %}>بیمه خدمات درمانی</option>
+                    <option value="ندارد" {% if form_data.insurance_type == 'ندارد' %}selected{% endif %}>ندارد</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>تعداد خواهر</label>
+                <input type="number" name="sisters_count" min="0" max="20" value="{{ form_data.sisters_count or '0' }}">
+            </div>
+            <div class="field-group">
+                <label>تعداد برادر</label>
+                <input type="number" name="brothers_count" min="0" max="20" value="{{ form_data.brothers_count or '0' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>فرزند چندم خانواده</label>
+                <input type="number" name="child_order" min="1" max="20" value="{{ form_data.child_order or '' }}" placeholder="مثلاً ۲">
+            </div>
+            <div class="field-group">
+                <label>کد پستی (۱۰ رقم)</label>
+                <input type="text" name="postal_code" value="{{ form_data.postal_code or '' }}" maxlength="10" pattern="\d{10}" placeholder="۱۰ رقم">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>دهک اقتصادی</label>
+                <select name="economic_decile">
+                    <option value="">-- انتخاب دهک --</option>
+                    {% for d in range(1, 11) %}
+                        <option value="{{ d }}" {% if form_data.economic_decile == d|string %}selected{% endif %}>دهک {{ d }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field-group">
+                <label>وضعیت مالی خانواده</label>
+                <select name="financial_status">
+                    <option value="">-- انتخاب --</option>
+                    <option value="ضعیف" {% if form_data.financial_status == 'ضعیف' %}selected{% endif %}>ضعیف</option>
+                    <option value="متوسط" {% if form_data.financial_status == 'متوسط' %}selected{% endif %}>متوسط</option>
+                    <option value="خوب" {% if form_data.financial_status == 'خوب' %}selected{% endif %}>خوب</option>
+                    <option value="بسیار خوب" {% if form_data.financial_status == 'بسیار خوب' %}selected{% endif %}>بسیار خوب</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>داروهای مصرفی</label>
+                <textarea name="medications" rows="2" placeholder="داروهای مصرفی دانش‌آموز را وارد کنید...">{{ form_data.medications or '' }}</textarea>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>نام بانک حساب دانش‌آموز</label>
+                <input type="text" name="bank_name" value="{{ form_data.bank_name or '' }}" placeholder="مثلاً بانک ملی">
+            </div>
+            <div class="field-group">
+                <label>شماره شبا</label>
+                <input type="text" name="iban" value="{{ form_data.iban or '' }}" maxlength="26" dir="ltr" inputmode="latin" placeholder="IR000000000000000000000000">
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۲: اطلاعات شناسنامه دانش‌آموز ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-id">
+        <h4><span class="section-badge badge-purple">۲</span> 🪪 اطلاعات شناسنامه دانش‌آموز</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>سریال شناسنامه</label>
+                <input type="text" name="student_id_serial" value="{{ form_data.student_id_serial or '' }}" placeholder="سریال شناسنامه">
+            </div>
+            <div class="field-group">
+                <label>حروف سریال</label>
+                <input type="text" name="student_id_serial_letter" value="{{ form_data.student_id_serial_letter or '' }}" placeholder="حروف سریال">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>محل صدور شناسنامه</label>
+                <input type="text" name="student_id_issue_place" value="{{ form_data.student_id_issue_place or '' }}" placeholder="محل صدور">
+            </div>
+            <div class="field-group">
+                <label>تاریخ صدور شناسنامه</label>
+                <input type="text" name="student_id_issue_date" value="{{ form_data.student_id_issue_date or '' }}" placeholder="مثلاً ۱۳۹۰/۰۴/۱۵" data-jdate>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۳: اطلاعات پدر ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-father">
+        <h4><span class="section-badge badge-blue">۳</span> 👨 اطلاعات پدر</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>نام پدر</label>
+                <input type="text" name="father_name" value="{{ form_data.father_name or '' }}">
+            </div>
+            <div class="field-group">
+                <label>کد ملی پدر (۱۰ رقم)</label>
+                <input type="text" name="father_code" value="{{ form_data.father_code or '' }}" maxlength="10" pattern="\d{10}" placeholder="۱۰ رقم">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>تاریخ تولد پدر</label>
+                <input type="text" name="father_birth_date" value="{{ form_data.father_birth_date or '' }}" placeholder="مثلاً ۱۳۴۵/۰۶/۱۲" data-jdate>
+            </div>
+            <div class="field-group">
+                <label>محل تولد پدر</label>
+                <input type="text" name="father_birth_place" value="{{ form_data.father_birth_place or '' }}" placeholder="شهر محل تولد">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>سریال شناسنامه پدر</label>
+                <input type="text" name="father_id_serial" value="{{ form_data.father_id_serial or '' }}" placeholder="سریال شناسنامه">
+            </div>
+            <div class="field-group">
+                <label>حروف سریال</label>
+                <input type="text" name="father_id_serial_letter" value="{{ form_data.father_id_serial_letter or '' }}" placeholder="حروف سریال">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>محل صدور شناسنامه پدر</label>
+                <input type="text" name="father_id_issue_place" value="{{ form_data.father_id_issue_place or '' }}" placeholder="محل صدور">
+            </div>
+            <div class="field-group">
+                <label>تاریخ صدور شناسنامه پدر</label>
+                <input type="text" name="father_id_issue_date" value="{{ form_data.father_id_issue_date or '' }}" placeholder="مثلاً ۱۳۶۰/۰۳/۲۰" data-jdate>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>شغل پدر</label>
+                <input type="text" name="father_job" value="{{ form_data.father_job or '' }}" placeholder="شغل پدر">
+            </div>
+            <div class="field-group">
+                <label>تحصیلات پدر</label>
+                <select name="father_education">
+                    <option value="">-- انتخاب تحصیلات --</option>
+                    <option value="بی‌سواد" {% if form_data.father_education == 'بی‌سواد' %}selected{% endif %}>بی‌سواد</option>
+                    <option value="ابتدایی" {% if form_data.father_education == 'ابتدایی' %}selected{% endif %}>ابتدایی</option>
+                    <option value="راهنمایی" {% if form_data.father_education == 'راهنمایی' %}selected{% endif %}>راهنمایی</option>
+                    <option value="دبیرستان" {% if form_data.father_education == 'دبیرستان' %}selected{% endif %}>دبیرستان</option>
+                    <option value="دیپلم" {% if form_data.father_education == 'دیپلم' %}selected{% endif %}>دیپلم</option>
+                    <option value="فوق دیپلم" {% if form_data.father_education == 'فوق دیپلم' %}selected{% endif %}>فوق دیپلم</option>
+                    <option value="لیسانس" {% if form_data.father_education == 'لیسانس' %}selected{% endif %}>لیسانس</option>
+                    <option value="فوق لیسانس" {% if form_data.father_education == 'فوق لیسانس' %}selected{% endif %}>فوق لیسانس</option>
+                    <option value="دکترا" {% if form_data.father_education == 'دکترا' %}selected{% endif %}>دکترا</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>شماره تلفن پدر</label>
+                <input type="text" name="father_phone" value="{{ form_data.father_phone or '' }}" placeholder="مثلاً 09123456789">
+            </div>
+            <div class="field-group"></div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>وضعیت جسمی پدر</label>
+                <select name="father_physical_status"><option value="">-- انتخاب --</option><option value="سالم" {% if form_data.father_physical_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if form_data.father_physical_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select>
+            </div>
+            <div class="field-group">
+                <label>وضعیت روانی پدر</label>
+                <select name="father_mental_status"><option value="">-- انتخاب --</option><option value="سالم" {% if form_data.father_mental_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if form_data.father_mental_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۴: اطلاعات مادر ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-mother">
+        <h4><span class="section-badge badge-red">۴</span> 👩 اطلاعات مادر</h4>
+        <div class="form-row">
+                    <div class="field-group">
+                        <label>نام مادر</label>
+                        <input type="text" name="mother_name" value="{{ form_data.mother_name or '' }}" placeholder="نام مادر">
+                    </div>
+                    <div class="field-group">
+                        <label>نام خانوادگی مادر</label>
+                        <input type="text" name="mother_last_name" value="{{ form_data.mother_last_name or '' }}" placeholder="نام خانوادگی مادر">
+                    </div>
+                    <div class="field-group">
+                        <label>کد ملی مادر (۱۰ رقم)</label>
+                        <input type="text" name="mother_code" value="{{ form_data.mother_code or '' }}" maxlength="10" pattern="\d{10}" placeholder="۱۰ رقم">
+                    </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>تاریخ تولد مادر</label>
+                <input type="text" name="mother_birth_date" value="{{ form_data.mother_birth_date or '' }}" placeholder="مثلاً ۱۳۴۷/۰۸/۲۵" data-jdate>
+            </div>
+            <div class="field-group">
+                <label>محل تولد مادر</label>
+                <input type="text" name="mother_birth_place" value="{{ form_data.mother_birth_place or '' }}" placeholder="شهر محل تولد">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>سریال شناسنامه مادر</label>
+                <input type="text" name="mother_id_serial" value="{{ form_data.mother_id_serial or '' }}" placeholder="سریال شناسنامه">
+            </div>
+            <div class="field-group">
+                <label>حروف سریال</label>
+                <input type="text" name="mother_id_serial_letter" value="{{ form_data.mother_id_serial_letter or '' }}" placeholder="حروف سریال">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>محل صدور شناسنامه مادر</label>
+                <input type="text" name="mother_id_issue_place" value="{{ form_data.mother_id_issue_place or '' }}" placeholder="محل صدور">
+            </div>
+            <div class="field-group">
+                <label>تاریخ صدور شناسنامه مادر</label>
+                <input type="text" name="mother_id_issue_date" value="{{ form_data.mother_id_issue_date or '' }}" placeholder="مثلاً ۱۳۶۰/۰۳/۲۰" data-jdate>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>شغل مادر</label>
+                <input type="text" name="mother_job" value="{{ form_data.mother_job or '' }}" placeholder="شغل مادر">
+            </div>
+            <div class="field-group">
+                <label>تحصیلات مادر</label>
+                <select name="mother_education">
+                    <option value="">-- انتخاب تحصیلات --</option>
+                    <option value="بی‌سواد" {% if form_data.mother_education == 'بی‌سواد' %}selected{% endif %}>بی‌سواد</option>
+                    <option value="ابتدایی" {% if form_data.mother_education == 'ابتدایی' %}selected{% endif %}>ابتدایی</option>
+                    <option value="راهنمایی" {% if form_data.mother_education == 'راهنمایی' %}selected{% endif %}>راهنمایی</option>
+                    <option value="دبیرستان" {% if form_data.mother_education == 'دبیرستان' %}selected{% endif %}>دبیرستان</option>
+                    <option value="دیپلم" {% if form_data.mother_education == 'دیپلم' %}selected{% endif %}>دیپلم</option>
+                    <option value="فوق دیپلم" {% if form_data.mother_education == 'فوق دیپلم' %}selected{% endif %}>فوق دیپلم</option>
+                    <option value="لیسانس" {% if form_data.mother_education == 'لیسانس' %}selected{% endif %}>لیسانس</option>
+                    <option value="فوق لیسانس" {% if form_data.mother_education == 'فوق لیسانس' %}selected{% endif %}>فوق لیسانس</option>
+                    <option value="دکترا" {% if form_data.mother_education == 'دکترا' %}selected{% endif %}>دکترا</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>شماره تلفن مادر</label>
+                <input type="text" name="mother_phone" value="{{ form_data.mother_phone or '' }}" placeholder="مثلاً 09123456789">
+            </div>
+            <div class="field-group"></div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>وضعیت جسمی مادر</label>
+                <select name="mother_physical_status"><option value="">-- انتخاب --</option><option value="سالم" {% if form_data.mother_physical_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if form_data.mother_physical_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select>
+            </div>
+            <div class="field-group">
+                <label>وضعیت روانی مادر</label>
+                <select name="mother_mental_status"><option value="">-- انتخاب --</option><option value="سالم" {% if form_data.mother_mental_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if form_data.mother_mental_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۵: اطلاعات تحصیلی ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-education">
+        <h4><span class="section-badge badge-green">۵</span> 📚 اطلاعات تحصیلی</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>پایه <span class="required-star">*</span></label>
+                <input type="text" name="grade" value="{{ form_data.grade or '' }}" required placeholder="مثلاً هفتم">
+            </div>
+            <div class="field-group">
+                <label>کلاس مدرسه</label>
+                <input type="text" name="class_name" value="{{ form_data.class_name or '' }}" placeholder="مثلاً ۱ یا الف">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>کلاس سیدا</label>
+                <select name="sida_class">
+                    <option value="">-- انتخاب کلاس سیدا --</option>
+                    <option value="اول 1 استثنایی" {% if form_data.sida_class == 'اول 1 استثنایی' %}selected{% endif %}>اول 1 استثنایی</option>
+                    <option value="اول 2 استثنایی" {% if form_data.sida_class == 'اول 2 استثنایی' %}selected{% endif %}>اول 2 استثنایی</option>
+                    <option value="اول 3 استثنایی" {% if form_data.sida_class == 'اول 3 استثنایی' %}selected{% endif %}>اول 3 استثنایی</option>
+                    <option value="دوم ابتدایی استثنایی" {% if form_data.sida_class == 'دوم ابتدایی استثنایی' %}selected{% endif %}>دوم ابتدایی استثنایی</option>
+                    <option value="سوم ابتدایی استثنایی" {% if form_data.sida_class == 'سوم ابتدایی استثنایی' %}selected{% endif %}>سوم ابتدایی استثنایی</option>
+                    <option value="چهارم ابتدایی استثنایی" {% if form_data.sida_class == 'چهارم ابتدایی استثنایی' %}selected{% endif %}>چهارم ابتدایی استثنایی</option>
+                    <option value="پنجم ابتدایی استثنایی" {% if form_data.sida_class == 'پنجم ابتدایی استثنایی' %}selected{% endif %}>پنجم ابتدایی استثنایی</option>
+                    <option value="ششم ابتدایی استثنایی" {% if form_data.sida_class == 'ششم ابتدایی استثنایی' %}selected{% endif %}>ششم ابتدایی استثنایی</option>
+                    <option value="آمادگی مقدماتی" {% if form_data.sida_class == 'آمادگی مقدماتی' %}selected{% endif %}>آمادگی مقدماتی</option>
+                    <option value="آمادگی تکمیلی" {% if form_data.sida_class == 'آمادگی تکمیلی' %}selected{% endif %}>آمادگی تکمیلی</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>معلم <span class="required-star">*</span></label>
+                <select name="teacher_code" required>
+                    <option value="">-- انتخاب معلم --</option>
+                    {% for t in teachers %}
+                        <option value="{{ t.code }}" {% if form_data.teacher_code == t.code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>سال ورود به مدرسه</label>
+                <select name="admission_year">
+                    <option value="">-- انتخاب سال --</option>
+                    {% for y in range(1390, 1406) %}
+                        <option value="{{ y }}" {% if form_data.admission_year == y|string %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="field-group">
+                <label>نوع پذیرش</label>
+                <select name="admission_type">
+                    <option value="">-- انتخاب نوع --</option>
+                    <option value="استثنایی" {% if form_data.admission_type == 'استثنایی' %}selected{% endif %}>استثنایی</option>
+                    <option value="ارجاع از عادی" {% if form_data.admission_type == 'ارجاع از عادی' %}selected{% endif %}>ارجاع از عادی</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>سال‌های صدور مجوز کبر سن</label>
+                <input type="text" name="license_years" value="{{ form_data.license_years or '' }}" placeholder="مثلاً ۱۴۰۰, ۱۴۰۲">
+            </div>
+            <div class="field-group">
+                <label>سهمیه ایثارگری (درصد)</label>
+                <input type="number" name="martyr_quota" min="0" max="100" value="{{ form_data.martyr_quota or '0' }}" placeholder="۰ تا ۱۰۰">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>نتیجه تست سنجش</label>
+                <select name="assessment_result">
+                    <option value="">-- انتخاب --</option>
+                    <option value="استثنایی قطعی" {% if form_data.assessment_result == 'استثنایی قطعی' %}selected{% endif %}>استثنایی قطعی</option>
+                    <option value="استثنایی آزمایشی" {% if form_data.assessment_result == 'استثنایی آزمایشی' %}selected{% endif %}>استثنایی آزمایشی</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>نوع معلولیت</label>
+                <select name="disability_type">
+                    <option value="">-- انتخاب --</option>
+                    <option value="کم توان ذهنی" {% if form_data.disability_type == 'کم توان ذهنی' %}selected{% endif %}>کم توان ذهنی</option>
+                    <option value="جسمی-حرکتی" {% if form_data.disability_type == 'جسمی-حرکتی' %}selected{% endif %}>جسمی-حرکتی</option>
+                    <option value="اتیسم" {% if form_data.disability_type == 'اتیسم' %}selected{% endif %}>اتیسم</option>
+                    <option value="ناشنوا" {% if form_data.disability_type == 'ناشنوا' %}selected{% endif %}>ناشنوا</option>
+                    <option value="نابینا" {% if form_data.disability_type == 'نابینا' %}selected{% endif %}>نابینا</option>
+                    <option value="چند معلولیتی" {% if form_data.disability_type == 'چند معلولیتی' %}selected{% endif %}>چند معلولیتی</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group field-group-full">
+                <label>تعداد توقف و سال ورود در همهٔ پایه‌ها</label>
+                <div class="repeats-container">
+                    {% set current = form_data %}
+                    {% include 'partials/grade_repeats.html' %}
+                    <div style="font-size:11px;color:#7f8c8d;margin-top:6px">💡 تعداد توقف از صفر تا چهار و سال ورود هر پایه را وارد کنید. پایه اول قبلی در «اول ۱» حفظ شده است.</div><input type="hidden" name="repeat_grade_prep" id="repeat_grade_prep" value="{{ form_data.repeat_grade_prep or '0' }}"><input type="hidden" name="repeat_grade_advanced" id="repeat_grade_advanced" value="{{ form_data.repeat_grade_advanced or '0' }}"><input type="hidden" name="repeat_grade_first1" id="repeat_grade_first1" value="{{ form_data.repeat_grade_first1 or '0' }}"><input type="hidden" name="repeat_grade_first2" id="repeat_grade_first2" value="{{ form_data.repeat_grade_first2 or '0' }}"><input type="hidden" name="repeat_grade_first3" id="repeat_grade_first3" value="{{ form_data.repeat_grade_first3 or '0' }}"><input type="hidden" name="repeat_grade_1" id="repeat_grade_1" value="{{ form_data.repeat_grade_1 or "0" }}"><input type="hidden" name="repeat_grade_2" id="repeat_grade_2" value="{{ form_data.repeat_grade_2 or "0" }}"><input type="hidden" name="repeat_grade_3" id="repeat_grade_3" value="{{ form_data.repeat_grade_3 or "0" }}"><input type="hidden" name="repeat_grade_4" id="repeat_grade_4" value="{{ form_data.repeat_grade_4 or "0" }}"><input type="hidden" name="repeat_grade_5" id="repeat_grade_5" value="{{ form_data.repeat_grade_5 or "0" }}"><input type="hidden" name="repeat_grade_6" id="repeat_grade_6" value="{{ form_data.repeat_grade_6 or "0" }}">            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۶: وضعیت خانواده ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-family">
+        <h4><span class="section-badge badge-gold">۶</span> 🏠 وضعیت خانواده</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>وضعیت والدین</label>
+                <select name="parents_alive">
+                    <option value="">-- انتخاب --</option>
+                    <option value="هر دو زنده" {% if form_data.parents_alive == 'هر دو زنده' %}selected{% endif %}>هر دو زنده</option>
+                    <option value="فقط پدر" {% if form_data.parents_alive == 'فقط پدر' %}selected{% endif %}>فقط پدر</option>
+                    <option value="فقط مادر" {% if form_data.parents_alive == 'فقط مادر' %}selected{% endif %}>فقط مادر</option>
+                    <option value="هر دو فوت شده" {% if form_data.parents_alive == 'هر دو فوت شده' %}selected{% endif %}>هر دو فوت شده</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>آیا والدین از هم جدا شده‌اند؟</label>
+                <select name="parents_separated">
+                    <option value="0" {% if form_data.parents_separated == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.parents_separated == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>کودک با چه کسی زندگی می‌کند؟</label>
+                <select name="child_lives_with">
+                    <option value="">-- انتخاب --</option>
+                    <option value="پدر" {% if form_data.child_lives_with == 'پدر' %}selected{% endif %}>پدر</option>
+                    <option value="مادر" {% if form_data.child_lives_with == 'مادر' %}selected{% endif %}>مادر</option>
+                    <option value="پدر و مادر" {% if form_data.child_lives_with == 'پدر و مادر' %}selected{% endif %}>پدر و مادر</option>
+                    <option value="پدربزرگ" {% if form_data.child_lives_with == 'پدربزرگ' %}selected{% endif %}>پدربزرگ</option>
+                    <option value="مادربزرگ" {% if form_data.child_lives_with == 'مادربزرگ' %}selected{% endif %}>مادربزرگ</option>
+                    <option value="خویشاوندان" {% if form_data.child_lives_with == 'خویشاوندان' %}selected{% endif %}>خویشاوندان</option>
+                    <option value="سایر" {% if form_data.child_lives_with == 'سایر' %}selected{% endif %}>سایر</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>آیا والدین نسبت خویشاوندی دارند؟</label>
+                <select name="parents_related">
+                    <option value="0" {% if form_data.parents_related == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.parents_related == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group field-group-full">
+                <label>آدرس</label>
+                <input type="text" name="address" value="{{ form_data.address or '' }}" placeholder="آدرس کامل">
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش: خواهر و برادر دانش‌آموز ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-siblings" style="border-right-color:#7c3aed;background:#faf5ff;">
+        <h4><span class="section-badge" style="background:#7c3aed;">👨‍👩‍👧‍👦</span> خواهر و برادر دانش‌آموز</h4>
+        <p class="section-subtitle">در صورت وجود خواهر یا برادر، با دکمهٔ زیر ردیف اضافه کنید. فیلدهای خالی به‌صورت «ثبت نشده» ذخیره می‌شوند.</p>
+        <div class="table-wrapper" style="overflow-x:auto;">
+        <table class="siblings-table" id="siblingsTable" style="width:100%;border-collapse:collapse;font-size:12px;min-width:920px;">
+            <thead>
+                <tr style="background:#ede9fe;">
+                    <th style="padding:6px 4px;">نسبت</th>
+                    <th style="padding:6px 4px;">نام و نام‌خانوادگی</th>
+                    <th style="padding:6px 4px;">سن</th>
+                    <th style="padding:6px 4px;">تحصیلات</th>
+                    <th style="padding:6px 4px;">وضعیت تأهل</th>
+                    <th style="padding:6px 4px;">شغل</th>
+                    <th style="padding:6px 4px;">وضعیت جسمی</th>
+                    <th style="padding:6px 4px;">وضعیت روانی</th>
+                    <th style="padding:6px 4px;">تنی/ناتنی</th>
+                    <th style="padding:6px 4px;"></th>
+                </tr>
+            </thead>
+            <tbody id="siblingsBody">
+            {% for sib in siblings %}
+                <tr>
+                    <td><select name="sibling_type[]"><option value="">--</option><option value="برادر" {% if sib.sibling_type == 'برادر' %}selected{% endif %}>برادر</option><option value="خواهر" {% if sib.sibling_type == 'خواهر' %}selected{% endif %}>خواهر</option></select></td>
+                    <td><input type="text" name="sibling_name[]" value="{{ sib.full_name or '' }}"></td>
+                    <td><input type="number" min="0" max="120" name="sibling_age[]" value="{{ sib.age or '' }}" style="width:60px;"></td>
+                    <td><input type="text" name="sibling_education[]" value="{{ sib.education or '' }}"></td>
+                    <td><select name="sibling_marital_status[]"><option value="">--</option><option value="مجرد" {% if sib.marital_status == 'مجرد' %}selected{% endif %}>مجرد</option><option value="متأهل" {% if sib.marital_status == 'متأهل' %}selected{% endif %}>متأهل</option></select></td>
+                    <td><input type="text" name="sibling_job[]" value="{{ sib.job or '' }}"></td>
+                    <td><select name="sibling_physical_status[]"><option value="">--</option><option value="سالم" {% if sib.physical_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if sib.physical_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select></td>
+                    <td><select name="sibling_mental_status[]"><option value="">--</option><option value="سالم" {% if sib.mental_status == 'سالم' %}selected{% endif %}>سالم</option><option value="ناسالم" {% if sib.mental_status == 'ناسالم' %}selected{% endif %}>ناسالم</option></select></td>
+                    <td><select name="sibling_kinship[]"><option value="">--</option><option value="تنی" {% if sib.kinship == 'تنی' %}selected{% endif %}>تنی</option><option value="ناتنی" {% if sib.kinship == 'ناتنی' %}selected{% endif %}>ناتنی</option></select></td>
+                    <td><button type="button" class="btn-remove-sibling" onclick="this.closest('tr').remove()" style="border:0;background:#fee2e2;color:#b42318;border-radius:6px;padding:4px 8px;cursor:pointer;">✖</button></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        </div>
+        <button type="button" class="btn" onclick="addSiblingRow()" style="margin-top:8px;border:1px dashed #7c3aed;background:#fff;color:#7c3aed;border-radius:8px;padding:6px 14px;cursor:pointer;font-weight:700;">➕ افزودن خواهر/برادر</button>
+        <template id="siblingRowTemplate">
+            <tr>
+                <td><select name="sibling_type[]"><option value="">--</option><option value="برادر">برادر</option><option value="خواهر">خواهر</option></select></td>
+                <td><input type="text" name="sibling_name[]"></td>
+                <td><input type="number" min="0" max="120" name="sibling_age[]" style="width:60px;"></td>
+                <td><input type="text" name="sibling_education[]"></td>
+                <td><select name="sibling_marital_status[]"><option value="">--</option><option value="مجرد">مجرد</option><option value="متأهل">متأهل</option></select></td>
+                <td><input type="text" name="sibling_job[]"></td>
+                <td><select name="sibling_physical_status[]"><option value="">--</option><option value="سالم">سالم</option><option value="ناسالم">ناسالم</option></select></td>
+                <td><select name="sibling_mental_status[]"><option value="">--</option><option value="سالم">سالم</option><option value="ناسالم">ناسالم</option></select></td>
+                <td><select name="sibling_kinship[]"><option value="">--</option><option value="تنی">تنی</option><option value="ناتنی">ناتنی</option></select></td>
+                <td><button type="button" class="btn-remove-sibling" onclick="this.closest('tr').remove()" style="border:0;background:#fee2e2;color:#b42318;border-radius:6px;padding:4px 8px;cursor:pointer;">✖</button></td>
+            </tr>
+        </template>
+        <script>
+        function addSiblingRow() {
+            var tpl = document.getElementById('siblingRowTemplate');
+            var body = document.getElementById('siblingsBody');
+            body.appendChild(tpl.content.cloneNode(true));
+        }
+        </script>
+    </div>
+
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۷: بیماری‌ها ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-health">
+        <h4><span class="section-badge badge-red">۷</span> 🩺 بیماری‌ها</h4>
+        <div class="form-row">
+            <div class="field-group field-group-full">
+                <label>بیماری‌های دانش‌آموز (چند گزینه قابل انتخاب)</label>
+                <div class="checkbox-group">
+                    {% set diseases_list = ['استراغ', 'اسهال', 'تب شدید', 'تشنج', 'آبله مرغان', 'سرخک', 'زردی', 'صرع', 'سابقه جراحی'] %}
+                    {% set selected_diseases = form_data.diseases.split(',') if form_data.diseases else [] %}
+                    {% for d in diseases_list %}
+                        <label>
+                            <input type="checkbox" name="diseases" value="{{ d }}" {% if d in selected_diseases %}checked{% endif %}>
+                            {{ d }}
+                        </label>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="diseases_hidden" id="diseases_hidden" value="{{ form_data.diseases or '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>آیا واکسن‌ها را کامل زده است؟</label>
+                <select name="vaccinations_complete">
+                    <option value="0" {% if form_data.vaccinations_complete == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.vaccinations_complete == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>آیا حساسیت دارویی دارد؟</label>
+                <select name="drug_allergy">
+                    <option value="0" {% if form_data.drug_allergy == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.drug_allergy == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۸: ویژگی‌های رفتاری روانی ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-behavior">
+        <h4><span class="section-badge badge-teal">۸</span> 🧠 ویژگی‌های رفتاری روانی</h4>
+        <div class="form-row">
+            <div class="field-group field-group-full">
+                <label>ویژگی‌های رفتاری روانی (چند گزینه قابل انتخاب)</label>
+                <div class="checkbox-group">
+                    {% set traits_list = ['بی قراری', 'کم حرفی', 'پر حرفی', 'گوشه گیری', 'اضطراب', 'بی اختیاری ادرار', 'ترس بی دلیل', 'دزدی', 'لجبازی', 'ناخن جویدن'] %}
+                    {% set selected_traits = form_data.behavioral_traits.split(',') if form_data.behavioral_traits else [] %}
+                    {% for t in traits_list %}
+                        <label>
+                            <input type="checkbox" name="behavioral_traits" value="{{ t }}" {% if t in selected_traits %}checked{% endif %}>
+                            {{ t }}
+                        </label>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="behavioral_traits_hidden" id="behavioral_traits_hidden" value="{{ form_data.behavioral_traits or '' }}">
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۹: عضویت ===== -->
+    <!-- ============================================================ -->
+    <div class="form-section form-section-membership">
+        <h4><span class="section-badge badge-purple">۹</span> 📋 عضویت</h4>
+        <div class="form-row">
+            <div class="field-group">
+                <label>عضویت در کمیته امداد</label>
+                <select name="is_emdad_member">
+                    <option value="0" {% if form_data.is_emdad_member == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.is_emdad_member == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>عضویت در بهزیستی</label>
+                <select name="is_behzisti_member">
+                    <option value="0" {% if form_data.is_behzisti_member == '0' %}selected{% endif %}>خیر</option>
+                    <option value="1" {% if form_data.is_behzisti_member == '1' %}selected{% endif %}>بله</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== بخش ۱۰: عکس دانش‌آموز ===== -->
+    <!-- ============================================================ -->
+    {% if custom_fields %}
+    <div class="form-section" style="border-right-color:#0f766e;background:#f0fdfa;">
+        <h4><span class="section-badge" style="background:#0f766e;">✚</span> 🧩 اطلاعات تکمیلی</h4>
+        <p class="section-subtitle">این فیلدها توسط مدیر سامانه ساخته شده‌اند و بدون تغییر برنامه قابل مدیریت هستند.</p>
+        <div class="form-row">
+        {% for field in custom_fields %}
+            <div class="field-group">
+                <label for="custom_{{ field.id }}">{{ field.label }}{% if field.required %} <span class="required-star">*</span>{% endif %}</label>
+                <small style="display:block;color:#64748b;font-size:10px;margin-bottom:3px;">{{ field.section_label }}</small>
+                {% if field.field_type == 'textarea' %}
+                    <textarea id="custom_{{ field.id }}" name="custom_{{ field.id }}" rows="2" {% if field.required %}required{% endif %}>{{ field.value }}</textarea>
+                {% elif field.field_type == 'select' %}
+                    <select id="custom_{{ field.id }}" name="custom_{{ field.id }}" {% if field.required %}required{% endif %}>
+                        <option value="">-- انتخاب --</option>
+                        {% for option in field.options %}<option value="{{ option }}" {% if field.value == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+                    </select>
+                {% elif field.field_type == 'checkbox' %}
+                    <label style="display:flex;align-items:center;gap:8px;font-weight:normal;padding:8px 0;"><input id="custom_{{ field.id }}" type="checkbox" name="custom_{{ field.id }}" value="1" {% if field.value in ['1','on','true','بله'] %}checked{% endif %}> بله</label>
+                {% else %}
+                    <input id="custom_{{ field.id }}" type="{{ 'number' if field.field_type == 'number' else ('date' if field.field_type == 'date' else 'text') }}" name="custom_{{ field.id }}" value="{{ field.value }}" {% if field.required %}required{% endif %}>
+                {% endif %}
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-section form-section-photo">
+        <h4><span class="section-badge badge-blue">۱۰</span> 🖼️ عکس دانش‌آموز</h4>
+        <div id="drop-zone">
+            <p>📤 عکس را اینجا بکشید و رها کنید یا کلیک کنید تا انتخاب کنید</p>
+            <input type="file" id="file-input" accept="image/*" style="display:none;">
+            <div id="preview"></div>
+            <input type="hidden" name="photo" id="photo-filename" value="{{ form_data.photo or '' }}">
+        </div>
+    </div>
+
+    <div class="student-form-float-actions"><button type="submit" class="btn-submit"><i class="cil-user-plus" aria-hidden="true"></i> ثبت دانش‌آموز جدید</button></div>
+</form>
+
+<script>
+
+
+    // ===== انتخاب تکرار در هر پایه =====
+    document.addEventListener('DOMContentLoaded', function() {
+        var gradeButtons = document.querySelectorAll('.grade-buttons button');
+        
+        gradeButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var parent = this.closest('.grade-buttons');
+                var grade = parent.dataset.grade;
+                var hiddenInput = document.getElementById('repeat_grade_' + grade); if (!hiddenInput) { hiddenInput = document.createElement('input'); hiddenInput.type='hidden'; hiddenInput.name='repeat_grade_'+grade; hiddenInput.id='repeat_grade_'+grade; this.closest('form').appendChild(hiddenInput); }
+                
+                parent.querySelectorAll('button').forEach(function(b) {
+                    b.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                hiddenInput.value = this.getAttribute('data-value');
+            });
+        });
+    });
+
+    // ===== مدیریت چک‌باکس‌های بیماری‌ها =====
+    document.addEventListener('DOMContentLoaded', function() {
+        var diseaseCheckboxes = document.querySelectorAll('input[name="diseases"]');
+        var diseaseHidden = document.getElementById('diseases_hidden');
+        
+        function updateDiseaseHidden() {
+            var selected = [];
+            diseaseCheckboxes.forEach(function(cb) {
+                if (cb.checked) {
+                    selected.push(cb.value);
+                }
+            });
+            diseaseHidden.value = selected.join(',');
+        }
+        
+        diseaseCheckboxes.forEach(function(cb) {
+            cb.addEventListener('change', updateDiseaseHidden);
+        });
+        updateDiseaseHidden();
+    });
+
+    // ===== مدیریت چک‌باکس‌های ویژگی‌های رفتاری =====
+    document.addEventListener('DOMContentLoaded', function() {
+        var traitCheckboxes = document.querySelectorAll('input[name="behavioral_traits"]');
+        var traitHidden = document.getElementById('behavioral_traits_hidden');
+        
+        function updateTraitHidden() {
+            var selected = [];
+            traitCheckboxes.forEach(function(cb) {
+                if (cb.checked) {
+                    selected.push(cb.value);
+                }
+            });
+            traitHidden.value = selected.join(',');
+        }
+        
+        traitCheckboxes.forEach(function(cb) {
+            cb.addEventListener('change', updateTraitHidden);
+        });
+        updateTraitHidden();
+    });
+
+    // ===== Drag & Drop برای عکس =====
+    (function() {
+        var dropZone = document.getElementById('drop-zone');
+        var fileInput = document.getElementById('file-input');
+        var preview = document.getElementById('preview');
+        var photoField = document.getElementById('photo-filename');
+
+        if (dropZone) {
+            dropZone.addEventListener('click', function() {
+                fileInput.click();
+            });
+            dropZone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#3498db';
+            });
+            dropZone.addEventListener('dragleave', function() {
+                this.style.borderColor = '#ccc';
+            });
+            dropZone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ccc';
+                var files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    handleFile(files[0]);
+                }
+            });
+        }
+
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+        }
+
+        function handleFile(file) {
+            // پیش‌نمایش
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                preview.innerHTML = '<img src="' + e.target.result + '" style="max-width:150px; max-height:150px; border-radius:8px; border:1px solid #ddd; margin-top:10px;">';
+            };
+            reader.readAsDataURL(file);
+            // آپلود
+            var formData = new FormData();
+            formData.append('photo', file);
+            formData.append('_csrf_token', '{{ csrf_token() }}');
+            fetch('/upload_photo', { method: 'POST', body: formData })
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.filename) {
+                        photoField.value = data.filename;
+                    } else if (data.error) {
+                        alert('خطا: ' + data.error);
+                    }
+                })
+                .catch(function() { alert('خطا در آپلود عکس'); });
+        }
+
+        // نمایش عکس موجود (در صورت وجود)
+        var existingPhoto = "{{ form_data.photo or '' }}";
+        if (existingPhoto) {
+            preview.innerHTML = '<img src="/static/uploads/' + existingPhoto + '" style="max-width:150px; max-height:150px; border-radius:8px; border:1px solid #ddd; margin-top:10px;">';
+        }
+    })();
+</script>
+
+{% endblock %}

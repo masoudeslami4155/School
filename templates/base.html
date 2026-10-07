@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="fa" dir="rtl" data-ui-density="{{ ui_preferences.ui_density }}" data-ui-card-size="{{ ui_preferences.card_size }}" data-ui-style="{{ ui_preferences.visual_style }}" data-ui-font="{{ ui_preferences.font_family }}" data-ui-text-scale="{{ ui_preferences.text_scale }}" data-ui-line-spacing="{{ ui_preferences.line_spacing }}" data-ui-motion="{{ ui_preferences.motion }}" data-ui-palette="{{ ui_preferences.color_palette }}" style="--ink:{{ ui_preferences.colors.text }};--primary:{{ ui_preferences.colors.button }};--primary2:{{ ui_preferences.colors.button }};--surface:{{ ui_preferences.colors.surface }};--surface-soft:{{ ui_preferences.colors.table_row_alt }};--line:{{ ui_preferences.colors.border }};--line-strong:{{ ui_preferences.colors.border }};--user-button-color:{{ ui_preferences.colors.button }};--user-button-text:{{ ui_preferences.colors.button_text }};--user-secondary-button-color:{{ ui_preferences.colors.secondary_button }};--user-secondary-button-text:{{ ui_preferences.colors.secondary_button_text }};--user-page-background:{{ ui_preferences.colors.background }};--user-box-background:{{ ui_preferences.colors.surface }};--user-text-color:{{ ui_preferences.colors.text }};--user-border-color:{{ ui_preferences.colors.border }};--user-table-header:{{ ui_preferences.colors.table_header }};--user-table-header-text:{{ ui_preferences.colors.table_header_text }};--user-table-row:{{ ui_preferences.colors.table_row }};--user-table-row-alt:{{ ui_preferences.colors.table_row_alt }};--user-light-button-color:{{ ui_preferences.colors.button }};--user-light-button-text:{{ ui_preferences.colors.button_text }};--user-light-secondary-button-color:{{ ui_preferences.colors.secondary_button }};--user-light-secondary-button-text:{{ ui_preferences.colors.secondary_button_text }};--user-light-page-background:{{ ui_preferences.colors.background }};--user-light-box-background:{{ ui_preferences.colors.surface }};--user-light-text-color:{{ ui_preferences.colors.text }};--user-light-border-color:{{ ui_preferences.colors.border }};--user-light-table-header:{{ ui_preferences.colors.table_header }};--user-light-table-header-text:{{ ui_preferences.colors.table_header_text }};--user-light-table-row:{{ ui_preferences.colors.table_row }};--user-light-table-row-alt:{{ ui_preferences.colors.table_row_alt }};--user-dark-button-color:{{ ui_preferences.dark_colors.button }};--user-dark-button-text:{{ ui_preferences.dark_colors.button_text }};--user-dark-secondary-button-color:{{ ui_preferences.dark_colors.secondary_button }};--user-dark-secondary-button-text:{{ ui_preferences.dark_colors.secondary_button_text }};--user-dark-page-background:{{ ui_preferences.dark_colors.background }};--user-dark-box-background:{{ ui_preferences.dark_colors.surface }};--user-dark-text-color:{{ ui_preferences.dark_colors.text }};--user-dark-border-color:{{ ui_preferences.dark_colors.border }};--user-dark-table-header:{{ ui_preferences.dark_colors.table_header }};--user-dark-table-header-text:{{ ui_preferences.dark_colors.table_header_text }};--user-dark-table-row:{{ ui_preferences.dark_colors.table_row }};--user-dark-table-row-alt:{{ ui_preferences.dark_colors.table_row_alt }};">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="{{ ui_preferences.colors.button }}"><script>try{var t=localStorage.getItem("school-theme");if(!t){t=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.dataset.theme=t;var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=t==="dark"?"{{ ui_preferences.dark_colors.button }}":"{{ ui_preferences.colors.button }}"}catch(e){}</script>
+    <title>{% block title %}سامانه جامع مدیریت مدرسه{% endblock %} | {{ config.SCHOOL_NAME }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='mobile_app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='design_system.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='topbar.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='liquid_button.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='theme_toggle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='v_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='modern_buttons.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='coreui-icons/css/free.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vendor/jquery-clockpicker.min.css') }}">
+    <script src="{{ url_for('static', filename='vendor/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery-clockpicker.min.js') }}" defer></script>
+    {% block head %}{% endblock %}
+    {% if frontend_built %}<link rel="stylesheet" href="{{ url_for('static', filename='frontend/main.css') }}">{% endif %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='liquid_glass_magma.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='glass_design.css') }}">
+    {% if current_user %}<link rel="stylesheet" href="{{ url_for('static', filename='sidebar_redesign.css') }}">{% endif %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='user_preferences.css') }}">
+</head>
+<body>
+<div class="app-shell">
+    <header class="topbar no-print">
+        <div class="brand">
+            <div class="brand-mark"><i class="cil-school" aria-hidden="true"></i></div>
+            <div><strong>{{ config.SCHOOL_NAME }}</strong><small>سامانه جامع مدیریت مدرسه · مدیریت هوشمند، امن و آفلاین</small><small class="brand-credit">برنامه‌نویس: {{ config.PROGRAMMER_NAME }}</small></div>
+        </div>
+        <div class="topbar-actions">
+            <div class="topbar-context" aria-label="اطلاعات سامانه">
+                <span class="date-chip"><i class="cil-calendar" aria-hidden="true"></i><span>{{ jalali_datetime }}</span></span>
+                <span class="topbar-separator" aria-hidden="true">|</span>
+                {% if current_user %}<span class="user-chip"><i class="cil-user" aria-hidden="true"></i><span class="topbar-user__text">{{ current_user }} · {{ {'admin':'مدیر سیستم','manager':'مدیر مدرسه','teacher':'معلم'}.get(current_role,current_role) }}</span></span>{% endif %}
+            </div>
+            <div class="topbar-tools">
+                {% block header_buttons %}{% endblock %}
+                <label class="theme-control no-print" title="تغییر حالت شب و روز">
+                    <input class="theme-control__input" type="checkbox" role="switch" id="themeToggle" aria-label="تغییر حالت شب و روز">
+                    <span class="theme-control__track" aria-hidden="true">
+                        <span class="theme-control__orbit theme-control__orbit--sun"><i class="cil-sun"></i></span>
+                        <span class="theme-control__orbit theme-control__orbit--moon"><i class="cil-moon"></i></span>
+                        <span class="theme-control__thumb"><i class="cil-sun"></i><i class="cil-moon"></i></span>
+                    </span>
+                </label>
+                {% if current_user %}
+                    <a class="topbar-link" href="{{ url_for('change_password') }}"><i class="cil-lock-locked" aria-hidden="true"></i><span>تغییر رمز</span></a>
+                    <form method="post" action="{{ url_for('logout') }}" class="inline-form no-print"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="topbar-link topbar-link--danger" type="submit"><i class="cil-account-logout" aria-hidden="true"></i><span>خروج</span></button></form>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    {% if current_user %}{% include 'partials/main_navigation.html' %}{% endif %}
+
+    <main class="page-container">
+        <div class="print-identity" aria-hidden="true"><strong>{{ config.SCHOOL_NAME }}</strong><span>گزارش چاپی · برنامه‌نویس: {{ config.PROGRAMMER_NAME }} · تاریخ چاپ: {{ jalali_datetime }}</span></div>
+        <div class="page-heading">
+            <div><div class="page-kicker">سامانه جامع مدرسه</div><h1>{% block page_title %}مدیریت مدرسه{% endblock %}</h1></div>
+            <div class="page-heading-actions no-print">
+                {% block page_actions %}{% endblock %}
+                <button class="btn btn--outline" type="button" onclick="window.print()"><i class="cil-print" aria-hidden="true"></i> چاپ A4</button>
+                <a class="btn btn--outline" href="{{ url_for('index') }}"><i class="cil-home" aria-hidden="true"></i> صفحه اصلی</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}<div class="flash-stack no-print">{% for category, message in messages %}<div class="flash flash--{{ category if category in ['success','danger','warning','info'] else 'info' }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="app-footer no-print d-none d-md-block"><span>{{ config.SCHOOL_NAME }}</span><span>برنامه‌نویس: {{ config.PROGRAMMER_NAME }}</span><span>نسخه {{ config.APP_VERSION }}</span></footer>
+</div>
+<script>
+(function(){var root=document.documentElement,btn=document.getElementById('themeToggle');function setTheme(t){root.dataset.theme=t;try{localStorage.setItem('school-theme',t)}catch(e){}var mc=document.querySelector('meta[name="theme-color"]');if(mc){mc.content=t==='dark'?'{{ ui_preferences.dark_colors.button }}':'{{ ui_preferences.colors.button }}'}if(btn){if(btn.tagName==='INPUT'){btn.checked=(t==='dark')}else{btn.innerHTML=t==='dark'?'<i class="cil-sun" aria-hidden="true"></i> حالت روز':'<i class="cil-moon" aria-hidden="true"></i> حالت شب'}}var sb=document.getElementById('sidebarThemeButton');if(sb){var ic=sb.querySelector('span:first-child i');if(ic){ic.className=t==='dark'?'cil-sun':'cil-moon';var lbl=sb.querySelector('.nav-label');if(lbl)lbl.textContent=t==='dark'?'حالت روشن':'حالت تاریک'}}}if(btn){setTheme(root.dataset.theme||'light');btn.addEventListener(btn.tagName==='INPUT'?'change':'click',function(){setTheme(btn.tagName==='INPUT'?(btn.checked?'dark':'light'):(root.dataset.theme==='dark'?'light':'dark'))})}})();
+</script>
+{% include 'partials/jalali_widgets.html' %}
+<script src="{{ url_for('static', filename='liquid_button.js') }}" defer></script>
+<script src="{{ url_for('static', filename='digest.js') }}" defer></script>
+<script src="{{ url_for('static', filename='responsive_tables.js') }}" defer></script>
+<script src="{{ url_for('static', filename='glass_design.js') }}" defer></script>
+{% if current_user %}<script src="{{ url_for('static', filename='user_accessibility.js') }}" defer></script>{% endif %}
+{% if frontend_built %}
+<script type="module" src="{{ url_for('static', filename='frontend/main.js') }}" defer></script>
+{% endif %}
+{% block scripts %}{% endblock %}
+
+    {% if current_user %}
+    <nav class="mobile-bottom-nav no-print" id="mobileBottomNav" aria-label="ناوبری سریع موبایل">
+        <a href="{{ url_for('index') }}" class="mobile-bottom-nav__item{% if request.endpoint == 'index' %} is-active{% endif %}" aria-label="صفحه اصلی">
+            <i class="cil-home" aria-hidden="true"></i>
+            <span>خانه</span>
+        </a>
+        <a href="{{ url_for('attendance_students') }}" class="mobile-bottom-nav__item{% if request.endpoint == 'attendance_students' %} is-active{% endif %}" aria-label="حضور و غیاب دانش‌آموزان">
+            <i class="cil-user-follow" aria-hidden="true"></i>
+            <span>حضور و غیاب</span>
+        </a>
+        {% if current_role != 'teacher' %}
+        <a href="{{ url_for('add_student') }}" class="mobile-bottom-nav__item{% if request.endpoint == 'add_student' %} is-active{% endif %}" aria-label="ثبت دانش‌آموز جدید">
+            <i class="cil-user-plus" aria-hidden="true"></i>
+            <span>ثبت‌نام</span>
+        </a>
+        <a href="{{ url_for('statistics') }}" class="mobile-bottom-nav__item{% if request.endpoint == 'statistics' %} is-active{% endif %}" aria-label="آمار و گزارشات مدرسه">
+            <i class="cil-chart-line" aria-hidden="true"></i>
+            <span>آمار</span>
+        </a>
+        {% else %}
+        <a href="{{ url_for('attendance_teachers') }}" class="mobile-bottom-nav__item{% if request.endpoint == 'attendance_teachers' %} is-active{% endif %}" aria-label="دفتر معلم">
+            <i class="cil-briefcase" aria-hidden="true"></i>
+            <span>دفتر</span>
+        </a>
+        {% endif %}
+        <button type="button" class="mobile-bottom-nav__item" id="mobileMenuTrigger" aria-label="منوی کامل">
+            <i class="cil-menu" aria-hidden="true"></i>
+            <span>منو</span>
+        </button>
+    </nav>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var trigger = document.getElementById('mobileMenuTrigger');
+        var sidebar = document.getElementById('mainSidebar');
+        var overlay = document.getElementById('sidebarOverlay');
+        if (trigger && sidebar) {
+            trigger.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof window.toggleSidebar === 'function') {
+                    window.toggleSidebar();
+                } else {
+                    var isExpanded = sidebar.classList.contains('is-expanded');
+                    sidebar.classList.toggle('is-expanded', !isExpanded);
+                    document.body.classList.toggle('nav-expanded', !isExpanded);
+                    document.body.classList.toggle('nav-open', !isExpanded);
+                    if (overlay) overlay.hidden = isExpanded;
+                }
+                trigger.setAttribute('aria-expanded', sidebar.classList.contains('is-expanded') ? 'true' : 'false');
+            });
+        }
+    });
+    </script>
+    {% endif %}
+
+</body>
+</html>

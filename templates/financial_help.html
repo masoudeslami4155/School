@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}کمک‌های مالی{% endblock %}
+{% block page_title %}🤝 کمک‌های مالی{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block header_buttons %}<span class="header-badge">{{ helps|length|format_number }} رکورد</span>{% endblock %}
+{% block content %}
+<section class="form-card no-print">
+  <div class="section-heading"><div><h2>ثبت کمک مالی</h2><p class="muted-text">مبلغ به تومان و تاریخ به‌صورت شمسی ثبت می‌شود.</p></div><span class="badge">ثبت آفلاین</span></div>
+  <form method="post" action="{{ url_for('financial_help') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row"><div class="field-group"><label for="student_code">دانش‌آموز <span class="required-star">*</span></label><select id="student_code" name="student_code" required><option value="">انتخاب دانش‌آموز</option>{% for s in students %}<option value="{{ s.code }}">{{ s.first_name }} {{ s.last_name }} · {{ s.code }}</option>{% endfor %}</select></div><div class="field-group"><label for="amount">مبلغ (تومان) <span class="required-star">*</span></label><input id="amount" type="number" name="amount" min="0" step="1000" placeholder="مثلاً ۵۰۰۰۰۰" required></div><div class="field-group"><label for="date">تاریخ شمسی <span class="required-star">*</span></label><input id="date" type="text" name="date" value="{{ today }}" placeholder="۱۴۰۵/۰۶/۲۳" required data-jdate></div></div>
+    <div class="form-row"><div class="field-group" style="flex-basis:100%"><label for="description">توضیحات</label><textarea id="description" name="description" placeholder="توضیح اختیاری…"></textarea></div></div>
+    <div class="form-actions"><button class="btn-submit glass-btn" type="submit"><i class="cil-save" aria-hidden="true"></i> ثبت کمک مالی</button></div>
+  </form>
+</section>
+<section class="card glass">
+  <div class="section-heading"><div><h2>تاریخچه کمک‌ها</h2><p class="muted-text">رکوردهای مالی ثبت‌شده را مشاهده و حذف کنید.</p></div><span class="badge">جمع: {{ "{:,}".format(helps|map(attribute='amount')|map('int')|sum) }} تومان</span></div>
+  <div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>تاریخ</th><th>دانش‌آموز</th><th>مبلغ (تومان)</th><th>توضیحات</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for h in helps %}<tr><td>{{ loop.index }}</td><td>{{ h.date or 'ثبت نشده' }}</td><td>{{ h.first_name }} {{ h.last_name }}</td><td><strong>{{ "{:,}".format(h.amount|int) }}</strong></td><td style="text-align:right;white-space:normal">{{ h.description or 'ثبت نشده' }}</td><td class="no-print"><form method="post" action="{{ url_for('delete_financial_help', id=h.id) }}" onsubmit="return confirm('این کمک مالی حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger glass-btn" type="submit"><i class="cil-trash" aria-hidden="true"></i> حذف</button></form></td></tr>{% else %}<tr><td colspan="6" class="empty-state"><i class="cil-inbox" aria-hidden="true"></i> هنوز کمک مالی ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

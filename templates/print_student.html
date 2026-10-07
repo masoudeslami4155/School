@@ -1,0 +1,48 @@
+﻿<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>پرونده کامل - {{ student.first_name or 'دانش‌آموز' }} {{ student.last_name or '' }} | {{ config.SCHOOL_NAME }}</title>
+<style>{{ student_info_layout|report_element_css|safe }}
+/* Vazirmatn برای چاپ — همان الگوی app.css و کارت دیواری، کاملاً آفلاین */
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+
+@page{size:A4 {{ student_info_layout.orientation }};margin:{{ student_info_layout.margin.top }}mm {{ student_info_layout.margin.right }}mm {{ student_info_layout.margin.bottom }}mm {{ student_info_layout.margin.left }}mm}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#172033;font-family:Vazirmatn,Tahoma,"Segoe UI",Arial,sans-serif;font-size:{{ student_info_layout.font_size }}pt;line-height:{{ student_info_layout.line_height }}}
+.print-container{max-width:{{ (210 if student_info_layout.orientation == 'portrait' else 297) - student_info_layout.margin.left - student_info_layout.margin.right }}mm;margin:auto}
+.print-header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 8px;margin-bottom:6px;border-radius:6px;background:linear-gradient(135deg,#0b4f6c,#0f766e);color:#fff;min-height:{{ student_info_layout.header_height }}mm}
+.header-identity{display:flex;align-items:center;gap:8px;min-width:0}.header-photo,.header-placeholder{width:46px;height:46px;border-radius:8px;object-fit:cover;border:1.5px solid #ffffffaa}.header-placeholder{display:grid;place-items:center;background:#ffffff26;color:#fff;font-size:19px;font-weight:800}.school-name{font-size:{{ student_info_layout.header_font_size }}pt;font-weight:900;color:#fff}.document-title{font-size:{{ student_info_layout.font_size }}pt;font-weight:800;margin-top:1px;color:#eafffb}.header-meta{color:#e2f6f3;font-size:7.5px;margin-top:2px}.print-date{text-align:left;color:#eafffb;font-size:7.5px;white-space:nowrap}
+.print-note{padding:3px 6px;margin-bottom:5px;border:1px solid #bae6fd;border-radius:4px;background:#f0f9ff;color:#075985;font-size:7.5px;line-height:1.35}
+.profile-section{margin:0 0 4px;border:1px solid #cbd5e1;border-radius:4px;break-inside:auto;overflow:hidden}
+.section-title{padding:2.5px 6px;background:#eef4fa;border-right:3px solid #0b4f6c;font-size:8px;font-weight:900;color:#0f172a;break-after:avoid}
+.profile-section:first-of-type .section-title{border-right-color:#0f766e}
+.profile-detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 6px;padding:2px 5px}
+.profile-detail{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:3px;min-height:{{ student_info_layout.row_height }}mm;padding:2px 0;border-bottom:1px dotted #e2e8f0;overflow-wrap:anywhere}
+.profile-detail--wide{grid-column:1/-1}
+.profile-detail__label{color:#64748b;font-weight:800;font-size:7.1px;white-space:nowrap}
+.profile-detail__value{color:#111827;font-size:7.5px;white-space:pre-wrap;word-break:break-word}
+.empty{color:#94a3b8}
+.mini-table{width:100%;border-collapse:collapse;font-size:7.3px;margin:2px 0}
+.mini-table th,.mini-table td{padding:2px 4px;border-bottom:1px dotted #e2e8f0;text-align:center}
+.mini-table th{background:#f8fafc;color:#475569;font-weight:800}
+.mini-table tbody tr:last-child td{border-bottom:0}
+.footer{display:flex;justify-content:space-between;gap:8px;margin-top:5px;padding-top:3px;border-top:1px solid #0b4f6c;color:#64748b;font-size:6.8px}
+.signatures{display:flex;gap:14px}.signature{text-align:center;min-width:55px}.signature-line{height:9px;border-bottom:1px solid #334155;margin-bottom:1px}
+.no-print{margin-top:8px;text-align:center}.no-print button{border:0;border-radius:4px;padding:5px 16px;margin:0 3px;color:#fff;background:#0b4f6c;font:inherit;cursor:pointer}.no-print button.close{background:#b42318}
+@media print{.no-print,.print-layout-hidden{display:none!important}.print-note{color:#111;background:#fff}.profile-section{break-inside:auto}.section-title{break-after:avoid}.print-header{background:#fff!important;color:#111!important;border:1px solid #0b4f6c}.school-name,.document-title{color:#0b4f6c!important}.header-meta,.print-date{color:#333!important}.header-photo,.header-placeholder{border-color:#94a3b8!important}.header-placeholder{background:#eff6ff!important;color:#0b4f6c!important}}
+@media(max-width:700px){.profile-detail-grid{grid-template-columns:1fr}.profile-detail--wide{grid-column:auto}.print-header{align-items:flex-start}.print-date{white-space:normal}}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body><main class="print-container">
+<header class="print-header{% if not student_info_layout.show_header %} print-layout-hidden{% endif %}" data-report-element="hero"><div class="header-identity">{% if student.photo %}<img class="header-photo" src="/static/uploads/{{ student.photo }}" alt="عکس دانش‌آموز">{% else %}<div class="header-placeholder">{{ (student.first_name or '؟')[:1] }}</div>{% endif %}<div><div class="school-name">🏫 {{ config.SCHOOL_NAME }}</div><div class="document-title">پرونده کامل و خوانای دانش‌آموز</div><div class="header-meta">{{ student.first_name or 'ثبت نشده' }} {{ student.last_name or '' }} · کد: {{ student.code or 'ثبت نشده' }} · وضعیت: {{ student.status or 'فعال' }}</div></div></div><div class="print-date">تاریخ چاپ<br><strong>{{ jalali_datetime }}</strong></div></header>
+{% if restricted %}<div class="print-note">🔒 این چاپ برای نقش معلم فقط اطلاعات آموزشی و عمومیِ مجاز را نمایش می‌دهد؛ اطلاعات حساس خانوادگی، پزشکی و مالی طبق سطح دسترسی نمایش داده نمی‌شوند.</div>{% else %}<div class="print-note">✅ هیچ فیلدی خلاصه یا حذف نشده است؛ همه فیلدهای مجاز پرونده، حتی موارد خالی، با عبارت «ثبت نشده» نمایش داده می‌شوند. سن نیز خودکار محاسبه شده است.</div>{% endif %}
+{% for section in profile_sections %}{% if student_info_layout.sections.get(section['key'], True) %}<section class="profile-section" data-report-element="{{ section['key'] }}"><div class="section-title">{{ section['title'] }}</div><div class="profile-detail-grid">{% for item in section['items'] %}<div class="profile-detail {% if item['wide'] %}profile-detail--wide{% endif %}"><span class="profile-detail__label">{{ item['label'] }}:</span><span class="profile-detail__value {% if item['value'] == 'ثبت نشده' %}empty{% endif %}">{{ item['value'] }}</span></div>{% endfor %}</div></section>{% endif %}{% endfor %}
+{% if grade_repeat_rows and student_info_layout.sections.get('grade_repeats', True) %}<section class="profile-section" data-report-element="grade_repeats"><div class="section-title">📅 تعداد توقف و سال ورود در پایه‌ها</div><table class="mini-table"><thead><tr><th>پایه</th><th>تعداد توقف</th><th>سال ورود</th></tr></thead><tbody>{% for row in grade_repeat_rows %}<tr><td>{{ row.grade }}</td><td>{{ row.count }}</td><td class="{% if row.entry_year == 'ثبت نشده' %}empty{% endif %}">{{ row.entry_year }}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+{% if siblings and student_info_layout.sections.get('siblings', True) %}<section class="profile-section" data-report-element="siblings"><div class="section-title">👨‍👩‍👧‍👦 خواهر و برادر</div><table class="mini-table"><thead><tr><th>نسبت</th><th>نام و نام‌خانوادگی</th><th>سن</th><th>تحصیلات</th><th>تأهل</th><th>شغل</th><th>وضعیت جسمی</th><th>وضعیت روانی</th><th>تنی/ناتنی</th></tr></thead><tbody>{% for sib in siblings %}<tr><td>{{ sib.sibling_type or 'ثبت نشده' }}</td><td>{{ sib.full_name or 'ثبت نشده' }}</td><td>{{ sib.age or 'ثبت نشده' }}</td><td>{{ sib.education or 'ثبت نشده' }}</td><td>{{ sib.marital_status or 'ثبت نشده' }}</td><td>{{ sib.job or 'ثبت نشده' }}</td><td>{{ sib.physical_status or 'ثبت نشده' }}</td><td>{{ sib.mental_status or 'ثبت نشده' }}</td><td>{{ sib.kinship or 'ثبت نشده' }}</td></tr>{% endfor %}</tbody></table></section>{% endif %}
+<footer class="footer{% if not student_info_layout.show_footer %} print-layout-hidden{% endif %}" data-report-element="footer"><span>{{ config.SCHOOL_NAME }} · گزارش چاپی کامل</span><div class="signatures"><div class="signature"><div class="signature-line"></div>امضای مسئول</div><div class="signature"><div class="signature-line"></div>امضای ولی</div></div></footer>
+<div class="no-print"><button onclick="window.print()">🖨️ چاپ</button><button class="close" onclick="window.close()">✖️ بستن</button></div>
+</main></body></html>

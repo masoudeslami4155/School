@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}گزارش بدهکاران{% endblock %}
+{% block page_title %}📊 گزارش بدهکاران سرویس{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block content %}
+<!-- فیلتر -->
+<form method="GET" class="no-print" style="background: var(--glass-surface); backdrop-filter: blur(var(--glass-blur-soft)); border: 1px solid var(--glass-border-soft); border-radius: var(--glass-radius); padding: 15px 20px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+    <label style="font-weight:bold;">فیلتر:</label>
+    <select name="year">
+        <option value="">همه سال‌ها</option>
+        {% for y in years %}<option value="{{ y.year }}" {% if year == y.year %}selected{% endif %}>{{ y.year }}</option>{% endfor %}
+    </select>
+    <select name="month">
+        <option value="">همه ماه‌ها</option>
+        {% for m in months %}<option value="{{ m }}" {% if month == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+    </select>
+    <button type="submit" style="background: var(--glass-primary); color: white; padding: 8px 16px; border: none; border-radius: var(--glass-radius-sm); cursor: pointer;"><i class="cil-search" aria-hidden="true"></i> نمایش</button>
+    <a href="/reports/debtors_by_month" style="background: var(--glass-surface); color: var(--glass-ink); padding: 8px 16px; border-radius: var(--glass-radius-sm); text-decoration: none; border: 1px solid var(--glass-border);"><i class="cil-reload" aria-hidden="true"></i> لغو</a>
+</form>
+
+<div class="print-only" style="border:1px solid #999;padding:4px 6px;margin-bottom:4px;font-size:8pt;">دامنه گزارش بدهکاران: سال {{ year or 'همه سال‌ها' }} · ماه {{ month or 'همه ماه‌ها' }} · تاریخ چاپ: {{ jalali_datetime }}</div>
+<div class="table-wrapper glass">
+    <table>
+        <tr><th>ردیف</th><th>نام</th><th>نام‌خانوادگی</th><th>سال</th><th>ماه</th><th>نوع</th><th>مبلغ کل</th><th>پرداختی</th><th>باقی‌مانده</th></tr>
+        {% for d in debtors %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ d.first_name }}</td>
+            <td>{{ d.last_name }}</td>
+            <td>{{ d.year }}</td>
+            <td>{{ d.month }}</td>
+            <td>{{ d.service_type }}</td>
+            <td>{{ d.amount|int|format_number }}</td>
+            <td>{{ d.paid_amount|int|format_number }}</td>
+            <td style="color:red; font-weight:bold;">{{ d.remaining|int|format_number }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" style="text-align:center; padding:20px; color: var(--glass-muted);"><i class="cil-check-circle" aria-hidden="true"></i> همه بدهی‌ها تسویه شده است.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+<a class="no-print" href="/monthly_service" style="background: var(--glass-surface); color: var(--glass-ink); padding: 10px 20px; border-radius: var(--glass-radius); text-decoration: none; display: inline-block; margin-top: 15px; border: 1px solid var(--glass-border);"><i class="cil-arrow-left" aria-hidden="true"></i> بازگشت</a>
+{% endblock %}

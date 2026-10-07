@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}ویرایش رویداد{% endblock %}
+{% block page_title %}✏️ ویرایش رویداد{% endblock %}
+{% block content %}
+<style>
+.form-card{background:var(--surface);color:var(--ink);padding:22px;border-radius:14px;border:1px solid var(--line);border-right:4px solid #f39c12;max-width:760px;margin:0 auto}
+.form-row{display:flex;flex-wrap:wrap;gap:15px;margin-bottom:12px}
+.form-row .field-group{flex:1;min-width:180px}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+input,select,textarea{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-submit{background:#f39c12;color:#fff;padding:12px;border:none;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer}
+.btn-back{background:var(--soft);color:var(--ink);border:1px solid var(--line);padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px}
+</style>
+<div class="form-card">
+  <h4 style="margin:0 0 14px">✏️ ویرایش رویداد</h4>
+  <form method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label>عنوان رویداد *</label><input type="text" name="title" value="{{ event.title }}" required></div>
+      <div class="field-group"><label>نوع رویداد</label><select name="type"><option value="امتحان" {% if event.type=='امتحان' %}selected{% endif %}>📝 امتحان</option><option value="جلسه" {% if event.type=='جلسه' %}selected{% endif %}>👥 جلسه</option><option value="اردو" {% if event.type=='اردو' %}selected{% endif %}>🚌 اردو</option><option value="تعطیلی" {% if event.type=='تعطیلی' %}selected{% endif %}>🏖️ تعطیلی</option><option value="سایر" {% if event.type=='سایر' or not event.type %}selected{% endif %}>🔸 سایر</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label>تاریخ *</label><input type="text" name="date" value="{{ event.date }}" data-jdate required></div>
+      <div class="field-group"><label>ساعت</label><input type="text" name="time" value="{{ event.time or '' }}" data-timepicker></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label>اولویت</label><select name="priority"><option value="فوری" {% if event.priority=='فوری' %}selected{% endif %}>فوری</option><option value="مهم" {% if event.priority=='مهم' %}selected{% endif %}>مهم</option><option value="عادی" {% if event.priority=='عادی' or not event.priority %}selected{% endif %}>عادی</option><option value="کم" {% if event.priority=='کم' %}selected{% endif %}>کم</option></select></div>
+      <div class="field-group"><label>توضیحات</label><textarea name="description" rows="3">{{ event.description or '' }}</textarea></div>
+    </div>
+    <button type="submit" class="btn-submit">💾 ذخیره تغییرات</button>
+  </form>
+  <div style="text-align:center"><a href="{{ url_for('calendar') }}" class="btn-back">🔙 بازگشت به تقویم</a></div>
+</div>
+{% endblock %}

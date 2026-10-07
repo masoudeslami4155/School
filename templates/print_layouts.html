@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}طراحی چاپ A4{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='print_layouts.css') }}">{% endblock %}
+{% block page_title %}<i class="cil-settings" aria-hidden="true"></i> طراحی چیدمان چاپ A4{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('features_hub') }}"><i class="cil-arrow-right" aria-hidden="true"></i> مرکز امکانات</a>{% endblock %}
+{% block content %}
+<div class="print-layout-app" id="printLayoutApp" data-document="{{ document }}" data-kind="{{ document_kind }}" data-preview-url="{{ active_preview_url }}">
+    <script type="application/json" id="printLayoutData">{{ layout_json|safe }}</script>
+    <section class="pla-intro">
+        <div><span class="pla-eyebrow">استودیو چاپ · واحد میلی‌متر</span><h2>برگه را مثل فرم خودتان بچینید</h2><p>هر کادر را با کشیدن جابه‌جا کنید یا مختصات و ابعاد دقیق را وارد کنید. تنظیمات برای حساب شما ذخیره می‌شود.</p></div>
+        <div class="pla-intro-badge"><i class="cil-layers" aria-hidden="true"></i><strong>A4</strong><span>قابل تنظیم</span></div>
+    </section>
+
+    <nav class="pla-document-tabs" aria-label="نوع برگه">
+        {% for item in documents %}<a class="pla-document-tab{% if item.key == document %} is-active{% endif %}" href="{{ item.url }}"><span class="pla-document-tab__icon"><i class="{% if item.kind == 'drivers' %}cil-car-alt{% elif item.key == 'service_receipt' %}cil-description{% else %}cil-file{% endif %}" aria-hidden="true"></i></span><span><strong>{{ item.short_label }}</strong><small>{{ item.label }}</small></span></a>{% endfor %}
+    </nav>
+
+    <form id="printLayoutForm" method="post" action="{{ url_for('print_layouts', document=document) }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="document" value="{{ document }}">
+        <input type="hidden" name="action" id="layoutAction" value="save">
+        <input type="hidden" name="layout_json" id="layoutJsonField">
+
+        <div class="pla-shell">
+            <section class="pla-workspace">
+                <div class="pla-workspace__bar"><div><strong>پیش‌نمایش زنده</strong><span id="plaPaperHint">حرکت و تغییر اندازه با مقیاس واقعی میلی‌متر</span></div><div class="pla-actions"><a class="btn btn--outline btn-sm" id="plaPreviewLink" href="{{ active_preview_url }}" target="_blank" rel="noopener"><i class="cil-eye" aria-hidden="true"></i> مشاهده چاپ واقعی</a><button class="btn btn--primary btn-sm" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره چیدمان</button></div></div>
+                <div class="pla-canvas-wrap"><div class="pla-paper" id="plaPaper" data-paper-kind="{{ document_kind }}">
+                    {% if document_kind == 'slip' %}
+                    <div class="pla-slip-sample" id="plaSlipSample">
+                        <div class="pla-element" data-element-key="badge">رسید دریافت</div>
+                        <div class="pla-element" data-element-key="header"><strong>مدرسه استثنایی حمید باخرز</strong><span>عنوان برگه و توضیح کوتاه</span></div>
+                        <div class="pla-element" data-element-key="routing">معلم: نمونه · کلاس: اول</div>
+                        <div class="pla-element" data-element-key="lead">ولی گرامی دانش‌آموز <b>زهرا آزمونی</b>؛ مبلغ این برگه در حساب مالی ثبت شده است و متن نامه اینجا دیده می‌شود.</div>
+                        <div class="pla-element" data-element-key="table"><table><tr><th>مبلغ مصوب</th><th>پرداختی</th><th>مانده</th></tr><tr><td>۱٬۰۰۰٬۰۰۰</td><td>۴۰۰٬۰۰۰</td><td>۶۰۰٬۰۰۰</td></tr></table></div>
+                        <div class="pla-element" data-element-key="bank">شماره کارت: ۰۰۰۰ · شماره حساب: ۰۰۰۰</div>
+                        <div class="pla-element" data-element-key="signatures"><span>امضاء ولی</span><span>مهر و امضاء</span></div>
+                        <div class="pla-element" data-element-key="footer">تاریخ چاپ: ۱۴۰۴/۰۷/۰۱ · واحد مالی مدرسه</div>
+                    </div>
+                    {% else %}
+                    <div class="pla-driver-sample" id="plaDriverSample"><header><strong>جدول سرویس دانش‌آموزان بر اساس مقصد</strong><small>مدرسه استثنایی حمید باخرز · تاریخ چاپ</small></header><div class="pla-driver-table"><div class="pla-driver-row pla-driver-row--head"><span>راننده</span><span>تماس</span><span>خودرو</span><span>دانش‌آموزان</span></div><div class="pla-driver-row"><span>علی رضایی</span><span>0912...</span><span>ون</span><span>زهرا آزمونی · مریم نمونه · حسین آزمون‌پور</span></div><div class="pla-driver-row"><span>محمد احمدی</span><span>0935...</span><span>مینی‌بوس</span><span>علی نمونه · سارا آزمایشی</span></div></div><small class="pla-driver-footer">تعداد مقصدها: ۳</small></div>
+                    {% endif %}
+                </div></div>
+                <p class="pla-help"><i class="cil-info" aria-hidden="true"></i> در چاپ واقعی، مقدارهای واقعی جایگزین نمونه می‌شوند. اگر کادرها هم‌پوشانی دارند، از پنل مختصات و ابعاد اصلاح کنید.</p>
+            </section>
+
+            <aside class="pla-controls">
+                <fieldset class="pla-card"><legend>صفحه A4</legend><div class="pla-control-grid pla-control-grid--two"><label>جهت چاپ<select id="layoutOrientation"><option value="portrait">عمودی</option><option value="landscape">افقی</option></select></label><label>واحد اندازه‌گیری<input value="میلی‌متر" disabled></label></div><div class="pla-section-label">حاشیه‌های کاغذ</div><div class="pla-control-grid pla-control-grid--four">{% for side, label in [('top','بالا'),('right','راست'),('bottom','پایین'),('left','چپ')] %}<label>{{ label }}<input type="number" min="0" max="40" step="0.01" data-margin-side="{{ side }}"></label>{% endfor %}</div></fieldset>
+
+                {% if document_kind == 'slip' %}
+                <fieldset class="pla-card"><legend>تعداد و ابعاد برگه‌ها</legend><div class="pla-control-grid pla-control-grid--two"><label>ستون در صفحه<input type="number" min="1" max="6" step="1" data-grid-field="columns"></label><label>ردیف در صفحه<input type="number" min="1" max="8" step="1" data-grid-field="rows"></label><label>عرض هر برگه<input type="number" min="20" max="205" step="0.01" data-grid-field="width"></label><label>ارتفاع هر برگه<input type="number" min="20" max="285" step="0.01" data-grid-field="height"></label><label>فاصله افقی<input type="number" min="0" max="30" step="0.01" data-grid-field="gap_x"></label><label>فاصله عمودی<input type="number" min="0" max="30" step="0.01" data-grid-field="gap_y"></label><label>جابجایی افقی<input type="number" min="-80" max="80" step="0.01" data-grid-field="offset_x"></label><label>جابجایی عمودی<input type="number" min="-80" max="80" step="0.01" data-grid-field="offset_y"></label></div></fieldset>
+                <fieldset class="pla-card"><legend>اجزای برگه</legend><p class="pla-card-note">نمایش، جایگاه، اندازه و قلم هر بخش را جدا تنظیم کنید.</p><div class="pla-element-controls">{% for key, label in element_labels.items() %}<div class="pla-element-control" data-element-control="{{ key }}"><label class="pla-element-control__title"><input type="checkbox" data-element-field="visible"><span>{{ label }}</span></label><div class="pla-control-grid pla-control-grid--five"><label>X<input type="number" step="0.01" data-element-field="x"></label><label>Y<input type="number" step="0.01" data-element-field="y"></label><label>عرض<input type="number" min="1" step="0.01" data-element-field="w"></label><label>ارتفاع<input type="number" min="1" step="0.01" data-element-field="h"></label><label>قلم<input type="number" min="5" max="30" step="0.01" data-element-field="font"></label></div></div>{% endfor %}</div></fieldset>
+                {% else %}
+                <fieldset class="pla-card"><legend>قرارگیری جدول</legend><div class="pla-control-grid pla-control-grid--two"><label>فاصله از راست<input type="number" min="0" max="120" step="0.01" data-table-field="x"></label><label>فاصله از بالا<input type="number" min="0" max="120" step="0.01" data-table-field="y"></label><label>عرض جدول<input type="number" min="50" max="297" step="0.01" data-table-field="width"></label><label>قلم جدول<input type="number" min="5" max="18" step="0.01" data-table-field="font_size"></label><label>قلم عنوان<input type="number" min="8" max="24" step="0.01" data-table-field="header_font_size"></label><label>فاصله سطر<input type="number" min="0" max="8" step="0.01" data-table-field="row_padding"></label><label>ستون دانش‌آموزان<input type="number" min="1" max="8" step="1" data-table-field="student_columns"></label><label>اندازه عکس<input type="number" min="0" max="25" step="0.01" data-table-field="photo_size"></label></div><div class="pla-check-row"><label><input type="checkbox" data-table-field="show_photos"> نمایش عکس</label><label><input type="checkbox" data-table-field="show_header"> نمایش سربرگ</label><label><input type="checkbox" data-table-field="show_footer"> نمایش پابرگ</label></div></fieldset>
+                {% endif %}
+
+                <div class="pla-card pla-card--actions"><button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره تنظیمات</button><button class="btn btn--outline" type="button" id="resetLayout"><i class="cil-reload" aria-hidden="true"></i> بازگشت به پیش‌فرض</button></div>
+            </aside>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='print_layouts.js') }}" defer></script>{% endblock %}

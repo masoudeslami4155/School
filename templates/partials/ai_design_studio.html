@@ -1,0 +1,24 @@
+<section id="aiDesignStudio" data-endpoint="{{ url_for('ai_documents') }}" data-csrf="{{ csrf_token() }}" style="margin:1.5rem 0;padding:clamp(1rem,3vw,2rem);border:1px solid #c6d5df;border-radius:20px;background:linear-gradient(125deg,#edf7fa,#fff);color:#18364a">
+  <details>
+    <summary style="font-size:1.2rem;font-weight:700;cursor:pointer">استودیوی طراحی هوشمند — نامه و جدول با HTML/CSS</summary>
+    <p>مدل، طرح را می‌سازد؛ متن نامه و سلول‌های جدول بدون ارسال به مدل، در دستگاهِ میزبان برنامه داخل طرح قرار می‌گیرند. هر خروجی موفق به‌صورت پیش‌نویس در بایگانی شما ذخیره می‌شود.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:1rem">
+      <label>نوع خروجی<select id="designKind"><option value="letter">نامهٔ آزاد</option><option value="table">جدول داده</option></select></label>
+      <label>عنوان<input id="designTitle" maxlength="100" placeholder="مثلاً دعوت‌نامهٔ جلسهٔ اولیا"></label>
+      <label>سبک پیشنهادی<select id="designStyle"><option>رسمی و مدرن؛ سرمه‌ای و فیروزه‌ای، سربرگ ظریف و فضای سفید کافی</option><option>مینیمال سیاه‌وسفید، مناسب چاپ کم‌هزینه، خطوط نازک و تایپوگرافی خوانا</option><option>گزارش مدیریتی، سبز تیره و طلایی ملایم، کادرهای منظم و رسمی</option></select></label>
+    </div>
+    <label style="display:block;margin-top:1rem">متن نامه / داده‌های جدول<textarea id="designBody" rows="7" maxlength="20000" style="width:100%" placeholder="متن نامه را بنویسید؛ برای جدول، سلول‌ها را از Excel کپی کنید. سطر اول عنوان ستون‌ها باشد."></textarea></label>
+    <small>حداکثر ۲۰۰ ردیف و ۲۰ ستون؛ جداکنندهٔ ستون‌ها Tab است. برای نگارش خود متن با AI، در گفت‌وگوی دستیار درخواست نامه بدهید. برای جدول پایگاه داده، ابتدا از دستیار جستجو و سپس طراحی گزارش بخواهید.</small>
+    <label style="display:block;margin-top:1rem">توضیح طراحی<textarea id="designBrief" rows="2" maxlength="1500" style="width:100%" placeholder="مثلاً سربرگ ساده، حاشیهٔ آبی، گوشه‌های گرد؛ اطلاعات شخصی را اینجا ننویسید."></textarea></label>
+    <label style="display:block;margin:.7rem 0"><input id="designConsent" type="checkbox"> اگر مدل اینترنتی است، با ارسال فقط شرح طراحی نمایش‌داده‌شده موافقم (مشروط به سیاست مدیر).</label>
+    <div style="display:flex;flex-wrap:wrap;gap:.5rem"><button type="button" id="designPayload" class="btn btn--outline">مشاهدهٔ دادهٔ ارسالی</button><button type="button" id="designGenerate" class="btn btn--primary">طراحی با AI و ذخیرهٔ پیش‌نویس</button><a class="btn btn--outline" href="{{ url_for('ai_documents') }}#documentArchive">بایگانی اسناد من</a></div>
+    <pre id="designPayloadView" hidden style="white-space:pre-wrap;overflow-wrap:anywhere"></pre>
+    <p id="designStatus" role="status" style="white-space:pre-wrap"></p>
+    <div id="designOutput" hidden>
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap"><button type="button" data-design-export="pdf_design" class="btn btn--primary">PDF گرافیکی</button><button type="button" data-design-export="docx" class="btn btn--outline">Word</button><button type="button" data-design-export="xlsx" class="btn btn--outline">Excel جدول</button><button type="button" id="designPrint" class="btn btn--outline">چاپ / ذخیره به PDF</button></div>
+      <p>PDF و چاپ، طرح HTML/CSS را حفظ می‌کنند. Word و Excel خروجی قابل‌ویرایش با ساختار جدول هستند، نه کپی دقیق ظاهر. PDF گرافیکی نیازمند نصب Chromium است. پیش‌نویس را پیش از صدور بررسی کنید.</p>
+      <iframe id="designPreview" title="پیش‌نمایش طراحی" sandbox="allow-same-origin allow-modals" style="width:100%;height:650px;border:1px solid #cbd5e1;background:white;border-radius:12px"></iframe>
+      <details><summary>ویرایش پیشرفتهٔ HTML/CSS</summary><p>فقط HTML با CSS درون‌خطی؛ اسکریپت و منابع خارجی حذف می‌شوند. ویرایش شامل داده‌های جدول هم می‌شود؛ صحت محتوا را بررسی کنید.</p><textarea id="designSource" rows="12" dir="ltr" style="width:100%;font-family:monospace"></textarea><button type="button" id="designSave" class="btn btn--primary">ذخیرهٔ نسخه و تازه‌سازی پیش‌نمایش</button></details>
+    </div>
+  </details>
+</section>

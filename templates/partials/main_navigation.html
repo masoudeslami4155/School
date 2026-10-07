@@ -1,0 +1,189 @@
+<div id="sidebarOverlay" class="sidebar-overlay no-print" hidden></div>
+<nav class="dashboard-nav no-print" id="mainSidebar" aria-label="دسترسی‌های اصلی">
+    <div class="dashboard-nav__brand">
+        <span class="dashboard-nav__logo" role="button" tabindex="0" aria-label="باز کردن منو"><i class="cil-school" aria-hidden="true"></i></span>
+        <span class="dashboard-nav__brand-text"><strong>{{ config.SCHOOL_NAME }}</strong><small>{% if current_role == 'admin' %}مدیر سیستم{% elif current_role == 'manager' %}مدیر مدرسه{% else %}معلم{% endif %}</small></span>
+    </div>
+    <label class="dashboard-nav__search"><i class="cil-search" aria-hidden="true"></i><input id="sidebarSearch" type="search" placeholder="جستجو در منو..." autocomplete="off"></label>
+    <div class="dashboard-nav__head"><span><i class="cil-menu" aria-hidden="true"></i> دسترسی سریع</span></div>
+    <a class="dashboard-nav__home" href="{{ url_for('index') }}" aria-current="page"><span class="nav-icon"><i class="cil-home" aria-hidden="true"></i></span><span class="nav-label">صفحه اصلی</span></a>
+    <a class="dashboard-nav__settings{% if request.endpoint == 'ui_preferences' %} is-active{% endif %}" href="{{ url_for('ui_preferences') }}"><span class="nav-icon"><i class="cil-settings" aria-hidden="true"></i></span><span class="nav-label">تنظیمات نمایش و رابط کاربری</span></a>
+    {% if current_role in ['admin', 'manager'] %}<a href="{{ url_for('student_certificate') }}"><span class="nav-icon"><i class="cil-description" aria-hidden="true"></i></span><span class="nav-label">صدور گواهی اشتغال به تحصیل</span></a>{% endif %}
+    {% if current_role in ['admin', 'manager'] %}<a href="{{ url_for('ai_documents') }}"><span class="nav-icon"><i class="cil-color-palette" aria-hidden="true"></i></span><span class="nav-label">طراح هوشمند اسناد چاپی</span></a>{% endif %}
+    <a href="{{ url_for('ai_agent') }}"><span class="nav-icon"><i class="cil-message-dot" aria-hidden="true"></i></span><span class="nav-label">دستیار هوشمند</span></a>
+    {% if current_role == 'teacher' %}
+        <a href="{{ url_for('attendance_students') }}"><span class="nav-icon"><i class="cil-user-follow" aria-hidden="true"></i></span><span class="nav-label">حضور و غیاب کلاس من</span></a>
+        <a href="{{ url_for('student_columns') }}"><span class="nav-icon"><i class="cil-list" aria-hidden="true"></i></span><span class="nav-label">جدول ستون‌های دلخواه</span></a>
+    {% else %}
+        <details class="dashboard-nav__group"><summary><span class="nav-icon"><i class="cil-book" aria-hidden="true"></i></span><span class="nav-label">دانش‌آموزان</span></summary><div class="dashboard-nav__menu">
+            <a href="{{ url_for('add_student') }}"><span class="nav-icon"><i class="cil-plus" aria-hidden="true"></i></span><span class="nav-label">ثبت دانش‌آموز</span></a>
+            <a href="{{ url_for('class_management') }}"><span class="nav-icon"><i class="cil-list" aria-hidden="true"></i></span><span class="nav-label">کلاس‌بندی هوشمند</span></a>
+            <a href="{{ url_for('features_hub') }}"><span class="nav-icon"><i class="cil-info" aria-hidden="true"></i></span><span class="nav-label">مرکز امکانات سامانه</span></a>
+            <a href="{{ url_for('graduates') }}"><span class="nav-icon"><i class="cil-education" aria-hidden="true"></i></span><span class="nav-label">فارغ‌التحصیلان</span></a>
+            <a href="{{ url_for('dropouts') }}"><span class="nav-icon"><i class="cil-ban" aria-hidden="true"></i></span><span class="nav-label">ترک‌تحصیلان</span></a>
+            <a href="{{ url_for('other_inactive') }}"><span class="nav-icon"><i class="cil-diamond" aria-hidden="true"></i></span><span class="nav-label">سایر دانش‌آموزان</span></a>
+            <a href="{{ url_for('student_ages') }}"><span class="nav-icon"><i class="cil-calendar-check" aria-hidden="true"></i></span><span class="nav-label">محاسبه سن دانش‌آموزان</span></a>
+            <a href="{{ url_for('student_columns') }}"><span class="nav-icon"><i class="cil-list" aria-hidden="true"></i></span><span class="nav-label">جدول ستون‌های دلخواه</span></a>
+            <a href="{{ url_for('list_for_folders') }}"><span class="nav-icon"><i class="cil-tags" aria-hidden="true"></i></span><span class="nav-label">لیست چسباننده به پشت پرونده</span></a>
+        </div></details>
+        <details class="dashboard-nav__group"><summary><span class="nav-icon"><i class="cil-user-follow" aria-hidden="true"></i></span><span class="nav-label">حضور و غیاب</span></summary><div class="dashboard-nav__menu">
+            <a href="{{ url_for('attendance_students') }}"><span class="nav-icon"><i class="cil-user-follow" aria-hidden="true"></i></span><span class="nav-label">دانش‌آموزان</span></a>
+            <a href="{{ url_for('attendance_teachers') }}"><span class="nav-icon"><i class="cil-briefcase" aria-hidden="true"></i></span><span class="nav-label">معلمان</span></a>
+            <a href="{{ url_for('excessive_absences') }}"><span class="nav-icon"><i class="cil-warning" aria-hidden="true"></i></span><span class="nav-label">غیبت‌های نیازمند پیگیری</span></a>
+            <a href="{{ url_for('attendance_report') }}"><span class="nav-icon"><i class="cil-chart" aria-hidden="true"></i></span><span class="nav-label">گزارش دانش‌آموزان</span></a>
+            <a href="{{ url_for('teacher_attendance_report') }}"><span class="nav-icon"><i class="cil-chart" aria-hidden="true"></i></span><span class="nav-label">گزارش معلمان</span></a>
+        </div></details>
+        <details class="dashboard-nav__group"><summary><span class="nav-icon"><i class="cil-briefcase" aria-hidden="true"></i></span><span class="nav-label">کارکنان و کاربران</span></summary><div class="dashboard-nav__menu">
+            <a href="{{ url_for('teachers') }}"><span class="nav-icon"><i class="cil-briefcase" aria-hidden="true"></i></span><span class="nav-label">فهرست کارکنان</span></a>
+            <a href="{{ url_for('service_drivers') }}"><span class="nav-icon"><i class="cil-car-alt" aria-hidden="true"></i></span><span class="nav-label">رانندگان سرویس</span></a>
+            <a href="{{ url_for('contact_book') }}"><span class="nav-icon"><i class="cil-phone" aria-hidden="true"></i></span><span class="nav-label">دفترچه تلفن مدرسه</span></a>
+            <a href="{{ url_for('add_teacher') }}"><span class="nav-icon"><i class="cil-plus" aria-hidden="true"></i></span><span class="nav-label">ثبت کارمند/معلم</span></a>
+            {% if current_role in ['admin', 'manager'] %}<a href="{{ url_for('student_field_settings') }}"><span class="nav-icon"><i class="cil-puzzle" aria-hidden="true"></i></span><span class="nav-label">فیلدهای فرم دانش‌آموز</span></a>{% endif %}
+            {% if current_role == 'admin' %}<a href="{{ url_for('users') }}"><span class="nav-icon"><i class="cil-lock-locked" aria-hidden="true"></i></span><span class="nav-label">مدیریت کاربران و دسترسی</span></a>{% endif %}
+        </div></details>
+        <details class="dashboard-nav__group"><summary><span class="nav-icon"><i class="cil-chart" aria-hidden="true"></i></span><span class="nav-label">گزارش و مدیریت</span></summary><div class="dashboard-nav__menu">
+            <a href="{{ url_for('statistics') }}"><span class="nav-icon"><i class="cil-chart-line" aria-hidden="true"></i></span><span class="nav-label">آمار مدرسه</span></a>
+            <a href="{{ url_for('data_quality') }}"><span class="nav-icon"><i class="cil-puzzle" aria-hidden="true"></i></span><span class="nav-label">کیفیت داده‌ها نیازمند بررسی</span></a>
+            <a href="{{ url_for('export_excel', q=request.args.get('q',''), grade=request.args.get('grade',''), class_name=request.args.get('class_name',''), sida_class=request.args.get('sida_class',''), gender=request.args.get('gender',''), teacher_code=request.args.get('teacher_code',''), status=request.args.get('status','active')) }}"><span class="nav-icon"><i class="cil-cloud-download" aria-hidden="true"></i></span><span class="nav-label">خروجی اکسلِ فیلترشده</span></a>
+            <a href="{{ url_for('calendar') }}"><span class="nav-icon"><i class="cil-calendar" aria-hidden="true"></i></span><span class="nav-label">تقویم، کارها و آلارم</span></a>
+            <a href="{{ url_for('monthly_service') }}"><span class="nav-icon"><i class="cil-credit-card" aria-hidden="true"></i></span><span class="nav-label">پرداخت و سرویس</span></a>
+            <a href="{{ url_for('report_print_layouts', document='attendance_students') }}"><span class="nav-icon"><i class="cil-settings" aria-hidden="true"></i></span><span class="nav-label">استودیو طراحی چاپ و گزارش‌ها</span></a>
+            <a href="{{ url_for('financial_help') }}"><span class="nav-icon"><i class="cil-handshake" aria-hidden="true"></i></span><span class="nav-label">کمک‌های مالی</span></a>
+            <a href="{{ url_for('discipline') }}"><span class="nav-icon"><i class="cil-balance-scale" aria-hidden="true"></i></span><span class="nav-label">انضباط</span></a>
+            <a href="{{ url_for('support_plans') }}"><span class="nav-icon"><i class="cil-heart" aria-hidden="true"></i></span><span class="nav-label">مشاوره و توانبخشی</span></a>
+            <a href="{{ url_for('meetings') }}"><span class="nav-icon"><i class="cil-notes" aria-hidden="true"></i></span><span class="nav-label">صورت‌جلسه‌های رسمی مدرسه</span></a>
+        </div></details>
+    {% endif %}
+    <div class="dashboard-nav__bottom">
+        <div class="dashboard-nav__separator"></div>
+        <div class="mobile-nav__items" aria-hidden="true">
+            <div class="mobile-nav__row mobile-nav__row--date"><i class="cil-calendar" aria-hidden="true"></i><span class="mobile-nav__date-text">{{ jalali_datetime }}</span></div>
+            {% if current_user %}<div class="mobile-nav__row mobile-nav__row--user"><i class="cil-user" aria-hidden="true"></i><span class="mobile-nav__user-text">{{ current_user }} · {{ {'admin':'مدیر سیستم','manager':'مدیر مدرسه','teacher':'معلم'}.get(current_role,current_role) }}</span></div>{% endif %}
+        </div>
+        {% if current_user %}
+        <a href="{{ url_for('change_password') }}" class="mobile-nav__action mobile-nav__action--pwd" title="تغییر رمز عبور"><i class="cil-lock-locked" aria-hidden="true"></i><span>تغییر رمز</span></a>
+        <button type="button" class="mobile-nav__action mobile-nav__action--logout" onclick="if(confirm('آیا مطمئن هستید؟')){var f=document.createElement('form');f.method='POST';f.action='{{ url_for('logout') }}';var t=document.createElement('input');t.type='hidden';t.name='_csrf_token';t.value='{{ csrf_token() }}';f.appendChild(t);document.body.appendChild(f);f.submit();}" title="خروج از سامانه"><i class="cil-account-logout" aria-hidden="true"></i><span>خروج از سامانه</span></button>
+        {% endif %}
+        <button type="button" class="dashboard-nav__theme" id="sidebarThemeButton"><span><i class="cil-moon" aria-hidden="true"></i><span class="nav-label">حالت تاریک</span></span><span class="dashboard-nav__switch" aria-hidden="true"></span></button>
+    </div>
+</nav>
+<script>
+(function(){
+    var sidebar = document.getElementById('mainSidebar'),
+        overlay = document.getElementById('sidebarOverlay'),
+        logo = sidebar && sidebar.querySelector('.dashboard-nav__logo'),
+        search = document.getElementById('sidebarSearch');
+    if(!sidebar) return;
+    
+    function isMobile(){ return window.innerWidth <= 768; }
+    function isExpanded(){ return sidebar.classList.contains('is-expanded'); }
+    
+    function setExpanded(expanded, focusSearch){
+        var exp = !!expanded;
+        sidebar.classList.toggle('is-expanded', exp);
+        document.body.classList.toggle('nav-expanded', exp);
+        if(overlay){
+            overlay.hidden = !exp;
+        }
+        if(exp){
+            document.body.classList.add('nav-open');
+        } else {
+            document.body.classList.remove('nav-open');
+        }
+        if(logo) logo.setAttribute('aria-expanded', exp ? 'true' : 'false');
+        var trigger = document.getElementById('mobileMenuTrigger');
+        if(trigger) trigger.setAttribute('aria-expanded', exp ? 'true' : 'false');
+        if(focusSearch && search){ window.setTimeout(function(){ search.focus(); }, 40); }
+    }
+    
+    function closeSidebar(){ setExpanded(false); }
+    function openSidebar(focusSearch){ setExpanded(true, focusSearch); }
+    function toggleSidebar(){ setExpanded(!isExpanded()); }
+
+    window.openSidebar = openSidebar;
+    window.closeSidebar = closeSidebar;
+    window.toggleSidebar = toggleSidebar;
+
+    function expandFromControl(control, event){
+        if(isExpanded()) return false;
+        if(event) event.preventDefault();
+        var group = control && control.closest ? control.closest('details') : null;
+        if(group) group.open = true;
+        setExpanded(true, control === search || (control && control.closest && control.closest('.dashboard-nav__search')));
+        return true;
+    }
+
+    setExpanded(false);
+
+    sidebar.addEventListener('click', function(event){
+        var control = event.target && event.target.closest ? event.target.closest('a,summary,.dashboard-nav__search,.dashboard-nav__logo,.dashboard-nav__logout,.dashboard-nav__theme') : null;
+        if(!control || !sidebar.contains(control)) return;
+        if(!isExpanded()){
+            expandFromControl(control, event);
+            return;
+        }
+    });
+
+    logo && logo.addEventListener('keydown', function(event){
+        if(event.key === 'Enter' || event.key === ' '){
+            event.preventDefault();
+            setExpanded(true);
+        }
+    });
+
+    if(overlay) overlay.addEventListener('click', closeSidebar);
+
+    document.addEventListener('click', function(event){
+        if(!isExpanded()) return;
+        var trigger = document.getElementById('mobileMenuTrigger');
+        if(trigger && (trigger === event.target || trigger.contains(event.target))){
+            return; // let trigger handler manage it
+        }
+        if(!sidebar.contains(event.target) && event.target !== overlay){
+            closeSidebar();
+        }
+    });
+
+    document.addEventListener('keydown', function(event){
+        if(event.key === 'Escape' && isExpanded()){
+            event.preventDefault();
+            closeSidebar();
+        }
+    });
+
+    window.addEventListener('resize', function(){
+        if(!isMobile() && document.body.classList.contains('nav-open')){
+            closeSidebar();
+        }
+    });
+})();
+</script>
+<script>
+(function(){
+    var input=document.getElementById('sidebarSearch'),
+        nav=document.getElementById('mainSidebar'),
+        themeButton=document.getElementById('sidebarThemeButton');
+    if(input&&nav){
+        input.addEventListener('input',function(){
+            var q=this.value.trim().toLocaleLowerCase('fa');
+            nav.querySelectorAll(':scope > a, :scope > details, .dashboard-nav__menu a').forEach(function(item){
+                if(item.classList && item.classList.contains('mobile-nav__action')) return;
+                var text=item.textContent.toLocaleLowerCase('fa');
+                item.hidden=!!q&&!text.includes(q);
+                if(q&&item.matches('details')&&text.includes(q)) item.open=true;
+            });
+        });
+    }
+    nav && nav.querySelectorAll('a, summary, button').forEach(function(item){
+        var label=item.querySelector('.nav-label');
+        if(label && !item.title) item.title=label.textContent.trim();
+    });
+    if(themeButton){
+        themeButton.addEventListener('click',function(){
+            var t=document.getElementById('themeToggle');
+            if(t){t.click();}
+            else{document.documentElement.dataset.theme=document.documentElement.dataset.theme==='dark'?'light':'dark';}
+        });
+    }
+})();
+</script>

@@ -1,0 +1,120 @@
+/* ============================================================
+   Liquid metal button — vanilla CSS/JS equivalent of the React
+   "LiquidMetalButton" (shadcn) component.
+   No build step, no npm, no WebGL: works fully offline.
+   Markup:
+     <button class="lmb" data-liquid-button>
+       <span class="lmb__ring"></span>
+       <span class="lmb__metal"></span>
+       <span class="lmb__core"></span>
+       <span class="lmb__label">متن دکمه</span>
+     </button>
+   Modes:  .lmb--icon  (46px circle)
+   ============================================================ */
+.lmb{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;
+    min-width:142px;min-height:46px;padding:0;border:0;background:transparent;
+    font-family:inherit;font-size:14px;font-weight:700;text-decoration:none;
+    cursor:pointer;isolation:isolate;overflow:hidden;border-radius:100px;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.lmb--icon{min-width:46px;width:46px}
+.lmb--full{width:100%;min-width:0}
+.lmb--sm{min-height:38px;font-size:12.5px}
+.lmb--sm .lmb__label{padding:0 14px}
+.lmb__ring,.lmb__core,.lmb__metal{position:absolute;border-radius:100px;pointer-events:none}
+.lmb__ring{inset:0;transition:box-shadow .28s ease}
+.lmb__metal{
+    inset:2px;overflow:hidden;
+    background:
+        linear-gradient(115deg,#f2f4f7 0%,#b9c0c9 18%,#fbfcfe 34%,#8f98a4 52%,#eef1f5 70%,#a8b1bc 86%,#f7f9fb 100%);
+    background-size:260% 260%;
+    animation:lmb-flow 7s linear infinite;
+}
+.lmb__metal::after{    /* moving metallic shine */
+    content:'';position:absolute;inset:-60%;
+    background:conic-gradient(from 0deg,
+        rgba(255,255,255,0) 0deg,rgba(255,255,255,.85) 26deg,rgba(255,255,255,0) 62deg,
+        rgba(120,132,148,.55) 140deg,rgba(255,255,255,0) 200deg,
+        rgba(255,255,255,.7) 268deg,rgba(255,255,255,0) 320deg);
+    mix-blend-mode:screen;animation:lmb-spin 5.5s linear infinite;
+}
+.lmb__metal::before{   /* liquid texture highlights */
+    content:'';position:absolute;inset:0;
+    background:
+        radial-gradient(60% 90% at 22% 30%,rgba(255,255,255,.55),rgba(255,255,255,0) 60%),
+        radial-gradient(50% 80% at 78% 72%,rgba(90,100,115,.45),rgba(255,255,255,0) 62%);
+    animation:lmb-swirl 9s ease-in-out infinite alternate;
+}
+.lmb__core{
+    inset:2px;border-radius:100px;
+    background:linear-gradient(180deg,rgba(32,32,32,.92) 0%,rgba(0,0,0,.96) 100%);
+    opacity:.88;transition:opacity .3s ease,inset .3s ease;
+}
+.lmb__label{
+    position:relative;z-index:4;display:inline-flex;align-items:center;gap:7px;
+    color:#f4f7fb;font-weight:700;letter-spacing:.2px;white-space:nowrap;
+    padding:0 22px;text-shadow:0 1px 2px rgba(0,0,0,.55);
+    transition:color .3s ease,transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.lmb--icon .lmb__label{padding:0}
+.lmb__label i{font-size:15px}
+/* hover: faster flow, higher contrast, lifted ring */
+.lmb:hover .lmb__metal,.lmb:focus-visible .lmb__metal{animation-duration:2.4s}
+.lmb:hover .lmb__metal::after,.lmb:focus-visible .lmb__metal::after{animation-duration:2s}
+.lmb:hover .lmb__key-lift,.lmb:hover .lmb__ring,
+.lmb:focus-visible .lmb__ring{
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,.42),
+        0 12px 6px rgba(0,0,0,.05),
+        0 8px 5px rgba(0,0,0,.10),
+        0 4px 4px rgba(0,0,0,.16),
+        0 1px 2px rgba(0,0,0,.22);
+}
+.lmb:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+.lmb:not(:hover):not(:focus-visible) .lmb__ring{
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,.32),
+        0 36px 14px rgba(0,0,0,.02),
+        0 20px 12px rgba(0,0,0,.08),
+        0 9px 9px rgba(0,0,0,.12),
+        0 2px 5px rgba(0,0,0,.16);
+}
+/* pressed */
+.lmb.is-pressed{transform:translateY(1px)}
+.lmb.is-pressed .lmb__ring{
+    box-shadow:0 0 0 1px rgba(0,0,0,.5),0 1px 2px rgba(0,0,0,.3);
+}
+.lmb.is-pressed .lmb__core{
+    opacity:1;box-shadow:inset 0 2px 4px rgba(0,0,0,.45),inset 0 1px 2px rgba(0,0,0,.35);
+}
+.lmb.is-pressed .lmb__label{transform:scale(.98)}
+.lmb.is-busy{pointer-events:none;opacity:.75}
+/* click ripple */
+.lmb__ripple{
+    position:absolute;z-index:5;width:22px;height:22px;border-radius:50%;
+    background:radial-gradient(circle,rgba(255,255,255,.55) 0%,rgba(255,255,255,0) 70%);
+    transform:translate(-50%,-50%) scale(0);animation:lmb-ripple .6s ease-out forwards;pointer-events:none;
+}
+@keyframes lmb-ripple{0%{transform:translate(-50%,-50%) scale(0);opacity:.75}100%{transform:translate(-50%,-50%) scale(4.2);opacity:0}}
+@keyframes lmb-flow{0%{background-position:0% 50%}100%{background-position:260% 50%}}
+@keyframes lmb-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes lmb-swirl{0%{transform:translate3d(-3%,-2%,0) scale(1.05)}100%{transform:translate3d(3%,2%,0) scale(1.12)}}
+/* dark theme: keep metal bright but soften the surrounding shadow */
+html[data-theme="dark"] .lmb:not(:hover):not(:focus-visible) .lmb__ring{
+    box-shadow:0 0 0 1px rgba(255,255,255,.16),0 14px 22px rgba(0,0,0,.45);
+}
+html[data-theme="dark"] .lmb__core{background:linear-gradient(180deg,rgba(10,12,16,.94),rgba(0,0,0,.97))}
+/* mobile: full-width friendly, bigger touch target */
+@media (max-width:560px){
+    .lmb{min-height:48px}
+    .lmb--block{width:100%;min-width:0}
+}
+/* accessibility + print */
+@media (prefers-reduced-motion:reduce){
+    .lmb__metal,.lmb__metal::after,.lmb__metal::before{animation:none!important}
+}
+@media print{
+    .lmb{display:none!important}
+}

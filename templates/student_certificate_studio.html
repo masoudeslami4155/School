@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}استودیو گواهی اشتغال به تحصیل{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='student_certificate_print.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='student_certificate_studio.css') }}">
+{% endblock %}
+{% block page_title %}<i class="cil-settings" aria-hidden="true"></i> طراحی چاپ گواهی اشتغال به تحصیل{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('student_certificate') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به فرم گواهی</a>{% endblock %}
+{% block content %}
+<div class="certificate-studio" id="certificateStudio" data-document="student_certificate" data-studio-document="student_certificate">
+  <section class="certificate-studio__intro">
+    <div><span>تنظیم چیدمان شخصی</span><h2>اجزای گواهی را با ماوس جابه‌جا و اندازه‌گذاری کنید</h2><p>هر جمله، فیلد، عکس یا QR را بکشید؛ دستگیرهٔ گوشه را برای تغییر اندازه بکشید یا مختصات را دقیق وارد کنید. تغییرات فقط برای حساب شما ذخیره می‌شود.</p></div>
+    <strong>A4 / A3</strong>
+  </section>
+  <script type="application/json" id="certificateLayoutData">{{ layout_json|safe }}</script>
+  <script type="application/json" id="certificateDefaultLayoutData">{{ default_layout_json|safe }}</script>
+  <form id="certificateLayoutForm" method="post" action="{{ url_for('report_print_layouts', document='student_certificate') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="document" value="student_certificate">
+    <input type="hidden" name="action" id="certificateLayoutAction" value="save">
+    <input type="hidden" name="layout_json" id="certificateLayoutJson">
+    <div class="certificate-studio__shell">
+      <section class="certificate-studio__workspace">
+        <div class="certificate-studio__bar"><div><strong>پیش‌نمایش قابل ویرایش</strong><span>برای جابه‌جایی، جزء را بکشید؛ برای تغییر اندازه، دستگیرهٔ گوشه را بکشید.</span></div><button class="btn btn--primary btn-sm" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره چیدمان</button></div>
+        <div class="certificate-studio__stage"><div class="certificate-studio-preview">
+          {% set studio_mode = true %}
+          {% set photo_url = '' %}
+          {% set qr_data_uri = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=' %}
+          {% set grade_line = 'سوم · کلاس ۲' %}
+          {% set values = {'certificate_number':'۵۹۳۶۴۸','education_period':'ابتدایی استثنایی','full_name':'زهرا آزمونی','national_id':'۱۲۳۴۵۶۷۸۹۰','father_name':'علی','birth_date':'۱۳۹۵/۰۲/۱۱','academic_year':'۱۴۰۵-۱۴۰۶','school_short_name':'حمید','school_code':'۵۵۶۱۴۴۰۶','study_program':'آموزش ابتدایی','issue_date':'۱۴۰۵/۰۷/۱۱','purpose':'بهزیستی','director_name':'مدیر نمونه'} %}
+          {% include 'partials/student_certificate_artwork.html' %}
+        </div></div>
+        <p class="certificate-studio__hint"><i class="cil-info" aria-hidden="true"></i> نمونه برای طراحی است و اطلاعات دانش‌آموزی ندارد. خروجی چاپ از فرم گواهی با اطلاعات انتخاب‌شده ساخته می‌شود.</p>
+      </section>
+      <aside class="certificate-studio__controls">
+        <fieldset><legend>تنظیمات صفحه</legend>
+<label>اندازه کاغذ<select data-certificate-global="paper_size"><option value="A4">A4</option><option value="A3">A3</option></select></label>
+<label>مقیاس همه نوشته‌ها<input type="number" min="0.8" max="1.6" step="0.01" data-certificate-global="font_scale"></label>
+<label>حاشیه قاب (میلی‌متر)<input type="number" min="5" max="18" step="0.01" data-certificate-global="frame_margin"></label>
+<label>ضخامت قاب (میلی‌متر)<input type="number" min="0" max="2" step="0.01" data-certificate-global="border_width"></label>
+<label>جهت صفحه<select id="certificateOrientation"><option value="portrait">عمودی</option><option value="landscape">افقی</option></select></label><small>قاب گواهی تمام صفحه را با حاشیهٔ امن چاپ پوشش می‌دهد.</small></fieldset>
+        <fieldset><legend>جزء انتخاب‌شده</legend><label>جمله یا فیلد<select id="certificateElementSelect">{% for key,label in element_labels.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select></label>
+          <div class="certificate-studio__numbers">
+            <label>X (%)<input type="number" min="0" max="100" step="0.01" data-certificate-field="x"></label>
+            <label>Y (%)<input type="number" min="0" max="100" step="0.01" data-certificate-field="y"></label>
+            <label>عرض (%)<input type="number" min="1" max="100" step="0.01" data-certificate-field="w"></label>
+            <label>ارتفاع (%)<input type="number" min="1" max="100" step="0.01" data-certificate-field="h"></label>
+            <label>اندازه قلم<input type="number" min="0.3" max="4" step="0.01" data-certificate-field="font"></label>
+          </div>
+          <button type="button" class="btn btn--outline" id="resetCertificateElement">بازنشانی فقط این جزء</button><small>مختصات نسبت به قاب گواهی و اندازهٔ قلم بر اساس عرض قاب است.</small>
+        </fieldset>
+        <div class="certificate-studio__actions"><button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره چیدمان</button><button class="btn btn--outline" id="resetCertificateLayout" type="button"><i class="cil-reload" aria-hidden="true"></i> بازگشت به پیش‌فرض</button></div>
+      </aside>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='student_certificate_studio.js') }}" defer></script>{% endblock %}

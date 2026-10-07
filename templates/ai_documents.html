@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block title %}طراح هوشمند اسناد چاپی{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='ai_documents.css') }}">{% endblock %}
+{% block page_title %}<i class="cil-color-palette" aria-hidden="true"></i> طراح هوشمند اسناد چاپی{% endblock %}
+{% block page_actions %}{% if current_role == 'admin' %}<a class="btn btn--outline" href="{{ url_for('ai_documents_settings') }}"><i class="cil-settings" aria-hidden="true"></i> تنظیم هوش مصنوعی</a>{% endif %}<a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='ai_letter') }}"><i class="cil-cursor-move" aria-hidden="true"></i> استودیوی نامه</a><a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='attendance_students') }}"><i class="cil-layers" aria-hidden="true"></i> استودیو چاپ</a>{% endblock %}
+{% block content %}
+{% include 'partials/ai_design_studio.html' %}
+<div class="ai-docs" id="aiDocuments" data-profile-id="{{ provider.get('id','') }}" data-archive-url="{{ url_for('ai_documents') }}" data-provider="{{ provider.provider }}" data-model="{{ provider.model }}" data-configured="{{ 1 if provider.configured else 0 }}" data-generate-url="{{ url_for('ai_documents_generate') }}" data-generate-letter-url="{{ url_for('ai_documents_generate_letter') }}" data-models-url="{{ url_for('ai_documents_models') }}" data-select-url="{{ url_for('ai_documents_select_provider') }}" data-connection-url="{{ url_for('ai_documents_save_connection') }}" data-csrf="{{ csrf_token() }}">
+  <section class="ai-docs__hero">
+    <div><span>طراحی زنده با اطلاعات انتخابی</span><h2>از درخواست ساده تا سند آمادهٔ چاپ</h2><p>نوع سند، دانش‌آموزان و خواسته‌تان را انتخاب کنید. اطلاعات لازم از پرونده خوانده می‌شود و طرح چاپی بلافاصله پیش‌نمایش می‌شود.</p></div>
+    <div class="ai-docs__status"><i class="cil-cloud{% if provider.provider == 'ollama' %}-download{% endif %}" aria-hidden="true"></i><strong>سرویس و مدل فعال</strong>
+      <div class="ai-docs__picker">
+        <select id="aiProviderSelect" aria-label="سرویس هوش مصنوعی">
+          {% for choice in provider_choices %}<option value="{{ choice.key }}" data-remote="{{ 1 if choice.remote else 0 }}" data-model="{{ choice.model }}"{% if not choice.ready %} disabled{% endif %}{% if choice.key == provider.provider %} selected{% endif %}>{{ choice.label }}</option>{% endfor %}
+        </select>
+        <span class="ai-docs__picker-row" id="aiModelRow"{% if provider.provider != 'ollama' %} hidden{% endif %}>
+          <select id="aiModelSelect" aria-label="مدل Ollama"><option value="{{ provider.model }}">{{ provider.model or 'در حال خواندن مدل‌های Ollama…' }}</option></select>
+          <button class="ai-docs__picker-refresh" id="aiRefreshModels" type="button" aria-label="خواندن دوبارهٔ مدل‌های نصب‌شدهٔ Ollama" title="خواندن دوبارهٔ مدل‌های نصب‌شدهٔ Ollama"><i class="cil-reload" aria-hidden="true"></i></button>
+        </span>
+        <button class="ai-docs__picker-save" id="aiSaveModel" type="button"><i class="cil-save" aria-hidden="true"></i> ذخیرهٔ مدل</button>
+      </div>
+      <span id="aiProviderStatus">{{ provider.provider_label }}{% if provider.model %} — {{ provider.model }}{% else %} — مدل انتخاب نشده{% endif %}</span>
+    </div>
+  </section>
+
+  {% if not provider.configured %}<div class="ai-docs__notice" role="status"><strong>سرویس هنوز آماده نیست.</strong> {% if current_role == 'admin' %}یک مدل Ollama انتخاب کنید یا در کادر «ثبت اتصال سرویس اینترنتی» پایین همین صفحه نشانی و کلید را یک‌بار وارد و ذخیره کنید.{% else %}یک مدل نصب‌شدهٔ Ollama را از کادر بالا انتخاب کنید، یا از مدیر سامانه بخواهید اتصال سرویس اینترنتی را ثبت کند.{% endif %}</div>{% endif %}
+
+  {% if current_role == 'admin' %}
+<nav style="display:flex;gap:.6rem;margin:1rem 0"><a class="btn btn--outline" href="#aiDocumentType">ساخت سند</a><a class="btn btn--outline" href="#documentArchive">پیش‌نویس‌ها و بایگانی من</a></nav>
+  <details class="ai-docs__connection" id="aiConnection" {% if provider.get('id') %}hidden{% endif %}>
+    <summary><i class="cil-cloud-upload" aria-hidden="true"></i> ثبت اتصال سرویس اینترنتی — یک‌بار وارد کنید و ذخیره شود</summary>
+    <div class="ai-docs__connection-body">
+      <div class="ai-docs__connection-grid">
+        <label>سرویس<select id="aiConnectionProvider"><option value="openai-compatible"{% if provider.provider == 'openai-compatible' %} selected{% endif %}>API اینترنتی سازگار با OpenAI</option><option value="gemini"{% if provider.provider == 'gemini' %} selected{% endif %}>Google Gemini (اینترنتی)</option></select></label>
+        <label>نشانی پایهٔ API<input id="aiConnectionUrl" maxlength="300" placeholder="https://api.openai.com/v1" autocomplete="off" spellcheck="false" value="{% if remote %}{{ provider.base_url }}{% endif %}"></label>
+        <label>نام مدل<input id="aiConnectionModel" maxlength="100" placeholder="مثلاً gpt-4o-mini یا gemini-2.0-flash" autocomplete="off" spellcheck="false" value="{% if remote %}{{ provider.model }}{% endif %}"></label>
+        <label>کلید API<input id="aiConnectionKey" type="password" maxlength="500" autocomplete="new-password" placeholder="{% if provider.api_key_set and remote %}کلید ذخیره شده؛ برای حفظ آن خالی بگذارید{% else %}کلید سرویس اینترنتی{% endif %}"></label>
+      </div>
+      <div class="ai-docs__connection-actions">
+        <button class="btn btn--primary" id="aiConnectionSave" type="button"><i class="cil-save" aria-hidden="true"></i> ذخیرهٔ اتصال</button>
+        <span class="ai-docs__connection-status" id="aiConnectionStatus" role="status" hidden></span>
+      </div>
+      <p class="ai-docs__connection-note">کلید API رمزگذاری‌شده ذخیره می‌شود و دوباره نمایش داده نمی‌شود؛ پس از ذخیره، همان سرویس برای حساب شما انتخاب می‌شود و لازم نیست هر بار نشانی یا کلید را وارد کنید. برای Ollama محلی نیازی به این بخش نیست.</p>
+    </div>
+  </details>
+  {% endif %}
+
+  <div class="ai-docs__layout">
+    <section class="ai-docs__form card">
+      <div class="ai-docs__section-head"><span>۱</span><div><h3>سند را مشخص کنید</h3><p>مبالغ رسید فقط از اطلاعات مالی سامانه خوانده می‌شوند.</p></div></div>
+      <label>اتصال اختصاصی این کاربر برای اسناد<select id="documentProfile"><option value="" {% if provider.get('selection_source') != 'user' %}selected{% endif %}>پیش‌فرض مدیر</option><option value="__legacy__" {% if provider.get('selection_source') == 'legacy_user' %}selected{% endif %}>انتخاب شخصی قبلی Ollama / اتصال قبلی</option>{% for id,p in connections.items() %}{% if p.enabled %}<option value="{{ id }}" {% if provider.get('id') == id and provider.get('selection_source') == 'user' %}selected{% endif %}>{{ p.name }} — {{ p.model }}</option>{% endif %}{% endfor %}</select></label><button type="button" class="btn btn--outline" id="resetDocProfile">بازگشت به پیش‌فرض مدیر</button><small>اتصال مؤثر: {{ provider.model }} — {{ {'user':'انتخاب شخصی','default':'پیش‌فرض مدیر','legacy_user':'انتخاب شخصی قبلی','legacy_default':'تنظیمات قبلی'}.get(provider.get('selection_source'),'تنظیمات قبلی') }}</small>
+      <label>نوع سند<select id="aiDocumentType">{% for key,label in document_types.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select></label>
+      <label>اندازهٔ چاپ<select id="aiPaper"><option value="a4-portrait">A4 عمودی</option><option value="a4-landscape">A4 افقی</option><option value="a5">A5</option><option value="card">کارت ۹ × ۵ سانتی‌متر</option></select></label>
+
+      <div class="ai-docs__section-head"><span>۲</span><div><h3>دانش‌آموزان</h3><p id="aiSelectionCount">۰ نفر انتخاب شده</p></div></div>
+      <input id="aiStudentSearch" type="search" placeholder="جست‌وجوی نام، پایه یا کلاس" autocomplete="off">
+      <div style="display:flex;gap:.5rem;flex-wrap:wrap"><select id="studentGradeFilter"><option value="">همهٔ پایه‌ها</option>{% for grade in students|map(attribute='grade')|unique %}<option value="{{ grade or '' }}">{{ grade or 'ثبت نشده' }}</option>{% endfor %}</select><select id="studentClassFilter"><option value="">همهٔ کلاس‌ها</option>{% for class_name in students|map(attribute='class_name')|unique %}<option value="{{ class_name or '' }}">{{ class_name or 'ثبت نشده' }}</option>{% endfor %}</select><button type="button" id="selectVisibleStudents" class="btn btn--outline">انتخاب فهرست فیلترشده</button><button type="button" id="clearStudentSelection" class="btn btn--outline">لغو انتخاب</button></div>
+      <label>سابقهٔ مالی رسید<select id="receiptSource"><option value="">ابتدا یک دانش‌آموز انتخاب کنید</option></select></label>
+      <div class="ai-docs__student-list" id="aiStudentList">
+        {% for student in students %}
+        <label class="ai-docs__student" data-grade="{{ student.grade or '' }}" data-class="{{ student.class_name or '' }}" data-student-search="{{ (student.first_name or '') ~ ' ' ~ (student.last_name or '') ~ ' ' ~ (student.grade or '') ~ ' ' ~ (student.class_name or '') }}">
+          <input type="checkbox" value="{{ student.id }}"><span><strong>{{ student.first_name or '' }} {{ student.last_name or '' }}</strong><small>{{ student.grade or 'پایه ثبت نشده' }} · {{ student.class_name or 'کلاس ثبت نشده' }}</small></span>
+        </label>
+        {% else %}<p class="ai-docs__empty">دانش‌آموز فعالی برای انتخاب وجود ندارد.</p>{% endfor %}
+      </div>
+
+      <div class="ai-docs__section-head"><span>۳</span><div><h3>شرح متن و طرح</h3><p>تاریخ، ساعت و محل را در صورت نیاز بنویسید.</p></div></div>
+      <label>موضوع<input id="documentSubject" maxlength="200" placeholder="موضوع مستقل از متن"></label>
+      <label>مخاطب<input id="documentRecipient" maxlength="200" placeholder="در صورت خالی‌بودن: نام دانش‌آموز"></label>
+      <label>پیوست<input id="documentAttachments" maxlength="200" placeholder="ندارد"></label>
+      <div id="invitationFields"><label>تاریخ دعوت<input id="eventDate" placeholder="۱۴۰۵/۰۷/۲۰"></label><label>ساعت<input id="eventTime" type="time"></label><label>محل<input id="eventPlace" maxlength="200"></label></div>
+      <textarea id="aiBrief" rows="5" maxlength="3000" placeholder="مثلاً: دعوت‌نامهٔ رسمی و گرم برای جلسهٔ اولیا، دوشنبه ساعت ۱۰ در سالن مدرسه. نام دانش‌آموز و پایه را داخل کارت برجسته کن."></textarea>
+      <div class="ai-docs__consent-row" id="aiConsentRow"{% if not remote %} hidden{% endif %}><label class="ai-docs__consent"><input type="checkbox" id="aiExternalConsent"><span>اجازه می‌دهم شرحی که نوشته‌ام و داده‌های لازم برای سند به سرویس اینترنتی برود: نام، پایه، کلاس، نام مدرسه و تاریخ/سال؛ نام پدر برای نامه و دعوت‌نامه؛ و اطلاعات مالی ثبت‌شده برای رسید.</span></label></div>
+      <p class="ai-docs__local-note" id="aiLocalNote"{% if remote %} hidden{% endif %}><i class="cil-lock-locked" aria-hidden="true"></i> اتصال روی Ollama محلی است؛ شرح و اطلاعات سند به سرویس ابری فرستاده نمی‌شود.</p>
+      <button type="button" id="previewPayload" class="btn btn--outline">مشاهدهٔ دادهٔ ارسالی قبل از تأیید</button><pre id="payloadPreview" style="white-space:pre-wrap;max-height:240px;overflow:auto" hidden></pre>
+      <small id="formSavedStatus" role="status"></small>
+      <button class="btn btn--primary ai-docs__generate" id="aiGenerate" type="button" {% if not provider.configured %}disabled{% endif %}><i class="cil-color-palette" aria-hidden="true"></i> ساخت پیش‌نمایش</button>
+      <label class="ai-docs__letter-template">الگوی نامه<select id="aiLetterTemplate">{% for item in letter_templates %}<option value="{{ item.key }}">{{ item.label }}{% if not item.builtin %} (شخصی){% endif %}</option>{% endfor %}</select></label>
+      <button class="btn btn--secondary ai-docs__generate-letter" id="aiGenerateLetter" type="button" disabled><i class="cil-print" aria-hidden="true"></i> ساخت نامهٔ آماده</button>
+      <p class="ai-docs__privacy">اطلاعات تماس، کد ملی، سلامت و عکس از پرونده خودکار ارسال نمی‌شود؛ متن تایپی شما ممکن است شامل این اطلاعات باشد و باید قبل از ارسال بررسی شود. رسید فقط برای یک دانش‌آموز ساخته می‌شود و مبلغ‌ها از پایگاه‌داده می‌آیند؛ هیچ عدد مالی را هوش مصنوعی محاسبه نمی‌کند.</p>
+    </section>
+
+    <section class="ai-docs__preview-card">
+      <div class="ai-docs__preview-head"><div><span>پیش‌نمایش</span><h3 id="aiPreviewTitle">سند شما اینجا نمایش داده می‌شود</h3></div><div class="ai-docs__preview-actions"><button class="btn btn--primary" id="aiPrint" type="button" disabled><i class="cil-print" aria-hidden="true"></i> چاپ</button></div></div>
+      <div class="ai-docs__preview-wrap"><iframe id="aiPreview" title="پیش‌نمایش سند چاپی" sandbox="allow-same-origin allow-modals"></iframe><div class="ai-docs__loading" id="aiLoading" hidden><span class="ai-docs__spinner"></span><strong>در حال طراحی سند…</strong><small>با مدل محلی ممکن است کمی بیشتر طول بکشد.</small></div></div>
+      <div id="documentPrintWarnings" role="alert" style="white-space:pre-wrap;padding:1rem"></div>
+      <div class="ai-docs__error" id="aiError" role="alert" hidden></div>
+    </section>
+  </div>
+</div>
+<section class="card" id="documentArchive" style="padding:1.2rem;margin-top:1rem">
+<h2>پیش‌نویس‌ها و بایگانی اسناد من</h2>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap"><select id="archiveSelect" style="max-width:100%"><option value="">انتخاب سند</option></select><button id="archiveRefresh" type="button" class="btn btn--outline">بازخوانی</button><button id="archiveOpen" type="button" class="btn btn--outline">باز کردن</button></div>
+<p id="archiveStatus" role="status"></p>
+<label>عنوان سند<input id="archiveTitle" maxlength="100"></label>
+<p>ویرایش متن پیش‌نویس در کادر زیر؛ اطلاعات پرونده را با دقت حفظ کنید. رسید مالی و سند صادرشده قفل‌اند.</p>
+<div id="documentEditor" contenteditable="false" dir="rtl" style="border:1px solid #aaa;padding:1rem;max-height:500px;overflow:auto;background:white;color:#111"></div>
+<div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1rem"><button id="saveDocumentEdit" type="button" class="btn btn--primary">ذخیرهٔ ویرایش</button><button id="flowDocument" type="button" class="btn btn--outline">چیدمان خوانای چندصفحه‌ای</button><button id="issueDocument" type="button" class="btn btn--outline">تأیید و صدور شماره</button><button id="voidDocument" type="button" class="btn btn--outline">ابطال</button><button id="deleteDocument" type="button" class="btn btn--outline">حذف پیش‌نویس</button><button id="exportWord" type="button" class="btn btn--outline">Word قابل‌ویرایش</button><button id="exportGraphicPdf" type="button" class="btn btn--primary">PDF گرافیکی</button><button id="exportExcel" type="button" class="btn btn--outline">Excel جدول</button><button id="exportPdf" type="button" class="btn btn--outline">PDF مستقل متنی</button></div>
+<p>برای حفظ دقیق طرح گرافیکی، از دکمهٔ چاپ بالای پیش‌نمایش و Save as PDF استفاده کنید. خروجی مستقیم Word/PDF با صفحه‌آرایی استاندارد متن، مستقل از طرح گرافیکی است.</p>
+<label>اصلاح همین نسخه با هوش مصنوعی<input id="revisionInstruction" maxlength="1500" placeholder="مثلاً فقط بند دوم را رسمی‌تر کن"></label><button id="reviseDocument" type="button" class="btn btn--outline">ساخت نسخهٔ اصلاح‌شده</button>
+<label>نسخه‌های قبلی<select id="documentVersions"></select></label><button id="compareDocument" type="button" class="btn btn--outline">مقایسهٔ متن دو نسخه</button><button id="restoreDocument" type="button" class="btn btn--outline">بازگردانی نسخه</button><pre id="versionComparison" style="white-space:pre-wrap;max-height:250px;overflow:auto"></pre>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='ai_design_studio.js') }}" defer></script><script src="{{ url_for('static', filename='ai_documents.js') }}" defer></script><script src="{{ url_for('static', filename='ai_document_archive.js') }}" defer></script>{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}ویرایش کامل پرداخت{% endblock %}
+{% block page_title %}✏️ ویرایش کامل پرداخت{% endblock %}
+{% block content %}
+<section class="form-card glass-strong">
+  <div class="section-heading"><div><h2>ویرایش اطلاعات پرداخت</h2><p class="muted-text">تمامی فیلدهای رکورد مالی را بررسی و سپس ذخیره کنید.</p></div><span class="badge">شناسه {{ payment.id }}</span></div>
+  <form method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label for="student_code">دانش‌آموز *</label><select id="student_code" name="student_code" required>{% for s in students %}<option value="{{ s.code }}" {% if payment.student_code == s.code %}selected{% endif %}>{{ s.first_name }} {{ s.last_name }} — {{ s.code }}</option>{% endfor %}</select></div>
+      <div class="field-group"><label for="year">سال تحصیلی *</label><input id="year" name="year" value="{{ payment.year or '' }}" required maxlength="10"></div>
+      <div class="field-group"><label for="month">ماه *</label><select id="month" name="month" required>{% for m in ['مهر','آبان','آذر','دی','بهمن','اسفند','فروردین','اردیبهشت','خرداد'] %}<option value="{{ m }}" {% if payment.month == m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label for="service_type">نوع سرویس</label><select id="service_type" name="service_type"><option value="رفت و برگشت" {% if payment.service_type == 'رفت و برگشت' %}selected{% endif %}>رفت و برگشت</option><option value="رفت" {% if payment.service_type == 'رفت' %}selected{% endif %}>فقط رفت</option><option value="برگشت" {% if payment.service_type == 'برگشت' %}selected{% endif %}>فقط برگشت</option></select></div>
+      <div class="field-group"><label for="amount">مبلغ مصوب (تومان) *</label><input id="amount" type="number" name="amount" value="{{ payment.amount or 0 }}" min="0" step="1000" required></div>
+      <div class="field-group"><label for="paid_amount">مبلغ پرداختی (تومان) *</label><input id="paid_amount" type="number" name="paid_amount" value="{{ payment.paid_amount or 0 }}" min="0" step="1000" required></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label for="payment_date">تاریخ پرداخت شمسی</label><input id="payment_date" name="payment_date" value="{{ payment.payment_date or '' }}" placeholder="۱۴۰۵/۰۶/۰۱" data-jdate></div>
+      <div class="field-group"><label for="description">توضیحات</label><textarea id="description" name="description">{{ payment.description or '' }}</textarea></div>
+    </div>
+    <div class="form-actions"><button class="btn btn--primary glass-btn" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره همه تغییرات</button><a class="btn btn--muted" href="{{ url_for('monthly_service') }}">انصراف</a></div>
+  </form>
+</section>
+{% endblock %}

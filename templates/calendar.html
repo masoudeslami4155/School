@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block title %}تقویم، کارها و هشدارها{% endblock %}
+{% block page_title %}<i class="cil-calendar" aria-hidden="true"></i> تقویم مدرسه · کارها و آلارم{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">
+<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>
+{% endblock %}
+
+{% block page_actions %}
+<span class="badge">امروز: {{ today_string }}</span>
+{% if occasion_today %}<span class="badge"><i class="cil-party-popper" aria-hidden="true"></i> {{ occasion_today|map(attribute='title')|join(' · ') }}</span>{% endif %}
+{% endblock %}
+
+{% block content %}
+
+{# =========================================================================
+   ساختار صفحه:
+   ۱) تقویم ماهانه (شبکهٔ گوگل‌مانند)
+   ۲) مناسبت‌های ماه شمسی (persian-holidays)
+   ۳) کارت‌های هشدار (امروز / هفت روز آینده / عقب‌افتاده)
+   ۴) فرم‌های ثبت (رویداد / کار و آلارم)
+   ۵) فهرست کارها و To-Do
+   ۶) فهرست کامل رویدادها
+   ۷) تنظیمات یادآور گزارش پایان روز
+   ۸) داده‌ها و اسکریپت (جزیره‌های JSON + calendar.js)
+   ========================================================================= #}
+
+{# ---- ۱) تقویم ماهانه --------------------------------------------------- #}
+<section class="gcal" aria-label="تقویم ماهانه">
+  <div class="gcal-head">
+    <div class="gcal-title" id="gcalTitle"></div>
+    <div class="gcal-actions no-print">
+      <button type="button" id="gcalPrev" title="ماه قبل">‹</button>
+      <button type="button" id="gcalTodayBtn" class="gcal-today">امروز</button>
+      <a class="gcal-link" href="{{ url_for('daily_digest') }}" title="گزارش پایان روز"><i class="cil-sunset" aria-hidden="true"></i> گزارش پایان روز</a>
+      <button type="button" id="gcalNext" title="ماه بعد">›</button>
+    </div>
+  </div>
+  <div class="gcal-dow"><div>شنبه</div><div>یکشنبه</div><div>دوشنبه</div><div>سه‌شنبه</div><div>چهارشنبه</div><div>پنجشنبه</div><div>جمعه</div></div>
+  <div class="gcal-grid" id="gcalGrid"></div>
+</section>
+
+{# ---- ۲) مناسبت‌های ماه -------------------------------------------------- #}
+<section class="gcal-occasions" aria-label="مناسبت‌های این ماه">
+  <div class="section-heading">
+    <div>
+      <h2><i class="cil-party-popper" aria-hidden="true"></i> مناسبتهای این ماه <span class="badge" id="gcalOccCount"></span></h2>
+      <p class="muted-text">بر پایهٔ پایگاه دادهٔ persian-holidays (نسخهٔ آفلاین داخل برنامه). مناسبتهای «تعطیل رسمی» با رنگ پررنگ مشخص می‌شوند؛ مناسبتهای ثابت به ماه و روز وابسته‌اند نه سال.</p>
+    </div>
+  </div>
+  <div class="gcal-occ-list" id="gcalOccList"></div>
+</section>
+
+{# ---- ۳) کارت‌های هشدار -------------------------------------------------- #}
+<section class="alert-grid" aria-label="هشدارهای تقویم و کارها">
+  <article class="alert-card">
+    <h3><i class="cil-pin" aria-hidden="true"></i> رویداد امروز <span class="badge">{{ today_events|length }}</span></h3>
+    <p>{{ today_string }}</p>
+    <ul>
+      {% for e in today_events %}<li><b>{{ e.time or 'بدون ساعت' }}</b> · {{ e.title }} <span class="event-priority priority-{{ e.priority or 'عادی' }}">{{ e.priority or 'عادی' }}</span></li>{% else %}<li>رویدادی نیست.</li>{% endfor %}
+    </ul>
+  </article>
+  <article class="alert-card alert-card--task">
+    <h3><i class="cil-check" aria-hidden="true"></i> کارهای امروز <span class="badge">{{ today_tasks|length }}</span></h3>
+    <p>To-Do با مهلت امروز</p>
+    <ul>
+      {% for t in today_tasks %}<li><b>{{ t.time_label }}</b> · {{ t.title }} <span class="event-priority priority-{{ t.priority }}">{{ t.priority }}</span>{% if t.alarm_active %} 🔔{% endif %}</li>{% else %}<li>کاری نیست.</li>{% endfor %}
+    </ul>
+  </article>
+  <article class="alert-card">
+    <h3>🗓️ هفت روز آینده <span class="badge">{{ (upcoming|length) + (upcoming_tasks|length) }}</span></h3>
+    <p>رویداد + کار</p>
+    <ul>
+      {% for e in upcoming %}<li><b>{{ e.date }}</b> · {{ e.title }}</li>{% endfor %}
+      {% for t in upcoming_tasks %}<li><b>{{ t.due_date }}</b> · <i class="cil-check" aria-hidden="true"></i> {{ t.title }}</li>{% endfor %}
+      {% if not upcoming and not upcoming_tasks %}<li>موردی نیست.</li>{% endif %}
+    </ul>
+  </article>
+  <article class="alert-card alert-card--danger">
+    <h3>⚠️ عقب‌افتاده <span class="badge">{{ (overdue|length) + (overdue_tasks|length) }}</span></h3>
+    <p>نیازمند پیگیری</p>
+    <ul>
+      {% for e in overdue %}<li><b>{{ e.date }}</b> · {{ e.title }}</li>{% endfor %}
+      {% for t in overdue_tasks %}<li><b>{{ t.due_date }}</b> · <i class="cil-check" aria-hidden="true"></i> {{ t.title }}</li>{% endfor %}
+      {% if not overdue and not overdue_tasks %}<li>مورد عقب‌افتاده‌ای نیست.</li>{% endif %}
+    </ul>
+  </article>
+</section>
+
+{# ---- ۴) فرم‌های ثبت ------------------------------------------------------ #}
+<div class="forms-grid no-print">
+  <section class="calendar-form">
+    <div class="section-heading"><div><h2>ثبت رویداد</h2><p>تاریخ و ساعت را با دکمه انتخاب کنید.</p></div><span class="badge">رویداد</span></div>
+    <form method="post" action="{{ url_for('calendar') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_kind" value="event">
+      <div class="form-row">
+        <div class="field-group"><label for="title">عنوان *</label><input id="title" name="title" required placeholder="جلسه اولیا"></div>
+        <div class="field-group"><label for="date">تاریخ *</label><input id="date" name="date" data-jdate required></div>
+        <div class="field-group"><label for="time">ساعت</label><input id="time" name="time" data-timepicker></div>
+      </div>
+      <div class="form-row">
+        <div class="field-group"><label for="type">نوع</label><select id="type" name="type"><option>امتحان</option><option>جلسه</option><option>اردو</option><option>تعطیلی</option><option selected>سایر</option></select></div>
+        <div class="field-group"><label for="priority">اولویت</label><select id="priority" name="priority"><option value="فوری">فوری</option><option value="مهم">مهم</option><option value="عادی" selected>عادی</option><option value="کم">کم</option></select></div>
+        <div class="field-group"><label for="description">توضیحات</label><textarea id="description" name="description" rows="1"></textarea></div>
+      </div>
+      <button class="btn" type="submit"><i class="cil-save" aria-hidden="true"></i> ثبت رویداد</button>
+    </form>
+  </section>
+
+  <section class="task-form">
+    <div class="section-heading"><div><h2>ثبت کار / To-Do + آلارم</h2><p>ساعت مانند آلارم موبایل تنظیم می‌شود.</p></div><span class="badge">کار و آلارم</span></div>
+    <form method="post" action="{{ url_for('calendar') }}">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_kind" value="task">
+      <div class="form-row">
+        <div class="field-group"><label for="task_title">عنوان کار *</label><input id="task_title" name="title" required placeholder="مثلاً تماس با ولی"></div>
+        <div class="field-group"><label for="due_date">مهلت *</label><input id="due_date" name="due_date" data-jdate required></div>
+      </div>
+      <div class="form-row">
+        <div class="field-group"><label for="due_time">ساعت یادآور</label><input id="due_time" name="due_time" data-timepicker></div>
+        <div class="field-group"><label for="category">دسته</label><select id="category" name="category">{% for c in task_categories %}<option value="{{ c }}" {% if c=='کار' %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+        <div class="field-group"><label for="task_priority">اولویت</label><select id="task_priority" name="priority"><option value="فوری">فوری</option><option value="مهم">مهم</option><option value="عادی" selected>عادی</option><option value="کم">کم</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="field-group"><label for="alarm_minutes">زمان آلارم</label><select id="alarm_minutes" name="alarm_minutes">{% for m in alarm_minute_options %}<option value="{{ m }}" {% if m==30 %}selected{% endif %}>{% if m==0 %}در موعد{% elif m==1440 %}۱ روز قبل{% else %}{{ m }} دقیقه قبل{% endif %}</option>{% endfor %}</select></div>
+        <div class="field-group"><label for="task_description">توضیحات</label><textarea id="task_description" name="description" rows="1"></textarea></div>
+      </div>
+      <div class="form-row">
+        <div class="field-group"><label style="display:flex;align-items:center;gap:8px;margin:0"><input type="checkbox" name="alarm_enabled" value="1" checked style="width:auto"> فعال‌سازی آلارم مرورگر</label></div>
+      </div>
+      <button class="btn" type="submit"><i class="cil-check" aria-hidden="true"></i> ثبت کار و آلارم</button>
+    </form>
+  </section>
+</div>
+
+{# ---- ۵) فهرست کارها ------------------------------------------------------ #}
+<section class="card">
+  <div class="section-heading"><div><h2>فهرست کارها و To-Do</h2><p class="muted-text">علامت‌گذاری انجام‌شده، ویرایش، آلارم و حذف.</p></div><span class="badge">{{ open_tasks|length }} باز · {{ done_tasks|length }} انجام‌شده</span></div>
+  <div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>مهلت</th><th>ساعت</th><th>عنوان</th><th>دسته</th><th>اولویت</th><th>وضعیت</th><th>آلارم</th><th>توضیحات</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for t in tasks %}<tr class="{% if not t.open %}task-done{% endif %}"><td>{{ loop.index }}</td><td><strong>{{ t.due_date }}</strong></td><td>{{ t.time_label }}</td><td>{{ t.title }}</td><td class="event-type">{{ t.category or 'کار' }}</td><td><span class="event-priority priority-{{ t.priority or 'عادی' }}">{{ t.priority or 'عادی' }}</span></td><td>{{ t.status or 'باز' }}</td><td class="{% if t.alarm_active %}alarm-on{% endif %}">{% if t.alarm_active %}🔔 {{ t.alarm_label }}{% else %}{{ t.alarm_label }}{% endif %}</td><td class="event-description">{{ t.description or '—' }}</td><td class="no-print"><div class="event-actions"><form method="post" action="{{ url_for('toggle_task', id=t.id) }}"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--muted" type="submit">{% if t.open %}✓ انجام شد{% else %}بازگشت به باز{% endif %}</button></form><a class="btn btn--muted" href="{{ url_for('edit_task', id=t.id) }}"><i class="cil-pencil" aria-hidden="true"></i></a><form method="post" action="{{ url_for('delete_task', id=t.id) }}" onsubmit="return confirm('این کار حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger" type="submit"><i class="cil-trash" aria-hidden="true"></i></button></form></div></td></tr>
+  {% else %}<tr><td colspan="10" class="empty-state">کاری ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+{# ---- ۶) فهرست رویدادها --------------------------------------------------- #}
+<section class="card">
+  <div class="section-heading"><div><h2>فهرست کامل رویدادها</h2><p class="muted-text">ویرایش، حذف و چاپ A4.</p></div><span class="badge">{{ events|length }} رویداد</span></div>
+  <div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>تاریخ</th><th>ساعت</th><th>عنوان</th><th>نوع</th><th>اولویت</th><th>توضیحات</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for e in events %}<tr><td>{{ loop.index }}</td><td><strong>{{ e.date }}</strong></td><td>{{ e.time or 'ثبت نشده' }}</td><td>{{ e.title }}</td><td class="event-type">{{ e.type or 'سایر' }}</td><td><span class="event-priority priority-{{ e.priority or 'عادی' }}">{{ e.priority or 'عادی' }}</span></td><td class="event-description">{{ e.description or 'ثبت نشده' }}</td><td class="no-print"><div class="event-actions"><a class="btn btn--muted" href="{{ url_for('edit_event', id=e.id) }}"><i class="cil-pencil" aria-hidden="true"></i> ویرایش</a><form method="post" action="{{ url_for('delete_event', id=e.id) }}" onsubmit="return confirm('این رویداد حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger" type="submit"><i class="cil-trash" aria-hidden="true"></i> حذف</button></form></div></td></tr>
+  {% else %}<tr><td colspan="8" class="empty-state">رویدادی ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+
+{# ---- ۷) تنظیمات گزارش پایان روز ------------------------------------------- #}
+<section class="card no-print" style="margin-bottom:18px">
+  <div class="section-heading"><div><h2 style="font-size:15px;color:var(--ink)"><i class="cil-sunset" aria-hidden="true"></i> یادآور گزارش پایان روز</h2><p class="muted-text">روزی یک‌بار، در ساعت انتخابی، خلاصه رویدادها و کارها خودکار نمایش داده می‌شود (اگر سامانه باز باشد).</p></div><span id="digestSaveState" class="badge"></span></div>
+  <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+    <label style="display:flex;gap:8px;align-items:center;font-weight:700;font-size:13px"><input type="checkbox" id="digestEnabled" style="width:auto"> فعال باشد</label>
+    <label style="display:flex;gap:8px;align-items:center;font-size:13px">ساعت نمایش:
+      <select id="digestTime" style="padding:7px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit">
+        <option value="16:00">۱۶:۰۰</option><option value="17:00">۱۷:۰۰</option><option value="17:30">۱۷:۳۰</option><option value="18:00">۱۸:۰۰</option><option value="19:00">۱۹:۰۰</option><option value="20:00">۲۰:۰۰</option><option value="21:00">۲۱:۰۰</option><option value="22:00">۲۲:۰۰</option>
+      </select>
+    </label>
+    <button type="button" id="digestTestBtn" class="btn btn--outline">مشاهده نمونه</button>
+  </div>
+</section>
+
+{# ---- ۸) پنجرهٔ ثبت سریع، داده‌ها و اسکریپت ---------------------------------- #}
+<div id="gcalAdd" class="gcal-add no-print">
+  <h4 id="gcalAddTitle"></h4>
+  <button type="button" id="gcalAddEvent"><i class="cil-calendar" aria-hidden="true"></i> ثبت رویداد در این روز</button>
+  <button type="button" id="gcalAddTask"><i class="cil-check" aria-hidden="true"></i> ثبت کار در این روز</button>
+  <button type="button" id="gcalAddClose">بستن</button>
+</div>
+
+<script id="gcalOccasions" type="application/json">{{ occasion_data|tojson }}</script>
+<script id="gcalEvents" type="application/json">[{% for e in events %}{"date":"{{ e.date }}","time":{{ (e.time or '')|tojson }},"title":{{ e.title|tojson }},"priority":{{ (e.priority or 'عادی')|tojson }} }{% if not loop.last %},{% endif %}{% endfor %}]</script>
+<script id="gcalTasks" type="application/json">[{% for t in tasks %}{"date":"{{ t.due_date }}","time":{{ (t.time_label or '')|tojson }},"title":{{ t.title|tojson }},"priority":{{ (t.priority or 'عادی')|tojson }},"open":{{ 1 if t.open else 0 }} }{% if not loop.last %},{% endif %}{% endfor %}]</script>
+
+{% if alarm_tasks %}
+<div id="taskAlarmData" class="no-print" hidden
+  data-tasks='[{% for t in alarm_tasks %}{"id":{{ t.id }},"title":{{ t.title|tojson }},"alarm_at":"{{ t.alarm_at_iso }}","due_at":"{{ t.due_at_iso }}","priority":{{ (t.priority or 'عادی')|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}]'></div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='calendar.js') }}"></script>
+{% endblock %}

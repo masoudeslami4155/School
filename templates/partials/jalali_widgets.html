@@ -1,0 +1,186 @@
+<style>
+/* ==== Jalali date picker (theme-aware) ==== */
+.jw-wrap{position:relative;display:inline-block;width:100%}
+.jw-btn{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-family:inherit;font-size:14px;text-align:right;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:border-color .15s}
+.jw-btn:hover{border-color:var(--primary)}
+.jw-btn .jw-ico{opacity:.65;font-size:13px}
+.jw-popup{position:absolute;z-index:80;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.22);padding:12px;width:288px;display:none;color:var(--ink)}
+.jw-popup.is-open{display:block}
+.jw-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:6px}
+.jw-head select{padding:6px 8px;border-radius:8px;border:1px solid var(--line);font-family:inherit;font-size:12px;background:var(--surface);color:var(--ink)}
+.jw-nav{display:flex;gap:4px}
+.jw-nav button{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:8px;width:30px;height:30px;cursor:pointer;font-family:inherit;font-size:14px}
+.jw-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
+.jw-grid .jw-dow{font-size:10.5px;color:var(--muted);padding:4px 0;font-weight:700}
+.jw-grid .jw-day{border:none;background:transparent;border-radius:8px;padding:7px 0;font-size:12.5px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.jw-grid .jw-day:hover{background:var(--soft)}
+.jw-grid .jw-day.is-today{outline:2px solid var(--primary);font-weight:700}
+.jw-grid .jw-day.is-selected{background:var(--primary);color:#fff}
+.jw-foot{display:flex;justify-content:space-between;margin-top:8px;gap:6px}
+.jw-foot button{border:1px solid var(--line);background:var(--soft);color:var(--primary);border-radius:8px;padding:6px 12px;cursor:pointer;font-family:inherit;font-size:12px}
+/* ==== time field with clock plugin ==== */
+.jw-time{display:flex;gap:6px;align-items:center}
+.jw-time input{flex:1;min-width:0}
+.jw-time .jw-mini{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:8px;padding:8px 10px;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.jw-time .jw-mini:hover{border-color:var(--primary);color:var(--primary)}
+/* clockpicker popover — match app theme (light + dark) */
+.popover.clockpicker-popover{z-index:1300;font-family:inherit;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.22);max-width:calc(100vw - 16px)}
+.clockpicker-popover .popover-title{background:var(--soft);color:var(--ink);border-bottom:1px solid var(--line);font-size:13px;font-weight:700}
+.clockpicker-popover .popover-content{background:var(--surface);padding:8px 10px 10px}
+.clockpicker-plate{background:var(--surface);border:1px solid var(--line);border-radius:50%}
+.clockpicker-tick{color:var(--ink)}
+.clockpicker-tick.active,.clockpicker-tick:hover{background-color:rgba(11,99,116,.18);color:var(--ink)}
+.clockpicker-button{background:var(--soft);color:var(--primary);font-weight:700;font-family:inherit;border-top:1px solid var(--line)}
+.clockpicker-button:hover{background:var(--line)}
+.clockpicker-canvas-bg{fill:rgba(11,99,116,.22)}
+.clockpicker-canvas-fg,.clockpicker-canvas-bearing{fill:#0b6374;stroke:none}
+.clockpicker-canvas line{stroke:#0b6374}
+.clockpicker-canvas-bg-trans{fill:rgba(11,99,116,.12)}
+.clockpicker-span-am-pm{color:var(--ink)}
+.clockpicker-popover>.arrow{border-color:var(--line)}
+.clockpicker-popover.top>.arrow:after{border-top-color:var(--surface)}
+.clockpicker-popover.bottom>.arrow:after{border-bottom-color:var(--surface)}
+.clockpicker-popover.left>.arrow:after{border-left-color:var(--surface)}
+.clockpicker-popover.right>.arrow:after{border-right-color:var(--surface)}
+html[dir="rtl"] .clockpicker-popover{text-align:right;direction:ltr}
+html[dir="rtl"] .clockpicker-popover .popover-title,html[dir="rtl"] .clockpicker-popover .popover-content{direction:rtl}
+</style>
+<script>
+(function(){
+  var MONTHS=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+  var DOW=['شنبه','یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه'];
+  var FA='۰۱۲۳۴۵۶۷۸۹';
+  function fa(n){return String(n).replace(/\d/g,function(d){return FA[+d]})}
+  function en(s){return String(s||'').replace(/[۰-۹]/g,function(d){return FA.indexOf(d)}).replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632})}
+  function isLeap(jy){return jy%33===1||jy%33===5||jy%33===9||jy%33===13||jy%33===17||jy%33===21||jy%33===25||jy%33===29}
+  function monthDays(jy,jm){if(jm<=6)return 31;if(jm<=11)return 30;return isLeap(jy)?30:29}
+  function j2g(jy,jm,jd){
+    jy-=979;var jdn=365*jy+Math.floor(jy/33)*8+Math.floor(((jy%33)+3)/4);
+    for(var m=1;m<jm;m++)jdn+=(m<=6)?31:30;jdn+=jd-1;
+    var gdn=jdn+79,gy=1600+400*Math.floor(gdn/146097);gdn%=146097;
+    var leap=true;
+    if(gdn>=36525){gdn--;gy+=100*Math.floor(gdn/36524);gdn%=36524;if(gdn>=365)gdn++;else leap=false}
+    gy+=4*Math.floor(gdn/1461);gdn%=1461;
+    if(gdn>=366){leap=false;gdn--;gy+=Math.floor(gdn/365);gdn%=365}
+    var md=[31,leap?29:28,31,30,31,30,31,31,30,31,30,31],gm=0;
+    while(gdn>=md[gm]){gdn-=md[gm];gm++}
+    return[gy,gm+1,gdn+1];
+  }
+  function g2j(gy,gm,gd){
+    var gdn=365*(gy-1600)+Math.floor((gy-1597)/4)-Math.floor((gy-1501)/100)+Math.floor((gy-1201)/400);
+    gdn+=[0,31,59,90,120,151,181,212,243,273,304,334][gm-1]+gd-1;
+    if(gm>2&&((gy%4===0&&gy%100!==0)||gy%400===0))gdn++;
+    var jdn=gdn-79,jn=Math.floor(jdn/12053);jdn%=12053;
+    var jy=979+33*jn+4*Math.floor(jdn/1461);jdn%=1461;
+    if(jdn>=366){jy+=Math.floor((jdn-1)/365);jdn=(jdn-1)%365}
+    var jm,jd;
+    if(jdn<186){jm=1+Math.floor(jdn/31);jd=1+jdn%31}else{jm=7+Math.floor((jdn-186)/30);jd=1+(jdn-186)%30}
+    return[jy,jm,jd];
+  }
+  function satIdx(gy,gm,gd){var d=new Date(gy,gm-1,gd).getDay();return(d+1)%7}
+  function todayJ(){var t=new Date();return g2j(t.getFullYear(),t.getMonth()+1,t.getDate())}
+  function pad(n){return(n<10?'0':'')+n}
+  window.__JW={MONTHS:MONTHS,DOW:DOW,fa:fa,en:en,monthDays:monthDays,j2g:j2g,g2j:g2j,satIdx:satIdx,todayJ:todayJ,pad:pad};
+
+  /* ---- Jalali date picker (button-based) ---- */
+  window.JDatePickers={};
+  document.querySelectorAll('[data-jdate]').forEach(function(input){
+    var t=todayJ(),cur=[t[0],t[1]],sel=null;
+    var m=en(input.value).match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);
+    if(m){sel=[+m[1],+m[2],+m[3]];cur=[sel[0],sel[1]]}
+    var root=document.createElement('div');root.className='jw-wrap';
+    input.parentNode.insertBefore(root,input);root.appendChild(input);
+    input.style.display='none';
+    var btn=document.createElement('button');btn.type='button';btn.className='jw-btn';
+    btn.innerHTML='<span class="jw-label"></span><span class="jw-ico">📅</span>';
+    var pop=document.createElement('div');pop.className='jw-popup';
+    root.appendChild(btn);root.appendChild(pop);
+    function label(){btn.querySelector('.jw-label').textContent=sel?fa(pad(sel[0])+'/'+pad(sel[1])+'/'+pad(sel[2])):'انتخاب تاریخ…'}
+    function render(){
+      var y=cur[0],mo=cur[1],html='';
+      html+='<div class="jw-head"><div class="jw-nav"><button type="button" data-nav="-1">›</button><button type="button" data-nav="1">‹</button></div>';
+      html+='<div><select data-m>';
+      for(var i=1;i<=12;i++)html+='<option value="'+i+'"'+(i===mo?' selected':'')+'>'+MONTHS[i-1]+'</option>';
+      html+='</select><select data-y>';
+       for(var yy=Math.max(1,y-150);yy<=y+25;yy++)html+='<option value="'+yy+'"'+(yy===y?' selected':'')+'>'+fa(yy)+'</option>';
+      html+='</select></div></div><div class="jw-grid">';
+      DOW.forEach(function(d){html+='<div class="jw-dow">'+d+'</div>'});
+      var first=j2g(y,mo,1),lead=satIdx(first[0],first[1],first[2]),days=monthDays(y,mo);
+      for(var e2=0;e2<lead;e2++)html+='<div></div>';
+      for(var d=1;d<=days;d++){
+        var cls='jw-day';
+        if(t[0]===y&&t[1]===mo&&t[2]===d)cls+=' is-today';
+        if(sel&&sel[0]===y&&sel[1]===mo&&sel[2]===d)cls+=' is-selected';
+        html+='<button type="button" class="'+cls+'" data-d="'+d+'">'+fa(d)+'</button>';
+      }
+      html+='</div><div class="jw-foot"><button type="button" data-act="today">امروز</button><button type="button" data-act="clear">پاک کردن</button></div>';
+      pop.innerHTML=html;
+      pop.querySelectorAll('[data-nav]').forEach(function(b){b.addEventListener('click',function(){cur[1]+= +b.dataset.nav;if(cur[1]<1){cur[1]=12;cur[0]--}if(cur[1]>12){cur[1]=1;cur[0]++}render()})});
+      var ms=pop.querySelector('[data-m]'),ys=pop.querySelector('[data-y]');
+      ms.addEventListener('change',function(){cur[1]=+ms.value;render()});
+      ys.addEventListener('change',function(){cur[0]=+ys.value;render()});
+       pop.querySelectorAll('[data-d]').forEach(function(b){b.addEventListener('click',function(){var selectedDay=+b.dataset.d;sel=[y,mo,selectedDay];input.value=pad(y)+'/'+pad(mo)+'/'+pad(selectedDay);label();close()})});
+      pop.querySelector('[data-act=today]').addEventListener('click',function(){sel=t.slice();input.value=pad(t[0])+'/'+pad(t[1])+'/'+pad(t[2]);cur=[t[0],t[1]];label();close()});
+      pop.querySelector('[data-act=clear]').addEventListener('click',function(){sel=null;input.value='';label();close()});
+    }
+    function open(){render();pop.classList.add('is-open')}
+    function close(){pop.classList.remove('is-open')}
+    btn.addEventListener('click',function(e){e.stopPropagation();document.querySelectorAll('.jw-popup.is-open').forEach(function(p){if(p!==pop)p.classList.remove('is-open')});pop.classList.contains('is-open')?close():open()});
+    pop.addEventListener('click',function(e){e.stopPropagation()});
+    document.addEventListener('click',function(e){if(!pop.contains(e.target)&&e.target!==btn)close()});
+    var api={set:function(v){var m2=en(v).match(/(\d{4})\/(\d{1,2})\/(\d{1,2})/);if(m2){sel=[+m2[1],+m2[2],+m2[3]];input.value=pad(sel[0])+'/'+pad(sel[1])+'/'+pad(sel[2]);cur=[sel[0],sel[1]];label()}},open:open};
+    if(sel){input.value=pad(sel[0])+'/'+pad(sel[1])+'/'+pad(sel[2])}else{input.value=''}
+    label();
+    window.JDatePickers[input.id]=api;
+  });
+
+  /* ---- Android-style clock timepicker (weareoutman/clockpicker) ---- */
+  window.TimePickers={};
+  function clampClock(){
+    var $=window.jQuery;
+    if(!$)return;
+    var $pop=$('.clockpicker-popover:visible').last();
+    if(!$pop.length)return;
+    var rect=$pop.get(0).getBoundingClientRect();
+    var vw=document.documentElement.clientWidth,vh=window.innerHeight,dx=0,dy=0;
+    if(rect.right>vw-8)dx=vw-8-rect.right;
+    else if(rect.left<8)dx=8-rect.left;
+    if(rect.bottom>vh-8)dy=vh-8-rect.bottom;
+    else if(rect.top<8)dy=8-rect.top;
+    if(dx||dy){
+      var curLeft=parseFloat($pop.css('left'))||0,curTop=parseFloat($pop.css('top'))||0;
+      $pop.css({left:(curLeft+dx)+'px',top:(curTop+dy)+'px'});
+    }
+  }
+  function initClock(){
+    if(!window.jQuery||!window.jQuery.fn||!window.jQuery.fn.clockpicker){setTimeout(initClock,120);return}
+    var $=window.jQuery;
+    document.querySelectorAll('[data-timepicker]').forEach(function(input){
+      if(input.dataset.tpInit)return;
+      input.dataset.tpInit='1';
+      var wrap=document.createElement('div');wrap.className='jw-time';
+      input.parentNode.insertBefore(wrap,input);wrap.appendChild(input);
+      var now=document.createElement('button');now.type='button';now.className='jw-mini';now.textContent='الان';
+      var clr=document.createElement('button');clr.type='button';clr.className='jw-mini';clr.textContent='✕';
+      wrap.appendChild(now);wrap.appendChild(clr);
+      $(input).clockpicker({
+        placement:'bottom',
+        align:'right',
+        donetext:'تأیید',
+        autoclose:true,
+        twelvehour:false,
+        vibrate:true,
+        afterShow:clampClock,
+        afterDone:function(){clampClock();input.dispatchEvent(new Event('change',{bubbles:true}))}
+      });
+      now.addEventListener('click',function(){var n=new Date();input.value=pad(n.getHours())+':'+pad(n.getMinutes())});
+      clr.addEventListener('click',function(){input.value=''});
+      window.TimePickers[input.id]={
+        set:function(v){var m2=en(v).match(/(\d{1,2}):(\d{2})/);if(m2)input.value=pad(+m2[1])+':'+pad(+m2[2])},
+        clear:function(){input.value=''}
+      };
+    });
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',initClock)}else{initClock()}
+})();
+</script>

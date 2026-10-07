@@ -1,0 +1,176 @@
+/* ثبت سریع حضور و غیاب — فقط برای حالت quick_mode صفحهٔ حضور و غیاب */
+.aw-quickview .aw-quick-filter__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: end;
+    gap: 10px;
+}
+
+.aw-quickview .aw-quick-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(220px, .7fr);
+    gap: 12px;
+    align-items: end;
+}
+
+.aw-quickview .aw-quick-toolbar__left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.aw-quickview .aw-quick-count {
+    padding: 8px 13px;
+    border: 1px solid var(--aw-absent-line);
+    border-radius: 999px;
+    background: var(--aw-absent-soft);
+    color: var(--aw-absent);
+    font-size: 11px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.aw-quickview .aw-quick-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 9px;
+}
+
+.aw-quickview .aw-quick-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    min-width: 0;
+    padding: 11px 13px;
+    border: 1px solid var(--aw-line);
+    border-inline-start: 4px solid var(--aw-line-strong);
+    border-radius: 14px;
+    background: var(--aw-surface);
+    box-shadow: var(--aw-shadow);
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+.aw-quickview .aw-quick-row:hover {
+    border-color: var(--aw-line-strong);
+    box-shadow: 0 0 0 2px var(--aw-soft), var(--aw-shadow);
+}
+
+.aw-quickview .aw-quick-row.is-absent {
+    border-color: var(--aw-absent-line);
+    border-inline-start-color: var(--aw-absent);
+    background: var(--aw-absent-soft);
+}
+
+.aw-quickview .aw-quick-row.is-hidden { display: none; }
+
+.aw-quickview .aw-quick-check {
+    flex: 0 0 auto;
+    width: 19px;
+    height: 19px;
+    margin: 0;
+    accent-color: var(--aw-absent);
+    cursor: pointer;
+}
+
+.aw-quickview .aw-quick-avatar {
+    display: grid;
+    place-items: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background: rgba(11, 99, 116, .1);
+    color: var(--aw-primary);
+    font-size: 15px;
+    font-weight: 950;
+}
+
+.aw-quickview .aw-quick-row.is-absent .aw-quick-avatar {
+    background: var(--aw-absent);
+    color: #fff;
+}
+
+.aw-quickview .aw-quick-body { min-width: 0; flex: 1; }
+
+.aw-quickview .aw-quick-name {
+    display: block;
+    overflow: hidden;
+    color: var(--aw-ink);
+    font-size: 13.5px;
+    font-weight: 950;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.aw-quickview .aw-quick-meta {
+    display: block;
+    margin-top: 2px;
+    color: var(--aw-muted);
+    font-size: 10.5px;
+}
+
+.aw-quickview .aw-quick-saved,
+.aw-quickview .aw-quick-auto {
+    flex: 0 0 auto;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-size: 9.5px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.aw-quickview .aw-quick-saved { background: var(--aw-present-soft); color: var(--aw-present); }
+.aw-quickview .aw-quick-auto { background: var(--aw-soft); color: var(--aw-muted); }
+.aw-quickview .aw-quick-row.is-absent .aw-quick-auto { display: none; }
+.aw-quickview .aw-quick-row:not(.is-absent) .aw-quick-saved { display: none; }
+
+@media (max-width: 900px) {
+    .aw-quickview .aw-quick-toolbar { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 700px) {
+    .aw-quickview .aw-quick-filter__form { grid-template-columns: 1fr; }
+    .aw-quickview .aw-quick-filter__form .aw-btn { width: 100%; }
+    .aw-quickview .aw-quick-list { grid-template-columns: 1fr; }
+    .aw-quickview .aw-quick-saved,
+    .aw-quickview .aw-quick-auto { display: none; }
+    .aw-quickview .aw-quick-row.is-absent .aw-quick-saved { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aw-quickview .aw-quick-row { transition: none; }
+}
+
+@media print {
+    @page { size: A4 portrait; margin: 7mm; }
+    .aw-quickview { display: block; padding: 0; color: #111; }
+    .aw-quickview .aw-hero,
+    .aw-quickview .aw-quick-filter,
+    .aw-quickview .aw-date-panel,
+    .aw-quickview .aw-quick-toolbar,
+    .aw-quickview .aw-savebar,
+    .aw-quickview .aw-empty,
+    .aw-quickview .aw-empty-filter { display: none !important; }
+    .aw-quickview .aw-quick-list { display: block; }
+    .aw-quickview .aw-quick-row {
+        display: flex;
+        gap: 4mm;
+        padding: 1.5mm 0;
+        border: 0;
+        border-bottom: 1px solid #ddd;
+        border-inline-start-width: 0;
+        border-radius: 0;
+        box-shadow: none;
+        break-inside: avoid;
+        background: #fff !important;
+    }
+    .aw-quickview .aw-quick-avatar { display: none; }
+    .aw-quickview .aw-quick-check { width: 4mm; height: 4mm; }
+    .aw-quickview .aw-quick-name { font-size: 9pt; }
+    .aw-quickview .aw-quick-meta { font-size: 7pt; }
+    .aw-quickview .aw-quick-auto,
+    .aw-quickview .aw-quick-saved { display: none !important; }
+}

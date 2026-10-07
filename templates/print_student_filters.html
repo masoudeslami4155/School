@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>راهنمای فیلترهای دانش‌آموزان | {{ config.SCHOOL_NAME }}</title>
+<style>{{ layout|report_element_css|safe }}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@page{size:A4 {{ layout.orientation }};margin:{{ layout.margin.top }}mm {{ layout.margin.right }}mm {{ layout.margin.bottom }}mm {{ layout.margin.left }}mm}
+*{box-sizing:border-box}
+html,body{margin:0;background:#fff;color:#14213d;font-family:Vazirmatn,Tahoma,Arial,sans-serif}
+.sheet{width:100%;margin:0 auto;font-size:{{ layout.font_size }}pt;line-height:{{ layout.line_height }}}
+.heading{display:flex;align-items:flex-end;justify-content:space-between;gap:5mm;padding-bottom:2mm;margin-bottom:3mm;border-bottom:1.5px solid #0b6374}
+.heading h1{margin:0;color:#0b4f6c;font-size:{{ layout.header_font_size }}pt}
+.heading p{margin:1mm 0 0;color:#667085;font-size:{{ layout.font_size }}pt}
+.heading time{color:#667085;font-size:{{ layout.font_size }}pt;white-space:nowrap}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th,td{padding:1.2mm 1.4mm;border:1px solid #8795a1;text-align:right;vertical-align:top;line-height:{{ layout.line_height }}}
+th{height:{{ layout.header_height }}mm;background:#eaf2f5;color:#14213d;font-weight:700}
+td{height:{{ layout.row_height }}mm}
+{% if not layout.repeat_header %}@media print{thead{display:table-row-group!important}}{% endif %}
+tbody tr:nth-child(even){background:#f7fafc}
+.num{width:6%;text-align:center}.key{width:15%;direction:ltr;text-align:left;font-family:ui-monospace,Consolas,monospace;font-size:.92em}.name{width:16%}.type{width:14%}.availability{width:23%}.behavior{width:26%}
+.notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:2mm;margin-top:3mm}
+.note{padding:2mm 2.5mm;border:1px solid #d4dde5;border-radius:1.5mm;background:#f8fafc}
+.note b{display:block;margin-bottom:.5mm;color:#0b6374}
+.print-layout-hidden{display:none!important}.sheet-footer{margin-top:3mm;padding-top:2mm;border-top:1px solid #8795a1;text-align:center;font-size:7pt;color:#667085}
+.actions{margin:5mm 0;text-align:center}
+.actions button,.actions a{display:inline-block;margin-inline:1mm;padding:2mm 5mm;border:0;border-radius:2mm;background:#0b6374;color:#fff;font:inherit;text-decoration:none;cursor:pointer}
+.actions a{background:#667085}
+@media print{.actions{display:none!important}}
+@media screen{body{padding:8mm;background:#edf2f7}.sheet{max-width:280mm;padding:8mm;background:#fff;box-shadow:0 8px 28px #14213d20}}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+<main class="sheet">
+  <header class="heading{% if not layout.show_header %} print-layout-hidden{% endif %}" data-report-element="hero">
+    <div><h1>راهنمای فیلترهای فهرست دانش‌آموزان</h1><p>{{ config.SCHOOL_NAME }} · نام فیلتر، کلید فنی و شیوهٔ اعمال</p></div>
+    <time>تاریخ چاپ: {{ jalali_datetime }}</time>
+  </header>
+  <table aria-label="جدول فیلترهای دانش‌آموزان" data-report-element="table">
+    <thead><tr><th class="num">ردیف</th><th class="name">فیلتر</th><th class="key">کلید</th><th class="type">نوع</th><th class="behavior">نحوهٔ اعمال</th><th class="availability">دسترسی</th></tr></thead>
+    <tbody>
+    {% for item in filters %}
+      <tr><td class="num">{{ loop.index|fa_digits }}</td><td>{{ item.label }}</td><td class="key">{{ item.key }}</td><td>{{ item.type }}</td><td>{{ item.behavior }}</td><td>{{ item.availability }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="notes" data-report-element="notes">
+    <div class="note"><b>ترکیب فیلترها</b>فیلترهای انتخابی هم‌زمان با «و» ترکیب می‌شوند؛ جست‌وجوی متنی داخل خودش با «یا» بین فیلدها می‌گردد.</div>
+    <div class="note"><b>مقدار خالی</b>گزینهٔ «ثبت نشده» برای فیلترهای انتخابی، مقدار خالی را پیدا می‌کند. برای معلم، کد نامعتبر نیز ثبت‌نشده محسوب می‌شود.</div>
+    <div class="note"><b>دامنهٔ فهرست</b>فهرست اصلی همیشه پرونده‌های فعال یا بدون وضعیت را نشان می‌دهد؛ معلم فقط دانش‌آموزان منتسب به خودش را می‌بیند.</div>
+  </div>
+  {% if layout.show_footer %}<footer class="sheet-footer" data-report-element="footer">{{ config.SCHOOL_NAME }} · راهنمای فیلترهای دانش‌آموزان · {{ jalali_datetime }}</footer>{% endif %}
+  <div class="actions"><button onclick="window.print()">چاپ راهنما</button><a href="javascript:window.close()">بستن</a></div>
+</main>
+{% if autoprint %}<script>window.addEventListener('load',()=>window.setTimeout(()=>window.print(),250));</script>{% endif %}
+</body>
+</html>

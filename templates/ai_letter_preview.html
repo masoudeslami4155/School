@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}پیش‌نمایش چاپ نامهٔ اداری{% endblock %}
+{% block head %}<style>
+@page { size: A4 {{ layout.orientation }}; margin: 0; }
+.letter-print-page { position: relative; margin: 14px auto; background: #fff; box-shadow: 0 5px 28px #0002; }
+.letter-print-page[data-orientation="portrait"] { width: 210mm; height: 297mm; }
+.letter-print-page[data-orientation="landscape"] { width: 297mm; height: 210mm; }
+.letter-print-page .letter-element { overflow: visible; }
+@media print {
+  body { background: #fff; }
+  .letter-print-page { margin: 0; box-shadow: none; break-after: avoid; }
+  .letter-print-page .letter-element.is-selected { outline: 0 !important; background: transparent !important; }
+}
+</style>{% endblock %}
+{% block page_title %}<i class="cil-print" aria-hidden="true"></i> پیش‌نمایش چاپ نامهٔ اداری{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='ai_letter') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به استودیوی نامه</a>{% endblock %}
+{% block content %}
+<div class="letter-print-page" data-orientation="{{ layout.orientation }}" style="padding:{{ layout.margin.top }}mm {{ layout.margin.right }}mm {{ layout.margin.bottom }}mm {{ layout.margin.left }}mm;font-size:{{ layout.font_size }}pt;">
+  {% include 'partials/ai_letter_artwork.html' %}
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% set student_name = ((s.first_name or 'بدون نام') ~ ' ' ~ (s.last_name or ''))|trim %}
+{% set card_fields = ui_preferences.student_card_fields %}
+{% set mobile_fields = ui_preferences.student_mobile_fields %}
+{% set has_mobile_meta = ('grade' in mobile_fields and 'grade' in card_fields) or ('class_name' in mobile_fields and 'class_name' in card_fields) or ('sida_class' in mobile_fields and 'sida_class' in card_fields) or ('gender' in mobile_fields and 'gender' in card_fields) %}
+<article class="student-card" data-student-id="{{ s.id }}">
+  <div class="student-card__topline">
+    <div class="student-card__identity">
+      <div class="student-card__avatar" aria-hidden="true">{% if 'photo' in card_fields and s.photo %}<img src="{{ url_for('static', filename='uploads/' ~ s.photo) }}" alt="">{% else %}<span>{{ (s.first_name or '؟')[:1] }}</span>{% endif %}</div>
+      <div class="student-card__title">
+        <h3 title="{{ student_name }}">{{ student_name }}</h3>
+        {% if 'code' in card_fields %}<p{% if 'code' not in mobile_fields %} class="student-card__mobile-hidden"{% endif %}>کد دانش‌آموزی: <b class="{% if not s.code %}is-missing{% endif %}">{{ s.code or 'ثبت نشده' }}</b></p>{% endif %}
+      </div>
+    </div>
+    <div class="student-card__flags">
+      {% if 'status' in card_fields %}<span class="student-card__status{% if 'status' not in mobile_fields %} student-card__mobile-hidden{% endif %}">فعال</span>{% endif %}
+      {% if current_role != 'teacher' %}
+      <label class="student-card__pick" title="انتخاب برای عملیات گروهی">
+        <input type="checkbox" class="student-checkbox" value="{{ s.id }}" aria-label="انتخاب {{ student_name }}">
+      </label>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if 'grade' in card_fields or 'class_name' in card_fields or 'sida_class' in card_fields or 'gender' in card_fields %}
+  <dl class="student-card__meta{% if not has_mobile_meta %} student-card__meta--mobile-empty{% endif %}">
+    {% if 'grade' in card_fields %}<div class="student-card__meta-item student-card__meta-item--grade{% if not s.grade %} is-missing{% endif %}{% if 'grade' not in mobile_fields %} student-card__mobile-hidden{% endif %}"><dt>پایه</dt><dd>{{ s.grade or 'ثبت نشده' }}</dd></div>{% endif %}
+    {% if 'class_name' in card_fields %}<div class="student-card__meta-item student-card__meta-item--class{% if not s.class_name %} is-missing{% endif %}{% if 'class_name' not in mobile_fields %} student-card__mobile-hidden{% endif %}"><dt>کلاس</dt><dd>{{ s.class_name or 'ثبت نشده' }}</dd></div>{% endif %}
+    {% if 'sida_class' in card_fields %}<div class="student-card__meta-item student-card__meta-item--sida{% if not s.sida_class %} is-missing{% endif %}{% if 'sida_class' not in mobile_fields %} student-card__mobile-hidden{% endif %}"><dt>سیدا</dt><dd>{{ s.sida_class or 'ثبت نشده' }}</dd></div>{% endif %}
+    {% if 'gender' in card_fields %}<div class="student-card__meta-item student-card__meta-item--gender{% if not s.gender %} is-missing{% endif %}{% if 'gender' not in mobile_fields %} student-card__mobile-hidden{% endif %}"><dt>جنسیت</dt><dd>{{ s.gender or 'ثبت نشده' }}</dd></div>{% endif %}
+  </dl>
+  {% endif %}
+
+  {% if 'teacher' in card_fields %}
+  <div class="student-card__assignment{% if not (s.teacher_first or s.teacher_last) %} is-missing{% endif %}{% if 'teacher' not in mobile_fields %} student-card__mobile-hidden{% endif %}">
+    <span class="student-card__assignment-icon" aria-hidden="true"><i class="cil-briefcase" aria-hidden="true"></i></span>
+    <span><small>معلم منتسب</small><strong>{% if s.teacher_first or s.teacher_last %}{{ s.teacher_first or '' }} {{ s.teacher_last or '' }}{% else %}ثبت نشده{% endif %}</strong></span>
+  </div>
+  {% endif %}
+
+  <div class="student-card__actions">
+    <a class="btn btn--primary" href="{{ url_for('student_profile', id=s.id) }}"><i class="cil-file" aria-hidden="true"></i> پرونده کامل</a>
+    <a class="btn btn--link" href="{{ url_for('print_student', id=s.id) }}" target="_blank" rel="noopener"><i class="cil-print" aria-hidden="true"></i> چاپ</a>
+    {% if current_role != 'teacher' %}
+    <a class="btn btn--muted" href="{{ url_for('student_certificate', student_id=s.id) }}"><i class="cil-description" aria-hidden="true"></i> گواهی تحصیل</a>
+    <a class="btn btn--muted" href="{{ url_for('edit_student', id=s.id) }}"><i class="cil-pencil" aria-hidden="true"></i> ویرایش</a>
+    <a class="btn btn--danger" href="{{ url_for('confirm_delete_student', id=s.id) }}"><i class="cil-sync" aria-hidden="true"></i> تغییر وضعیت</a>
+    {% endif %}
+  </div>
+</article>

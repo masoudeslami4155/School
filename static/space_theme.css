@@ -1,0 +1,664 @@
+/* ==========================================================================
+   Space Glass Theme — سامانه مدرسه
+   پس‌زمینه فضا + ستاره‌های چشمک‌زن + ستاره دنباله‌دار + پنل‌های شیشه‌ای
+   این فایل عمداً بعد از app.css/topbar.css/index.css و… بارگذاری می‌شود
+   تا مقادیرش بر تم قبلی غلبه کند. برای چاپ کاملاً غیرفعال می‌شود.
+   ========================================================================== */
+
+/* ---------- 1) پس‌زمینه فضا (کاملاً CSS، بدون تصویر و آفلاین) ---------- */
+/* نکته مهم: پس‌زمینه پیش‌فرض body باید شفاف شود تا لایه فضایی (z-index منفی)
+   پشت آن پنهان نشود. رنگ html هم برای پرش‌های اسکرول تیره است. */
+html { background: #0b1026 !important; }
+body { background: transparent !important; }
+
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    background:
+        radial-gradient(1100px 700px at 82% -10%, rgba(96, 165, 250, .16), transparent 60%),
+        radial-gradient(900px 600px at 8% 108%, rgba(167, 139, 250, .14), transparent 60%),
+        radial-gradient(700px 500px at 50% 45%, rgba(45, 212, 191, .08), transparent 65%),
+        linear-gradient(160deg, #0b1026 0%, #101936 45%, #0a0f24 100%);
+}
+
+/* ---------- 2) ستاره‌ها (سه لایه پارالاکس) ---------- */
+.space-stars, .space-stars::before, .space-stars::after {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+.space-stars {
+    background-image:
+        radial-gradient(1.6px 1.6px at 22% 18%, #ffffff 50%, transparent 51%),
+        radial-gradient(1.2px 1.2px at 68% 42%, #dbeafe 50%, transparent 51%),
+        radial-gradient(1.4px 1.4px at 84% 12%, #ffffff 50%, transparent 51%),
+        radial-gradient(1.1px 1.1px at 12% 64%, #e0e7ff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 46% 82%, #ffffff 50%, transparent 51%),
+        radial-gradient(1.2px 1.2px at 90% 58%, #f8fafc 50%, transparent 51%),
+        radial-gradient(1.3px 1.3px at 33% 34%, #ffffff 50%, transparent 51%),
+        radial-gradient(1.1px 1.1px at 58% 8%,  #e2e8f0 50%, transparent 51%),
+        radial-gradient(1.4px 1.4px at 6%  88%, #ffffff 50%, transparent 51%),
+        radial-gradient(1.2px 1.2px at 74% 76%, #ffffff 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 26% 52%, #cbd5f5 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 51% 27%, #e2e8f0 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 71% 63%, #f1f5f9 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 17% 79%, #dbeafe 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 39% 6%,  #e0e7ff 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 63% 71%, #f8fafc 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 88% 33%, #e2e8f0 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 44% 45%, #eff6ff 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 9%  36%, #f1f5f9 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 57% 94%, #dbeafe 50%, transparent 51%),
+        radial-gradient(0.8px 0.8px at 95% 74%, #e0e7ff 50%, transparent 51%),
+        radial-gradient(0.9px 0.9px at 30% 90%, #f8fafc 50%, transparent 51%);
+    background-size: 560px 560px;
+    animation: twinkle 5.5s ease-in-out infinite alternate;
+    opacity: .9;
+}
+.space-stars::before {
+    content: '';
+    background-image:
+        radial-gradient(1px 1px at 18% 30%, #fde68a 50%, transparent 51%),
+        radial-gradient(1px 1px at 52% 56%, #a5f3fc 50%, transparent 51%),
+        radial-gradient(1px 1px at 78% 24%, #fbcfe8 50%, transparent 51%),
+        radial-gradient(1px 1px at 36% 72%, #c7d2fe 50%, transparent 51%),
+        radial-gradient(1px 1px at 64% 88%, #fef9c3 50%, transparent 51%),
+        radial-gradient(1px 1px at 88% 44%, #bae6fd 50%, transparent 51%);
+    background-size: 380px 380px;
+    animation: twinkle 7.5s ease-in-out infinite alternate-reverse;
+    opacity: .8;
+}
+.space-stars::after {
+    content: '';
+    background-image:
+        radial-gradient(2.2px 2.2px at 28% 14%, #ffffff 50%, transparent 51%),
+        radial-gradient(2px 2px     at 62% 38%, #e0f2fe 50%, transparent 51%),
+        radial-gradient(2.4px 2.4px at 14% 52%, #fef3c7 50%, transparent 51%),
+        radial-gradient(2px 2px     at 82% 66%, #ffffff 50%, transparent 51%),
+        radial-gradient(2.2px 2.2px at 44% 92%, #dbeafe 50%, transparent 51%),
+        radial-gradient(2.6px 2.6px at 92% 86%, #ffffff 50%, transparent 51%),
+        radial-gradient(2.4px 2.4px at 8%  24%, #ffffff 50%, transparent 51%),
+        radial-gradient(2.8px 2.8px at 70% 10%, #fff7ed 50%, transparent 51%),
+        radial-gradient(2.3px 2.3px at 35% 64%, #dbeafe 50%, transparent 51%),
+        radial-gradient(2.6px 2.6px at 54% 20%, #f1f5f9 50%, transparent 51%);
+    background-size: 720px 720px;
+    animation: twinkle 9s ease-in-out infinite alternate;
+    opacity: .95;
+}
+
+/* ستاره‌های درشت با هاله نور (فراتر از لایه‌های CSS خالص) */
+.space-stars-bright {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+.space-stars-bright span {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, #e0f2fe 45%, rgba(224, 242, 254, 0) 72%);
+    animation: brightStarPulse 4s ease-in-out infinite alternate;
+}
+.space-stars-bright span:nth-child(2n) { background: radial-gradient(circle, #fffbeb 0%, #fde68a 42%, rgba(253, 230, 138, 0) 72%); animation-duration: 6s; }
+.space-stars-bright span:nth-child(3n) { background: radial-gradient(circle, #fff1f2 0%, #fbcfe8 42%, rgba(251, 207, 232, 0) 72%); animation-duration: 7.5s; }
+.space-stars-bright span:nth-child(5n) { background: radial-gradient(circle, #f0fdfa 0%, #a5f3fc 42%, rgba(165, 243, 252, 0) 72%); animation-duration: 5s; }
+@keyframes brightStarPulse {
+    from { opacity: .35; transform: scale(.75); }
+    to   { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes twinkle {
+    from { opacity: .55; }
+    to   { opacity: 1; }
+}
+
+/* ---------- 2) کهکشان راه شیری کم‌رنگ (نوار مورب ثابت) ---------- */
+.space-galaxy {
+    position: fixed;
+    inset: -30%;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .8;
+    transform: rotate(-22deg);
+    filter: blur(1.5px);
+    background:
+        radial-gradient(46% 9% at 50% 47%, rgba(196, 181, 253, .20), transparent 72%),
+        radial-gradient(36% 6% at 46% 53%, rgba(165, 180, 252, .15), transparent 72%),
+        radial-gradient(62% 14% at 55% 50%, rgba(226, 232, 240, .10), transparent 78%),
+        radial-gradient(20% 4% at 38% 44%, rgba(255, 255, 255, .12), transparent 75%);
+}
+/* غبار تیره میان ستاره‌ها برای عمق بیشتر */
+.space-galaxy::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(30% 5% at 58% 46%, rgba(2, 6, 23, .35), transparent 70%),
+        radial-gradient(22% 4% at 40% 52%, rgba(2, 6, 23, .28), transparent 70%);
+    filter: blur(4px);
+}
+
+/* ---------- 3) منظومه شمسی گوشه صفحه (اصلی) + دو منظومه فرعی ---------- */
+.space-solar {
+    position: fixed;
+    left: -95px;
+    bottom: -95px;
+    width: 340px;
+    height: 340px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: .85;
+}
+.space-sun {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 72px;
+    height: 72px;
+    margin: -36px 0 0 -36px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, #fffbeb, #fde68a 38%, #f59e0b 72%, rgba(245, 158, 11, 0));
+    box-shadow:
+        0 0 42px 14px rgba(251, 191, 36, .32),
+        0 0 100px 48px rgba(251, 146, 60, .16);
+    animation: sun-breathe 9s ease-in-out infinite;
+}
+/* ستاره‌ی سرد (آبی-سفید) برای منظومه‌های فرعی */
+.space-sun--cool {
+    background: radial-gradient(circle at 35% 32%, #f8fafc, #bae6fd 38%, #38bdf8 72%, rgba(56, 189, 248, 0));
+    box-shadow:
+        0 0 22px 7px rgba(56, 189, 248, .3),
+        0 0 56px 28px rgba(59, 130, 246, .15);
+    animation-name: sun-breathe-cool;
+}
+@keyframes sun-breathe-cool {
+    50% { box-shadow: 0 0 30px 11px rgba(56, 189, 248, .36), 0 0 70px 34px rgba(59, 130, 246, .18); }
+}
+@keyframes sun-breathe {
+    50% { box-shadow: 0 0 46px 16px rgba(251, 191, 36, .4), 0 0 110px 52px rgba(251, 146, 60, .2); }
+}
+.space-orbit {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    border: 1px dashed rgba(255, 255, 255, .10);
+    border-radius: 50%;
+}
+.space-orbit--1 { width: 164px; height: 164px; margin: -82px 0 0 -82px; }
+.space-orbit--2 { width: 240px; height: 240px; margin: -120px 0 0 -120px; }
+.space-orbit--3 { width: 316px; height: 316px; margin: -158px 0 0 -158px; }
+.orbit-spin { position: absolute; inset: 0; animation: orbit-rotate linear infinite; }
+.space-orbit--1 .orbit-spin { animation-duration: 20s; }
+.space-orbit--2 .orbit-spin { animation-duration: 36s; animation-direction: reverse; }
+.space-orbit--3 .orbit-spin { animation-duration: 64s; }
+@keyframes orbit-rotate { to { transform: rotate(360deg); } }
+.space-planet { position: absolute; left: 50%; border-radius: 50%; }
+.planet--a {
+    top: -7px; margin-left: -7px; width: 14px; height: 14px;
+    background: radial-gradient(circle at 30% 30%, #bfdbfe, #2563eb 75%);
+    box-shadow: 0 0 11px rgba(96, 165, 250, .8);
+}
+.planet--b {
+    top: -10px; margin-left: -10px; width: 20px; height: 20px;
+    background: radial-gradient(circle at 30% 30%, #fed7aa, #c2410c 78%);
+    box-shadow: 0 0 13px rgba(251, 146, 60, .7);
+}
+/* زحل‌نما با حلقه */
+.planet--c {
+    top: -8px; margin-left: -8px; width: 16px; height: 16px;
+    background: radial-gradient(circle at 30% 30%, #f1f5f9, #64748b 78%);
+    box-shadow: 0 0 10px rgba(148, 163, 184, .7);
+}
+.planet--c::after {
+    content: '';
+    position: absolute;
+    left: -7px;
+    top: 4px;
+    width: 28px;
+    height: 9px;
+    border: 1.5px solid rgba(226, 232, 240, .5);
+    border-radius: 50%;
+    transform: rotate(-16deg);
+}
+
+/* ---------- 4) شهاب تعاملی (با کلیک روی فضای خالی) ---------- */
+.click-comet {
+    position: fixed;
+    z-index: -1;
+    width: 150px;
+    height: 2px;
+    border-radius: 999px;
+    pointer-events: none;
+    opacity: 0;
+    transform-origin: right center;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0), #ffffff);
+    box-shadow: 0 0 10px 2px rgba(165, 243, 252, .6);
+    animation: click-comet-fly 1.15s cubic-bezier(.2, .6, .3, 1) forwards;
+}
+/* ---------- 3b) منظومه‌های فرعی کوچک‌تر (نمای دورتر) ---------- */
+.space-solar--mini {
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    width: 168px;
+    height: 168px;
+    opacity: .6;
+}
+.space-solar--mini .space-sun {
+    width: 34px;
+    height: 34px;
+    margin: -17px 0 0 -17px;
+}
+.space-solar--mini .space-orbit--1 { width: 76px; height: 76px; margin: -38px 0 0 -38px; }
+.space-solar--mini .space-orbit--2 { width: 116px; height: 116px; margin: -58px 0 0 -58px; }
+.space-solar--mini .space-orbit--3 { width: 156px; height: 156px; margin: -78px 0 0 -78px; }
+.space-solar--mini .planet--a { top: -5px; margin-left: -5px; width: 10px; height: 10px; }
+.space-solar--mini .planet--b { top: -6px; margin-left: -6px; width: 12px; height: 12px; }
+.space-solar--mini .planet--c { top: -5px; margin-left: -5px; width: 11px; height: 11px; }
+.space-solar--mini .planet--c::after { left: -5px; top: 2px; width: 20px; height: 6px; }
+.space-solar--mini .space-orbit--1 .orbit-spin { animation-duration: 14s; }
+.space-solar--mini .space-orbit--2 .orbit-spin { animation-duration: 26s; animation-direction: reverse; }
+.space-solar--mini .space-orbit--3 .orbit-spin { animation-duration: 44s; }
+.space-solar--top { top: -46px; inset-inline-start: 130px; }
+.space-solar--mid { bottom: 26vh; inset-inline-end: 31vw; opacity: .42; }
+
+@keyframes click-comet-fly {
+    0%   { opacity: 0; transform: rotate(var(--angle, -18deg)) translateX(12px) scaleX(.4); }
+    12%  { opacity: 1; }
+    100% { opacity: 0; transform: rotate(var(--angle, -18deg)) translateX(-195px) scaleX(1); }
+}
+
+/* ---------- 5) ستاره دنباله‌دار ---------- */
+/* جهت صحیح فیزیکی: سر روشن جلو و دم پشت سر است. در صفحه RTL با انیمیشنِ
+   right، حرکت از راست به چپ است؛ پس سر باید سمت چپ (سمت مقصد) باشد.
+   ساختار: گرادیان از دمِ محو (راست) به سرِ درخشان (چپ) + هسته سمت چپ. */
+.comet {
+    position: fixed;
+    top: 8%;
+    left: -14%;
+    z-index: -1;
+    width: 210px;
+    height: 3px;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(90deg, #ffffff 0%, rgba(255, 255, 255, .95) 10%, rgba(165, 243, 252, .55) 55%, transparent 100%);
+    border-radius: 999px;
+    filter: drop-shadow(-2px 0 8px rgba(125, 211, 252, .9));
+    transform: rotate(13deg);
+    transform-origin: left center;
+    animation: comet-fly 38s cubic-bezier(.25, .1, .35, 1) infinite;
+    animation-delay: 4s;
+}
+/* هسته درخشان — سمت چپ (جلوی مسیر حرکت) */
+.comet::before {
+    content: '';
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    background: #ffffff;
+    box-shadow:
+        0 0 12px 4px rgba(255, 255, 255, .95),
+        0 0 26px 10px rgba(125, 211, 252, .55);
+}
+/* دم پهن و محو — سمت راست (پشت سر) */
+.comet::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    width: 120px;
+    height: 46px;
+    transform: translateY(-50%) scaleX(-1);
+    background: linear-gradient(90deg, transparent, rgba(186, 230, 253, .28));
+    border-radius: 50% 40% 40% 50% / 60% 55% 45% 40%;
+    filter: blur(6px);
+}
+
+@keyframes comet-fly {
+    0%   { left: -18%; top: 4%;  opacity: 0; transform: rotate(14deg) scaleX(.7); }
+    8%   { opacity: .85; }
+    /* ورود آرام با قوس ملایم به پایین */
+    18%  { left: 14%; top: 12%; opacity: .95; transform: rotate(12.5deg) scaleX(.9); }
+    /* شتاب در میانه مسیر */
+    40%  { left: 58%; top: 27%; opacity: .9;  transform: rotate(10deg) scaleX(1); }
+    /* خروج و محو تدریجی */
+    54%  { left: 92%; top: 34%; opacity: 0;  transform: rotate(9deg) scaleX(1.05); }
+    /* مکث بلند بیرون از کادر */
+    100% { left: 104%; top: 36%; opacity: 0; transform: rotate(9deg) scaleX(1.05); }
+}
+
+/* شهاب ثانویه — کمی ریزتر، کوتاه‌تر و کم‌بسامدتر */
+.comet--minor {
+    width: 120px;
+    height: 2px;
+    top: 64%;
+    left: -12%;
+    transform: rotate(-13deg);
+    opacity: 0;
+    animation: comet-fly-2 52s cubic-bezier(.3, .1, .4, 1) infinite;
+    animation-delay: 19s;
+}
+.comet--minor::before {
+    width: 7px;
+    height: 7px;
+    left: -5px;
+}
+.comet--minor::after { display: none; }
+
+@keyframes comet-fly-2 {
+    0%   { left: -16%; top: 74%; opacity: 0; transform: rotate(-15deg) scaleX(.8); }
+    4%   { opacity: .75; }
+    16%  { left: 26%; top: 63%; opacity: .8;  transform: rotate(-13deg) scaleX(1); }
+    26%  { left: 68%; top: 49%; opacity: 0;  transform: rotate(-11deg) scaleX(1.05); }
+    100% { left: 92%;  top: 44%; opacity: 0; transform: rotate(-11deg) scaleX(1.05); }
+}
+
+/* ---------- 4) رابط شیشه‌ای (Glassmorphism) ---------- */
+.app-shell { background: transparent !important; }
+
+.topbar {
+    background: rgba(13, 20, 44, .56) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(175%);
+    backdrop-filter: blur(26px) saturate(175%);
+    border-bottom: 1px solid rgba(255, 255, 255, .14) !important;
+    box-shadow: 0 10px 34px rgba(2, 6, 23, .45) !important;
+}
+.topbar .brand strong { color: #f1f5ff !important; }
+.topbar .brand small { color: rgba(226, 232, 255, .78) !important; }
+.topbar .brand-mark {
+    background: linear-gradient(135deg, rgba(56, 189, 248, .35), rgba(129, 140, 248, .35)) !important;
+    border: 1px solid rgba(255, 255, 255, .25);
+    color: #e0f2fe !important;
+}
+
+.date-chip, .user-chip, .header-badge {
+    background: rgba(255, 255, 255, .10) !important;
+    border: 1px solid rgba(255, 255, 255, .18) !important;
+    color: #e8eeff !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+.topbar-link {
+    background: rgba(255, 255, 255, .08) !important;
+    border: 1px solid rgba(255, 255, 255, .16) !important;
+    color: #e8eeff !important;
+}
+.topbar-link--danger {
+    background: rgba(248, 113, 113, .16) !important;
+    border-color: rgba(248, 113, 113, .4) !important;
+    color: #fecaca !important;
+}
+
+/* ناوبری کناری شیشه‌ای */
+.dashboard-nav {
+    background: rgba(12, 18, 40, .60) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(175%);
+    backdrop-filter: blur(26px) saturate(175%);
+    border-inline-end: 1px solid rgba(255, 255, 255, .12) !important;
+    box-shadow: 12px 0 40px rgba(2, 6, 23, .4) !important;
+}
+.dashboard-nav .dashboard-nav__brand-text strong { color: #f1f5ff !important; }
+.dashboard-nav .dashboard-nav__brand-text small { color: rgba(226, 232, 255, .75) !important; }
+.dashboard-nav__logo {
+    background: linear-gradient(135deg, rgba(56, 189, 248, .3), rgba(129, 140, 248, .3)) !important;
+    border: 1px solid rgba(255, 255, 255, .22);
+    color: #e0f2fe !important;
+}
+.dashboard-nav > a,
+.dashboard-nav .dashboard-nav__group,
+.dashboard-nav__home,
+.dashboard-nav__logout,
+.dashboard-nav__theme {
+    color: rgba(226, 232, 255, .92) !important;
+}
+.dashboard-nav > a:hover,
+.dashboard-nav .dashboard-nav__menu a:hover,
+.dashboard-nav__home:hover {
+    background: rgba(255, 255, 255, .10) !important;
+    color: #ffffff !important;
+}
+.dashboard-nav > a.is-active,
+.dashboard-nav__home[aria-current="page"] {
+    background: linear-gradient(90deg, rgba(56, 189, 248, .22), rgba(129, 140, 248, .18)) !important;
+    border-inline-start: 3px solid #7dd3fc;
+    color: #ffffff !important;
+}
+.dashboard-nav .dashboard-nav__search input {
+    background: rgba(255, 255, 255, .09) !important;
+    border: 1px solid rgba(255, 255, 255, .16) !important;
+    color: #eef2ff !important;
+}
+.dashboard-nav .dashboard-nav__search input::placeholder { color: rgba(226, 232, 255, .55); }
+
+/* پنل‌های محتوایی شیشه‌ای */
+.page-container,
+main.page-container { background: transparent !important; }
+
+.dashboard-section,
+.filter-panel,
+.student-card,
+.stat-card,
+.quick-action,
+.reminder-card,
+.notice--link,
+.bulk-actions__bar,
+.results-bar,
+.empty-state,
+.event-alert-modal,
+.card,
+.panel {
+    /* شیشه پررنگ‌تر و تارتر با جلای مورب و درخشش لبه بالا */
+    background: linear-gradient(150deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .06) 42%, rgba(255, 255, 255, .11)) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, .26) !important;
+    box-shadow:
+        0 18px 44px rgba(2, 6, 23, .45),
+        inset 0 1px 0 rgba(255, 255, 255, .22) !important;
+}
+
+/* نوار بالای صفحه اصلی (سربرگ صفحه) */
+.page-heading .page-kicker { color: #93c5fd !important; }
+.page-heading h1 { color: #f4f7ff !important; }
+
+/* تیترها و متن‌ها روی زمینه تیره فضایی */
+body { color: #e7ecff; }
+.dashboard-section h2,
+.filter-panel__title h2 { color: #f2f5ff !important; }
+.results-bar__count,
+.results-bar__count small,
+.reminder-card small,
+.notice__body,
+.notice__details,
+.filter-panel__hint { color: rgba(230, 236, 255, .85) !important; }
+
+/* کارت‌های آماری: حفظ رنگ نوار مشخصه ولی بدنه شیشه‌ای */
+.stat-card.stat-card--blue   { border-inline-start: 4px solid #60a5fa !important; }
+.stat-card.stat-card--teal   { border-inline-start: 4px solid #2dd4bf !important; }
+.stat-card.stat-card--purple { border-inline-start: 4px solid #a78bfa !important; }
+.stat-card.stat-card--orange { border-inline-start: 4px solid #fbbf24 !important; }
+.stat-card.stat-card--red    { border-inline-start: 4px solid #f87171 !important; }
+.stat-card__label { color: rgba(226, 232, 255, .82) !important; }
+.stat-card__value { color: #ffffff !important; }
+.stat-card__note  { color: rgba(226, 232, 255, .68) !important; }
+.stat-card__cta   { color: #93c5fd !important; }
+.stat-card__icon {
+    background: linear-gradient(135deg, rgba(56, 189, 248, .28), rgba(129, 140, 248, .28)) !important;
+    border: 1px solid rgba(255, 255, 255, .22);
+    color: #e0f2fe !important;
+}
+
+/* دسترسی سریع */
+.quick-action { color: #e8eeff !important; }
+.quick-action__icon {
+    background: linear-gradient(135deg, rgba(56, 189, 248, .26), rgba(129, 140, 248, .26)) !important;
+    border: 1px solid rgba(255, 255, 255, .2);
+    color: #e0f2fe !important;
+}
+.quick-action__label { color: rgba(230, 236, 255, .92) !important; }
+.quick-action:hover { background: rgba(255, 255, 255, .18) !important; }
+
+/* فرم‌ها و فیلدها شیشه‌ای تار */
+input, select, textarea {
+    background: rgba(13, 20, 44, .38) !important;
+    border: 1px solid rgba(255, 255, 255, .22) !important;
+    color: #eef2ff !important;
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+}
+input::placeholder, textarea::placeholder { color: rgba(226, 232, 255, .5); }
+input:focus, select:focus, textarea:focus {
+    border-color: rgba(125, 211, 252, .65) !important;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, .18) !important;
+}
+/* انتخاب‌گر تاریخ و اجزای سفارشی داخل فرم‌ها */
+select option { background: #101936; color: #eef2ff; }
+
+/* جدول‌ها شیشه‌ای تار (پاک‌کردن پس‌زمینه سفید توپال قدیمی) */
+.table-wrapper, .form-card, .form-section {
+    background: rgba(255, 255, 255, .07) !important;
+    border: 1px solid rgba(255, 255, 255, .2) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    backdrop-filter: blur(24px) saturate(170%);
+}
+.table-wrapper table, table.stats-table, table.mini-table, table.data-table,
+table.ms-mini-table, table.ar-mini-table, table.siblings-table, table.vdash__table {
+    background: transparent !important;
+}
+table th {
+    background: rgba(13, 20, 44, .55) !important;
+    color: #dbeafe !important;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+}
+table td { background: transparent !important; color: rgba(238, 242, 255, .94) !important; border-bottom: 1px solid rgba(255, 255, 255, .09) !important; }
+tr:nth-child(even) td, tr:hover td { background: rgba(255, 255, 255, .05) !important; }
+tr:hover td { background: rgba(125, 211, 252, .09) !important; }
+/* جدول‌های داخل کارت‌های شیشه‌ای عمیق‌تر به نظر برسند */
+.dashboard-section table td { color: rgba(238, 242, 255, .94); }
+
+/* دکمه‌ها */
+.btn--primary {
+    background: linear-gradient(135deg, rgba(37, 99, 235, .85), rgba(13, 148, 136, .85)) !important;
+    border: 1px solid rgba(255, 255, 255, .25) !important;
+    color: #ffffff !important;
+}
+.btn--outline {
+    background: rgba(255, 255, 255, .1) !important;
+    border: 1px solid rgba(255, 255, 255, .25) !important;
+    color: #e8eeff !important;
+}
+.btn--muted {
+    background: rgba(255, 255, 255, .09) !important;
+    color: rgba(232, 238, 255, .9) !important;
+}
+.btn--link {
+    background: rgba(147, 197, 253, .14) !important;
+    color: #bfdbfe !important;
+}
+
+/* ناوبری پایین موبایل شیشه‌ای */
+.mobile-bottom-nav {
+    background: rgba(12, 18, 40, .64) !important;
+    -webkit-backdrop-filter: blur(26px) saturate(175%);
+    backdrop-filter: blur(26px) saturate(175%);
+    border-top: 1px solid rgba(255, 255, 255, .14) !important;
+}
+.mobile-bottom-nav__item { color: rgba(226, 232, 255, .85) !important; }
+.mobile-bottom-nav__item.is-active { color: #7dd3fc !important; }
+
+/* پیام‌های فلش شیشه‌ای */
+.flash {
+    background: rgba(255, 255, 255, .1) !important;
+    border: 1px solid rgba(255, 255, 255, .22) !important;
+    color: #eef2ff !important;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+}
+.flash--success { border-color: rgba(74, 222, 128, .45) !important; }
+.flash--danger  { border-color: rgba(248, 113, 113, .45) !important; }
+.flash--warning { border-color: rgba(251, 191, 36, .45) !important; }
+
+/* ---------- 5) احترام به کاربران با حساسیت حرکتی ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .space-stars, .space-stars::before, .space-stars::after,
+    .comet, .comet--minor { animation: none !important; }
+    .comet, .comet--minor { display: none !important; }
+    .orbit-spin, .space-sun, .space-stars-bright span { animation: none !important; }
+    .click-comet { display: none !important; }
+}
+
+/* ---------- 6) چاپ A4: حذف کامل فضا و شیشه ---------- */
+@media print {
+    body::before, .space-stars, .comet, .comet--minor,
+    .space-galaxy, .space-solar, .space-solar--mini, .space-stars-bright, .click-comet {
+        display: none !important;
+        animation: none !important;
+    }
+    body { background: #ffffff !important; color: #111827 !important; }
+    html { background: #ffffff !important; }
+    .topbar, .dashboard-nav, .mobile-bottom-nav {
+        background: #ffffff !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    .dashboard-section, .filter-panel, .student-card, .stat-card,
+    .quick-action, .reminder-card, .notice--link {
+        background: #ffffff !important;
+        border: 1px solid #d1d5db !important;
+        box-shadow: none !important;
+        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none !important;
+    }
+    .page-heading h1, .dashboard-section h2, .filter-panel__title h2 { color: #111827 !important; }
+    .stat-card__label, .stat-card__note, .quick-action__label { color: #374151 !important; }
+}
+
+/* ---------- 7) صفحه ورود (قالب مستقل) ---------- */
+.login-page { background: transparent !important; }
+/* حذف پس‌زمینه‌های شلوغ قدیمی: پنل فیروزه‌ای توپال و شبکه نقطه‌ای حذف می‌شوند
+   تا فضای شیشه‌ای یکپارچه دیده شود */
+.login-visual { background: transparent !important; -webkit-backdrop-filter: none; backdrop-filter: none; }
+.login-constellation { display: none !important; }
+.login-visual .visual-content { color: #e8eeff; }
+.login-visual .visual-content p { color: rgba(217, 242, 255, .92); }
+.login-visual .visual-points span {
+    background: rgba(255, 255, 255, .10) !important;
+    border: 1px solid rgba(255, 255, 255, .20) !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    color: #e8eeff;
+}
+.login-card {
+    background: linear-gradient(150deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .06) 42%, rgba(255, 255, 255, .11)) !important;
+    border: 1px solid rgba(255, 255, 255, .26) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%);
+    backdrop-filter: blur(28px) saturate(180%);
+    box-shadow:
+        0 26px 75px rgba(2, 6, 23, .5),
+        inset 0 1px 0 rgba(255, 255, 255, .22) !important;
+}
+.login-brand h2 { color: #ffffff !important; }
+.login-brand p, .login-card label { color: rgba(230, 236, 255, .88) !important; }
+.login-school-name { color: #93c5fd !important; }
+.login-programmer { color: rgba(226, 232, 255, .7) !important; }
+.login-links a { color: #bfdbfe !important; }
+.login-links span, .login-note { color: rgba(226, 232, 255, .65) !important; }
+/* ---------- 8) سازگاری موبایل ---------- */
+@media (max-width: 768px) {
+    .comet { width: 130px; }
+    .comet--minor { width: 90px; }
+    .space-solar { transform: scale(.62); transform-origin: left bottom; }
+    .space-orbit--3 { display: none; }
+    .click-comet { width: 110px; }
+    .space-solar--top { inset-inline-start: 64px; }
+    .space-solar--mid { display: none; }
+}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}هشدار غیبت‌های زیاد{% endblock %}
+{% block page_title %}⚠️ هشدار غیبت‌های زیاد{% endblock %}
+{% block header_buttons %}<span class="header-badge">{{ absences|length|format_number }} دانش‌آموز</span>{% endblock %}
+{% block content %}
+<section class="notice"><span aria-hidden="true">⚠️</span><div><strong>دانش‌آموزان دارای بیش از ۵ روز غیبت</strong><p class="muted-text">این فهرست از رکوردهای حضور و غیاب ثبت‌شده محاسبه می‌شود و برای چاپ A4 آماده است.</p></div></section>
+<section class="card"><div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>نام</th><th>نام‌خانوادگی</th><th>کد دانش‌آموزی</th><th>تعداد غیبت</th></tr></thead><tbody>
+{% for a in absences %}<tr><td>{{ loop.index }}</td><td>{{ a.first_name or 'ثبت نشده' }}</td><td>{{ a.last_name or 'ثبت نشده' }}</td><td>{{ a.code or 'ثبت نشده' }}</td><td><span class="status-pill {{ 'status-pill--off' if a.abs_count > 10 else 'status-pill--ok' }}">{{ a.abs_count }} روز</span></td></tr>{% else %}<tr><td colspan="5" class="empty-state">✅ دانش‌آموزی با غیبت بیش از ۵ روز پیدا نشد.</td></tr>{% endfor %}
+</tbody></table></div></section>
+{% endblock %}

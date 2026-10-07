@@ -1,0 +1,397 @@
+/*
+ * سیستم طراحی شیشه‌ای (Glassmorphism) — نسخه ۴.۵۵
+ * تمام مقادیر از طریق CSS variables قابل شخصی‌سازی هستند.
+ */
+
+:root {
+  /* رنگ‌های اصلی — قابل تغییر از تنظیمات */
+  --glass-primary: #0b6374;
+  --glass-primary2: #0b4f6c;
+  --glass-teal: #087f5b;
+  --glass-danger: #b42318;
+  --glass-warning: #b54708;
+
+  /* رنگ‌های سطحی */
+  --glass-surface: rgba(255, 255, 255, 0.72);
+  --glass-surface-strong: rgba(255, 255, 255, 0.85);
+  --glass-surface-soft: rgba(255, 255, 255, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-soft: rgba(255, 255, 255, 0.3);
+
+  /* رنگ‌های سطحی حالت تاریک */
+  --glass-dark-surface: rgba(32, 44, 61, 0.72);
+  --glass-dark-surface-strong: rgba(32, 44, 61, 0.85);
+  --glass-dark-surface-soft: rgba(32, 44, 61, 0.55);
+  --glass-dark-border: rgba(255, 255, 255, 0.12);
+  --glass-dark-border-soft: rgba(255, 255, 255, 0.08);
+
+  /* افکت شیشه‌ای */
+  --glass-blur: 12px;
+  --glass-blur-strong: 20px;
+  --glass-blur-soft: 6px;
+  --glass-saturate: 1.4;
+  --glass-shadow: 0 8px 32px rgba(20, 33, 61, 0.12);
+  --glass-shadow-strong: 0 12px 40px rgba(20, 33, 61, 0.18);
+  --glass-shadow-soft: 0 4px 16px rgba(20, 33, 61, 0.08);
+
+  /* گوشه‌ها */
+  --glass-radius: 16px;
+  --glass-radius-sm: 10px;
+  --glass-radius-lg: 24px;
+  --glass-radius-xl: 32px;
+
+  /* فاصله‌ها */
+  --glass-gap: 16px;
+  --glass-gap-sm: 8px;
+  --glass-gap-lg: 24px;
+
+  /* انیمیشن */
+  --glass-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --glass-transition-fast: 0.15s ease;
+}
+
+/* کلاس‌های شیشه‌ای */
+.glass {
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--glass-radius);
+}
+
+.glass-strong {
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow-strong);
+  border-radius: var(--glass-radius);
+}
+
+.glass-soft {
+  background: var(--glass-surface-soft);
+  backdrop-filter: blur(var(--glass-blur-soft)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-soft)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border-soft);
+  box-shadow: var(--glass-shadow-soft);
+  border-radius: var(--glass-radius);
+}
+
+/* حالت تاریک */
+html[data-theme="dark"] .glass {
+  background: var(--glass-dark-surface);
+  border-color: var(--glass-dark-border);
+}
+
+html[data-theme="dark"] .glass-strong {
+  background: var(--glass-dark-surface-strong);
+  border-color: var(--glass-dark-border);
+}
+
+html[data-theme="dark"] .glass-soft {
+  background: var(--glass-dark-surface-soft);
+  border-color: var(--glass-dark-border-soft);
+}
+
+/* انیمیشن‌ها */
+.glass-animate {
+  transition: transform var(--glass-transition), box-shadow var(--glass-transition), background var(--glass-transition);
+}
+
+.glass-animate:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+/* کارت‌های آماری شیشه‌ای */
+.glass-stat-card {
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--glass-radius);
+  padding: var(--glass-gap);
+  transition: transform var(--glass-transition), box-shadow var(--glass-transition);
+}
+
+.glass-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+/* دکمه‌های شیشه‌ای */
+.glass-btn {
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur-soft));
+  -webkit-backdrop-filter: blur(var(--glass-blur-soft));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-sm);
+  padding: 8px 16px;
+  font-weight: 700;
+  transition: all var(--glass-transition-fast);
+  cursor: pointer;
+}
+
+.glass-btn:hover {
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-soft);
+  transform: translateY(-1px);
+}
+
+.glass-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* منوی شیشه‌ای موبایل */
+.glass-mobile-menu {
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-lg);
+  box-shadow: var(--glass-shadow-strong);
+}
+
+/* سوایپ موبایل */
+.glass-swipe {
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.glass-swipe-indicator {
+  width: 40px;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  margin: 8px auto;
+}
+
+/* تمام‌صفحه */
+.glass-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur-strong));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+/* جدول شیشه‌ای */
+.glass-table {
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  overflow: hidden;
+}
+
+.glass-table th {
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid var(--glass-border);
+  padding: 12px 16px;
+  font-weight: 700;
+}
+
+.glass-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--glass-border-soft);
+}
+
+.glass-table tr:hover td {
+  background: var(--glass-surface-soft);
+}
+
+/* فرم شیشه‌ای */
+.glass-input {
+  background: var(--glass-surface-soft);
+  backdrop-filter: blur(var(--glass-blur-soft));
+  -webkit-backdrop-filter: blur(var(--glass-blur-soft));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-sm);
+  padding: 10px 14px;
+  transition: all var(--glass-transition-fast);
+}
+
+.glass-input:focus {
+  background: var(--glass-surface);
+  border-color: var(--glass-primary);
+  box-shadow: 0 0 0 3px rgba(11, 99, 116, 0.15);
+  outline: none;
+}
+
+/* اسکرول‌بار شیشه‌ای */
+.glass-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.glass-scroll::-webkit-scrollbar-track {
+  background: var(--glass-surface-soft);
+  border-radius: 4px;
+}
+
+.glass-scroll::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 4px;
+}
+
+.glass-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--glass-border-soft);
+}
+
+/* واکنش‌گرایی */
+@media (max-width: 768px) {
+  :root {
+    --glass-gap: 12px;
+    --glass-radius: 12px;
+    --glass-blur: 8px;
+  }
+
+  .glass-stat-card {
+    padding: 12px;
+  }
+
+  .glass-table {
+    font-size: 12px;
+  }
+
+  .glass-table th,
+  .glass-table td {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --glass-gap: 8px;
+    --glass-radius: 8px;
+    --glass-blur: 6px;
+  }
+}
+
+/* چاپ */
+@media print {
+  .glass,
+  .glass-strong,
+  .glass-soft,
+  .glass-stat-card,
+  .glass-table {
+    background: #fff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
+}
+
+/* قابلیت‌های موبایل — نسخه ۴.۵۵ */
+.glass-swipe {
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.glass-swipe-indicator {
+  width: 40px;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  margin: 8px auto;
+}
+
+.glass-mobile-menu {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong)) saturate(var(--glass-saturate));
+  border-top: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-lg) var(--glass-radius-lg) 0 0;
+  padding: 16px;
+  transform: translateY(100%);
+  transition: transform var(--glass-transition);
+}
+
+.glass-mobile-menu.is-open {
+  transform: translateY(0);
+}
+
+.glass-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--glass-surface-strong);
+  backdrop-filter: blur(var(--glass-blur-strong));
+  -webkit-backdrop-filter: blur(var(--glass-blur-strong));
+  border-radius: 0;
+  overflow-y: auto;
+}
+
+.glass-animate-in {
+  animation: glassFadeIn 0.4s ease-out;
+}
+
+.glass-animate-out {
+  animation: glassFadeOut 0.3s ease-in;
+}
+
+@keyframes glassFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glassFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(10px); }
+}
+
+/* واکنش‌گرایی موبایل */
+@media (max-width: 768px) {
+  .glass-stat-card {
+    padding: 12px;
+  }
+
+  .glass-table {
+    font-size: 12px;
+  }
+
+  .glass-table th,
+  .glass-table td {
+    padding: 8px 10px;
+  }
+
+  .glass-mobile-menu {
+    display: block;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --glass-gap: 8px;
+    --glass-radius: 8px;
+    --glass-blur: 6px;
+  }
+
+  .glass-stat-card {
+    padding: 10px;
+  }
+
+  .glass-table {
+    font-size: 11px;
+  }
+
+  .glass-table th,
+  .glass-table td {
+    padding: 6px 8px;
+  }
+}

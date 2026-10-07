@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>دفترچه تلفن — {{ config.SCHOOL_NAME }}</title>
+<style>
+@font-face{font-family:VazirmatnLocal;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:VazirmatnLocal;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;color:#111;font-family:VazirmatnLocal,Vazirmatn,Tahoma,sans-serif;font-size:{{ font_size }}px;line-height:1.2}
+{% include 'contact_book_style.html' %}
+.print-btn{position:fixed;top:10px;left:10px;z-index:100;padding:8px 18px;border:0;border-radius:7px;background:#1a3a2a;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.print-btn:hover{background:#2d5a3f}
+.sheet-header{text-align:center;padding:3mm 3mm 2mm;border-bottom:1.5px solid #1a3a2a;margin-bottom:1.5mm}
+.sheet-header h1{font-size:13pt;font-weight:900;color:#1a3a2a;letter-spacing:.4px;margin:0}
+.sheet-header p{font-size:7pt;color:#555;font-weight:300;margin-top:.6mm}
+/* قواعد @page بیرون از @media print می‌آیند تا در چاپگرهای متفاوت سالم بمانند */
+@page{size:A4 landscape;margin:3mm 4mm{% if page_num == 'yes' %} 9mm{% endif %}}
+{% if page_num == 'yes' %}
+/* شمارهٔ صفحه با جعبهٔ حاشیه‌ای؛ در کرومیوم ۱۳۱ به بعد فعال است و در قدیمی‌ترها بی‌اثر می‌ماند */
+@page{@bottom-center{content:"صفحهٔ " counter(page) " از " counter(pages);font-family:VazirmatnLocal,Tahoma,sans-serif;font-size:8pt;color:#555}}
+{% endif %}
+@media print{
+ body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .print-btn{display:none!important}
+ .contact-book{font-size:{{ font_size }}px}
+ .book-title{font-size:12px;margin:0 0 4px}
+ .section{margin-bottom:3px}
+ .section-title{font-size:10px;height:{{ title_h }}px;line-height:{{ title_h }}px;padding:0 5px}
+ .contact-book th,.contact-book td{font-size:{{ font_size }}px;line-height:{{ cell_h }}px;height:{{ cell_h }}px}
+ .contact-book th{font-size:{{ font_size }}px;height:{{ hdr_h }}px;line-height:{{ hdr_h }}px}
+}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨️ چاپ A4</button>
+
+{% if sheet_header == 'yes' %}
+<div class="sheet-header">
+    <h1>{{ config.SCHOOL_NAME }}</h1>
+    <p>دفترچهٔ تلفن مدرسه · {{ config.PROGRAMMER_NAME }} · نسخهٔ {{ config.APP_VERSION }} · تاریخ چاپ: {{ jalali_date }} · {{ staff_count }} کارمند/راننده · {{ parent_count }} دانش‌آموز{% if class_filter %} · کلاس: {{ class_filter }}{% endif %}{% if staff_filter == 'teachers' %} · فقط معلمان{% elif staff_filter == 'drivers' %} · فقط رانندگان سرویس{% endif %}{% if group_by == 'class' %} · دسته‌بندی بر اساس کلاس{% endif %}</p>
+</div>
+{% endif %}
+
+<div class="contact-book{% if stripe == 'no' %} no-stripe{% endif %}">
+{% include 'contact_book_body.html' %}
+</div>
+</body>
+</html>

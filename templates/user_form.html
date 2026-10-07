@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'ویرایش کاربر' if editing else 'تعریف کاربر جدید' }}{% endblock %}
+{% block page_title %}{{ '✏️ ویرایش کاربر' if editing else '➕ تعریف کاربر جدید' }}{% endblock %}
+{% block content %}
+<div class="form-card">
+  {% if errors %}<div class="alert-danger"><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+  <div class="notice"><span>🔒</span><div>رمز اولیه به‌صورت هش‌شده ذخیره می‌شود و فقط رمز موقت یک‌بار در همین صفحه به مدیر نمایش داده می‌شود.</div></div>
+  <form method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-section"><h3>اطلاعات هویتی و تماس</h3><div class="form-row">
+      <div class="field-group"><label>نام کامل *</label><input name="full_name" value="{{ form_data.full_name or '' }}" required></div>
+      <div class="field-group"><label>شماره پرسنلی *</label><input name="personnel_number" value="{{ form_data.personnel_number or '' }}" required></div>
+    </div><div class="form-row">
+      <div class="field-group"><label>کد ملی</label><input name="national_id" maxlength="10" inputmode="numeric" value="{{ form_data.national_id or '' }}" placeholder="۱۰ رقم"></div>
+      <div class="field-group"><label>شماره تماس</label><input name="phone" maxlength="15" inputmode="tel" value="{{ form_data.phone or '' }}"></div>
+    </div></div>
+    <div class="form-section"><h3>نقش و انتساب</h3><div class="form-row">
+      <div class="field-group"><label>نقش *</label><select name="role" required><option value="teacher" {% if form_data.role == 'teacher' %}selected{% endif %}>معلم</option><option value="manager" {% if form_data.role == 'manager' %}selected{% endif %}>مدیر مدرسه</option><option value="admin" {% if form_data.role == 'admin' %}selected{% endif %}>مدیر سیستم</option></select></div>
+      <div class="field-group"><label>کد معلم</label><input name="teacher_code" value="{{ form_data.teacher_code or '' }}" placeholder="برای حساب معلم"></div>
+    </div></div>
+    <div class="form-section"><h3>دسترسی‌های قابل اعطا یا سلب</h3><p class="muted-text">برای اعمال دسترسی پیش‌فرض نقش، گزینه‌ای را انتخاب نکنید. اگر همه گزینه‌ها را بردارید، کاربر فقط به صفحه اصلی و تغییر رمز دسترسی خواهد داشت.</p><div class="permission-grid">
+      {% set selected = (form_data.permissions or '').split(',') if form_data.permissions and form_data.permissions != '__none__' else [] %}
+      {% for key,label in permission_choices.items() %}<label class="permission-item"><input type="checkbox" name="permissions" value="{{ key }}" {% if key in selected %}checked{% endif %}><span>{{ label }}</span></label>{% endfor %}
+    </div></div>
+    <div class="form-actions"><button class="btn btn--primary" type="submit">💾 ذخیره</button><a class="btn btn--muted" href="{{ url_for('users') }}">انصراف</a></div>
+  </form>
+</div>
+{% endblock %}

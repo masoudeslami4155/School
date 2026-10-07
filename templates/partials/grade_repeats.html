@@ -1,0 +1,34 @@
+{# ============================================================
+   بخش مشترک «تعداد توقف و سال ورود در همهٔ پایه‌ها»
+   — طراحی مجدد: در دسکتاپ و موبایل هر پایه یک کارت مرتب است.
+   قالب‌های استفاده‌کننده باید یک متغیر `current` (دیکشنری مقادیر
+   فعلی فرم) تعریف کنند؛ هر دو فرم ثبت و ویرایش این کار را می‌کنند.
+   ============================================================ #}
+{% set _src = current if current is defined else (form_data if form_data is defined else {}) %}
+<div class="repeats-grid repeats-grid-modern">
+    {% set grade_rows = [
+        ('prep', 'پایه آمادگی مقدماتی', 'repeat_grade_prep', 'entry_year_grade_prep'),
+        ('advanced', 'پایه آمادگی تکمیلی', 'repeat_grade_advanced', 'entry_year_grade_advanced'),
+        ('first1', 'پایه اول ۱', 'repeat_grade_first1', 'entry_year_grade_first1'),
+        ('first2', 'پایه اول ۲', 'repeat_grade_first2', 'entry_year_grade_first2'),
+        ('first3', 'پایه اول ۳', 'repeat_grade_first3', 'entry_year_grade_first3'),
+        ('2', 'پایه دوم', 'repeat_grade_2', 'entry_year_grade_2'),
+        ('3', 'پایه سوم', 'repeat_grade_3', 'entry_year_grade_3'),
+        ('4', 'پایه چهارم', 'repeat_grade_4', 'entry_year_grade_4'),
+        ('5', 'پایه پنجم', 'repeat_grade_5', 'entry_year_grade_5'),
+        ('6', 'پایه ششم', 'repeat_grade_6', 'entry_year_grade_6'),
+    ] %}
+    {% for grade_key, grade_title, repeat_name, entry_name in grade_rows %}
+    <div class="repeat-row">
+        <div class="grade-label">{{ grade_title }}</div>
+        <div class="grade-buttons" data-grade="{{ grade_key }}">
+            {% for i in range(0, 5) %}
+            <button type="button" data-value="{{ i }}" {% if _src[repeat_name]|string == i|string %}class="selected"{% endif %}>{{ i }}</button>
+            {% endfor %}
+        </div>
+        <label class="year-label" for="{{ entry_name }}">سال ورود</label>
+        <input type="text" class="year-input" id="{{ entry_name }}" name="{{ entry_name }}"
+               value="{{ _src[entry_name] or '' }}" placeholder="مثلاً ۱۴۰۰" inputmode="numeric">
+    </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}ویرایش کار{% endblock %}
+{% block page_title %}✏️ ویرایش کار / To-Do{% endblock %}
+{% block content %}
+<style>
+.form-card{background:var(--surface);color:var(--ink);padding:22px;border-radius:14px;border:1px solid var(--line);border-right:4px solid #7d3c98;max-width:760px;margin:0 auto}
+.form-row{display:flex;flex-wrap:wrap;gap:15px;margin-bottom:12px}
+.form-row .field-group{flex:1;min-width:180px}
+label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+input,select,textarea{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+.btn-submit{background:#7d3c98;color:#fff;padding:12px;border:none;border-radius:8px;width:100%;font-size:15px;font-weight:bold;cursor:pointer}
+.btn-back{background:var(--soft);color:var(--ink);border:1px solid var(--line);padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px}
+</style>
+<div class="form-card">
+  <h4 style="margin:0 0 14px">✏️ ویرایش کار</h4>
+  <form method="POST">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label>عنوان *</label><input type="text" name="title" value="{{ task.title }}" required></div>
+      <div class="field-group"><label>دسته</label><select name="category">{% for c in task_categories %}<option value="{{ c }}" {% if task.category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label>مهلت شمسی *</label><input type="text" name="due_date" value="{{ task.due_date }}" data-jdate required></div>
+      <div class="field-group"><label>ساعت یادآور</label><input type="text" name="due_time" value="{{ task.due_time or '' }}" data-timepicker></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label>اولویت</label><select name="priority"><option value="فوری" {% if task.priority=='فوری' %}selected{% endif %}>فوری</option><option value="مهم" {% if task.priority=='مهم' %}selected{% endif %}>مهم</option><option value="عادی" {% if task.priority=='عادی' or not task.priority %}selected{% endif %}>عادی</option><option value="کم" {% if task.priority=='کم' %}selected{% endif %}>کم</option></select></div>
+      <div class="field-group"><label>وضعیت</label><select name="status">{% for s in task_statuses %}<option value="{{ s }}" {% if task.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label>زمان آلارم</label><select name="alarm_minutes">{% for m in alarm_minute_options %}<option value="{{ m }}" {% if (task.alarm_minutes|int)==m %}selected{% endif %}>{% if m==0 %}در موعد{% elif m==1440 %}۱ روز قبل{% else %}{{ m }} دقیقه قبل{% endif %}</option>{% endfor %}</select></div>
+      <div class="field-group" style="display:flex;align-items:flex-end"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" name="alarm_enabled" value="1" {% if task.alarm_enabled %}checked{% endif %} style="width:auto"> آلارم فعال</label></div>
+    </div>
+    <div class="form-row"><div class="field-group"><label>توضیحات</label><textarea name="description" rows="3">{{ task.description or '' }}</textarea></div></div>
+    <button type="submit" class="btn-submit">💾 ذخیره تغییرات</button>
+  </form>
+  <div style="text-align:center"><a href="{{ url_for('calendar') }}" class="btn-back">🔙 بازگشت به تقویم</a></div>
+</div>
+{% endblock %}

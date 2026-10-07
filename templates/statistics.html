@@ -1,0 +1,238 @@
+{% extends 'base.html' %}
+{% block title %}داشبورد حرفه‌ای آمار مدرسه{% endblock %}
+{% block page_title %}📊 داشبورد حرفه‌ای آمار مدرسه{% endblock %}
+{% block content %}
+<style>@media print{ {{ school_statistics_layout|report_element_css|safe }} }
+    :root {
+        --ink:#172033; --muted:#64748b; --line:#e2e8f0; --soft:#f8fafc;
+        --primary:#2563eb; --success:#059669; --warning:#d97706; --danger:#dc2626;
+        --purple:#7c3aed; --cyan:#0891b2; --radius:18px;
+    }
+    .stats-page{color:var(--ink)}
+    .stats-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:24px;border-radius:var(--radius);color:#fff;background:linear-gradient(135deg,#172554,#1d4ed8 52%,#0891b2);box-shadow:0 14px 30px rgba(37,99,235,.18);margin-bottom:18px}
+    .stats-hero h1{font-size:25px;margin:0 0 8px;color:#fff}.stats-hero p{margin:0;color:#dbeafe;font-size:13px;line-height:1.9}.hero-kicker{opacity:.8;font-size:12px;margin-bottom:6px}.hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .stats-btn{border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font:inherit;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;transition:.2s}.stats-btn-light{color:#172554;background:#fff}.stats-btn-light:hover{background:#dbeafe}.stats-btn-ghost{color:#fff;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35)}.stats-btn-ghost:hover{background:rgba(255,255,255,.24)}.stats-btn-primary{color:#fff;background:var(--primary)}.stats-btn-primary:hover{background:#1d4ed8}.stats-btn-muted{color:var(--ink);background:#f1f5f9}
+    .filter-panel,.section-card,.kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 5px 16px rgba(15,23,42,.05)}
+    .filter-panel{padding:18px;margin-bottom:18px}.section-card{padding:18px;min-width:0;margin-bottom:14px}.section-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px}.section-heading h2{font-size:17px;margin:0;color:var(--ink)}.section-heading p{margin:3px 0 0;color:var(--muted);font-size:12px}
+    .filter-grid{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;align-items:end}.filter-field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px;font-weight:700}.filter-field input,.filter-field select{width:100%;min-height:42px;border:1px solid #cbd5e1;border-radius:10px;padding:8px 10px;background:#fff;font:inherit;font-size:13px;color:var(--ink)}.filter-field input:focus,.filter-field select:focus{outline:3px solid rgba(37,99,235,.14);border-color:var(--primary)}.filter-actions{display:flex;gap:8px;min-height:42px}.filter-actions .stats-btn{flex:1}.filter-error{margin-top:12px;padding:10px 12px;color:#991b1b;background:#fef2f2;border:1px solid #fecaca;border-radius:10px;font-size:13px}.filter-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px;color:var(--muted);font-size:12px}.filter-pill{background:#eff6ff;color:#1d4ed8;padding:5px 9px;border-radius:999px;font-weight:700}.filter-pill.neutral{background:#f1f5f9;color:#475569}
+    .quality-alert{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:-4px 0 18px;padding:14px 16px;border:1px solid #fed7aa;border-right:5px solid var(--warning);border-radius:14px;background:#fff7ed;color:#7c2d12;font-size:12px;line-height:1.9}.quality-alert strong{font-size:14px}.quality-items{display:flex;gap:8px;flex-wrap:wrap}.quality-chip{background:#ffedd5;border-radius:999px;padding:4px 9px;font-weight:700}
+    .kpi-grid{display:grid;grid-template-columns:repeat(6,minmax(120px,1fr));gap:12px;margin-bottom:18px}.kpi{position:relative;overflow:hidden;padding:16px}.kpi:after{content:'';position:absolute;left:-18px;bottom:-28px;width:70px;height:70px;border-radius:50%;background:var(--tint,#dbeafe);opacity:.55}.kpi-label{color:var(--muted);font-size:12px;font-weight:700}.kpi-value{color:var(--kpi,var(--ink));font-size:27px;font-weight:900;margin:7px 0 2px}.kpi-note{color:var(--muted);font-size:11px}.kpi-blue{--kpi:#2563eb;--tint:#dbeafe}.kpi-green{--kpi:#059669;--tint:#d1fae5}.kpi-red{--kpi:#dc2626;--tint:#fee2e2}.kpi-amber{--kpi:#d97706;--tint:#fef3c7}.kpi-purple{--kpi:#7c3aed;--tint:#ede9fe}.kpi-cyan{--kpi:#0891b2;--tint:#cffafe}
+    .status-grid{display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:10px;margin-bottom:18px}.status-card{padding:13px;border-radius:14px;background:var(--soft);border:1px solid var(--line)}.status-card .top{display:flex;justify-content:space-between;gap:8px;color:var(--muted);font-size:12px}.status-card strong{display:block;font-size:21px;margin:7px 0;color:var(--status-color,var(--ink))}.status-track{height:6px;border-radius:99px;background:#e2e8f0;overflow:hidden}.status-track span{display:block;height:100%;width:var(--status-width,0%);border-radius:inherit;background:var(--status-color,var(--primary))}.status-active{--status-color:#059669}.status-graduate{--status-color:#2563eb}.status-dropout{--status-color:#dc2626}.status-other{--status-color:#d97706}.status-total{--status-color:#475569}
+    .dashboard-grid{display:grid;grid-template-columns:1.05fr 1.6fr 1.05fr;gap:14px;margin-bottom:4px}.dashboard-grid .section-card{margin-bottom:14px}.muted{color:var(--muted);font-size:12px}.donut-wrap{display:flex;align-items:center;justify-content:center;gap:18px;min-height:190px}.donut{width:142px;height:142px;border-radius:50%;position:relative;background:conic-gradient(#059669 0 0%,#dc2626 0 100%);display:grid;place-items:center;flex:0 0 auto}.donut:after{content:'';width:96px;height:96px;border-radius:50%;background:#fff;position:absolute}.donut-label{position:relative;z-index:1;text-align:center;font-weight:900;color:var(--ink)}.donut-label strong{display:block;font-size:24px}.donut-label small{display:block;color:var(--muted);font-size:10px}.legend{display:grid;gap:9px;font-size:12px;color:var(--muted)}.legend-row{display:flex;align-items:center;gap:7px;white-space:nowrap}.legend-dot{width:9px;height:9px;border-radius:50%;display:inline-block}.dot-green{background:#059669}.dot-red{background:#dc2626}.dot-amber{background:#d97706}.chart-box{min-height:190px;display:flex;align-items:flex-end;gap:5px;padding:18px 5px 0;border-bottom:1px solid var(--line)}.bar-col{flex:1;min-width:10px;height:165px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px}.bar-stack{width:100%;max-width:22px;height:140px;display:flex;align-items:flex-end;flex-direction:column-reverse;justify-content:flex-start;gap:1px}.bar-segment{width:100%;min-height:2px;border-radius:4px 4px 0 0}.bar-label{color:var(--muted);font-size:9px;transform:rotate(-45deg);white-space:nowrap;margin-top:8px}.chart-empty{width:100%;text-align:center;color:var(--muted);padding:70px 0;font-size:12px}.teacher-mini{display:grid;gap:11px;margin-top:12px}.teacher-mini-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;font-size:12px}.mini-track{height:7px;background:#e2e8f0;border-radius:99px;overflow:hidden;grid-column:1/-1}.mini-track span{display:block;height:100%;width:var(--mini-width,0%);background:linear-gradient(90deg,#60a5fa,#2563eb);border-radius:inherit}
+    .content-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:14px;margin-bottom:0}.content-grid .section-card{margin-bottom:14px}.table-wrap{overflow-x:auto}.stats-table{width:100%;min-width:600px;border-collapse:collapse;font-size:12px}.stats-table th{background:#f1f5f9;color:#475569;border-bottom:1px solid var(--line);padding:10px 8px;text-align:right;white-space:nowrap}.stats-table td{border-bottom:1px solid #eef2f7;padding:10px 8px;text-align:right;vertical-align:middle}.stats-table tr:hover td{background:#f8fafc}.badge{display:inline-flex;min-width:27px;justify-content:center;padding:3px 7px;border-radius:999px;font-size:11px;font-weight:800}.badge-blue{color:#1d4ed8;background:#dbeafe}.badge-green{color:#047857;background:#d1fae5}.badge-red{color:#b91c1c;background:#fee2e2}.badge-amber{color:#92400e;background:#fef3c7}.progress-cell{min-width:115px}.progress{height:7px;border-radius:99px;background:#e2e8f0;overflow:hidden;margin-top:5px}.progress span{display:block;height:100%;width:var(--progress-width,0%);background:linear-gradient(90deg,#93c5fd,#2563eb);border-radius:inherit}.empty-row{text-align:center!important;color:var(--muted);padding:28px!important}.risk-list{display:grid;gap:8px}.risk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;font-size:12px}.risk-name{font-weight:800;color:#7c2d12}.risk-meta{color:#9a3412;font-size:11px;margin-top:3px}.finance-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.finance-item{padding:13px;border-radius:12px;background:#f8fafc;border:1px solid var(--line)}.finance-item small{color:var(--muted);display:block;font-size:11px}.finance-item strong{display:block;margin-top:6px;color:var(--ink);font-size:18px}.page-footer-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px}.print-note{color:var(--muted);font-size:11px}.print-filter-context{display:none}
+    @media(max-width:1050px){.filter-grid{grid-template-columns:repeat(3,1fr)}.kpi-grid{grid-template-columns:repeat(3,1fr)}.dashboard-grid{grid-template-columns:1fr 1.4fr}.dashboard-grid .section-card:last-child{grid-column:1/-1}}
+    @media(max-width:720px){.stats-hero{flex-direction:column;align-items:stretch;padding:18px}.hero-actions{justify-content:stretch}.hero-actions .stats-btn{flex:1}.filter-grid,.kpi-grid,.status-grid,.dashboard-grid,.content-grid{grid-template-columns:1fr 1fr}.filter-actions{grid-column:1/-1}.dashboard-grid .section-card:last-child,.content-grid .section-card:first-child{grid-column:1/-1}.donut-wrap{justify-content:space-around}.finance-grid{grid-template-columns:1fr 1fr}.quality-alert{grid-template-columns:1fr}}
+    @media(max-width:480px){.filter-grid,.kpi-grid,.status-grid,.dashboard-grid,.content-grid{grid-template-columns:1fr}.filter-actions{grid-column:auto}.kpi-value{font-size:24px}.donut-wrap{flex-direction:column;padding:12px 0}.finance-grid{grid-template-columns:1fr 1fr}}
+     .print-layout-hidden{display:none!important}
+     .print-breakdown-panel{display:grid;gap:12px;padding:15px 18px;margin-bottom:18px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(135deg,#eff6ff,#f8fafc)}.print-breakdown-panel__head{display:flex;align-items:center;justify-content:space-between;gap:10px}.print-breakdown-panel__head h2{margin:0;font-size:15px}.print-breakdown-panel__head p{margin:3px 0 0;color:var(--muted);font-size:11px}.print-breakdown-options{display:flex;flex-wrap:wrap;gap:8px}.print-breakdown-options label{display:flex;align-items:center;gap:6px;padding:8px 11px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;color:var(--ink);font-size:12px;font-weight:700}.print-breakdown-options input{accent-color:var(--primary)}.print-breakdown-panel__actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.print-breakdown-panel__hint{color:var(--muted);font-size:11px}.combined-breakdown-card{grid-column:1/-1}.combined-breakdown-card .section-heading{margin-bottom:8px}
+     .stats-print-footer{display:none}
+     @media print{
+      .stats-page[data-hide-hero="1"] .stats-hero,
+      .stats-page[data-hide-header="1"] .stats-hero,
+     .stats-page[data-hide-quality="1"] .quality-alert,
+     .stats-page[data-hide-kpi="1"] .kpi-grid,
+     .stats-page[data-hide-status="1"] .status-grid,
+     .stats-page[data-hide-attendance="1"] .dashboard-grid > :nth-child(1),
+     .stats-page[data-hide-trend="1"] .dashboard-grid > :nth-child(2),
+     .stats-page[data-hide-teachers="1"] .dashboard-grid > :nth-child(3),
+      .stats-page[data-hide-breakdowns="1"] .content-grid .section-card:has(.stats-table),
+      .stats-page[data-hide-breakdowns="1"] .combined-breakdown-card,
+       .stats-page[data-hide-risk="1"] .section-card:has(.risk-list),
+       .stats-page[data-hide-finance="1"] .section-card:has(.finance-grid){display:none!important}
+      }
+      @media print{
+      .stats-page[data-print-breakdowns="1"] .quality-alert,
+      .stats-page[data-print-breakdowns="1"] .kpi-grid,
+      .stats-page[data-print-breakdowns="1"] .status-grid,
+      .stats-page[data-print-breakdowns="1"] .dashboard-grid,
+      .stats-page[data-print-breakdowns="1"] .content-grid,
+      .stats-page[data-print-breakdowns="1"] .section-card:not(.combined-breakdown-card),
+      .stats-page[data-print-breakdowns="1"] .page-footer-actions,
+      .stats-page[data-print-breakdowns="1"] .print-breakdown-panel{display:none!important}
+      .stats-page[data-print-breakdowns="1"] .combined-breakdown-card{display:block!important;break-inside:auto}
+      .stats-page[data-print-breakdowns="1"] .stats-hero{margin-bottom:6px}
+      }
+     @media print{
+         @page{size:A4 {{ school_statistics_layout.orientation }};margin:{{ school_statistics_layout.margin.top }}mm {{ school_statistics_layout.margin.right }}mm {{ school_statistics_layout.margin.bottom }}mm {{ school_statistics_layout.margin.left }}mm}
+        body{background:#fff!important;padding:0!important}
+        .container{box-shadow:none!important;padding:0!important;max-width:none!important}
+        .no-print,.filter-panel,.hero-actions,.page-footer-actions,.footer,.header>div{display:none!important}
+        .stats-hero{color:#111827;background:#fff;box-shadow:none;border:1px solid #cbd5e1;padding:6px;margin-bottom:6px}
+        .stats-hero h1{font-size:14px}.stats-hero p{color:#111827;font-size:8px}
+        .quality-alert{margin:0 0 6px;padding:5px 7px;font-size:8px;line-height:1.4}
+        .quality-alert strong{font-size:9px}
+        .kpi-grid{gap:5px;margin-bottom:6px}.kpi{box-shadow:none;padding:6px}.kpi-value{font-size:15px;margin:2px 0}.kpi-label,.kpi-note{font-size:7px}
+        .status-grid{gap:5px;margin-bottom:6px}.status-card{padding:5px;box-shadow:none}.status-card strong{font-size:13px;margin:2px 0}.status-card .top{font-size:7px}
+        .dashboard-grid,.content-grid{grid-template-columns:1fr 1fr;gap:6px}.section-card{box-shadow:none;padding:6px;break-inside:auto;margin-bottom:6px}.section-heading{margin-bottom:4px}.section-heading h2{font-size:9px}.section-heading p,.muted{font-size:7px}
+        .stats-table{min-width:0;font-size:7px}.stats-table th{padding:2px 3px}.stats-table td{padding:2px 3px}.progress-cell{min-width:0}.risk-list{gap:3px}.risk-row{padding:4px;font-size:7px}
+        .finance-grid{gap:4px}.finance-item{padding:5px}.finance-item small{font-size:7px}.finance-item strong{font-size:11px;margin-top:2px}
+         .stats-page{font-size:{{ school_statistics_layout.font_size }}pt;line-height:{{ school_statistics_layout.line_height }}}
+         .print-layout-hidden{display:none!important}
+         .stats-print-footer{display:block;border-top:1px solid #999;margin-top:6px;padding-top:3px;text-align:center;font-size:7px;color:#555}
+        .print-filter-context{display:block!important;border:1px solid #999;background:#fff;padding:4px 6px;margin:0 0 6px;font-size:7.5px;line-height:1.5}
+    }
+</style>
+
+{% set total = total_stats.total_students|default(0, true) %}
+     <div class="stats-page"
+      data-print-breakdowns="{{ 1 if print_breakdown_mode else 0 }}"
+      data-hide-hero="{{ 0 if school_statistics_layout.sections.hero else 1 }}"
+      data-hide-header="{{ 0 if school_statistics_layout.show_header else 1 }}"
+     data-hide-quality="{{ 0 if school_statistics_layout.sections.quality else 1 }}"
+     data-hide-kpi="{{ 0 if school_statistics_layout.sections.kpi else 1 }}"
+     data-hide-status="{{ 0 if school_statistics_layout.sections.status else 1 }}"
+     data-hide-attendance="{{ 0 if school_statistics_layout.sections.attendance else 1 }}"
+     data-hide-trend="{{ 0 if school_statistics_layout.sections.trend else 1 }}"
+     data-hide-teachers="{{ 0 if school_statistics_layout.sections.teachers else 1 }}"
+     data-hide-breakdowns="{{ 0 if school_statistics_layout.sections.breakdowns else 1 }}"
+     data-hide-risk="{{ 0 if school_statistics_layout.sections.risk else 1 }}"
+     data-hide-finance="{{ 0 if school_statistics_layout.sections.finance else 1 }}">
+    <section class="stats-hero">
+        <div>
+            <div class="hero-kicker">داشبورد مدیریتی • شمارش واقعی رکوردهای دانش‌آموزان</div>
+            <h1>نمای کامل‌تر از جمعیت و عملکرد مدرسه</h1>
+            <p>جنسیت، کلاس سیدا، کلاس مدرسه، پایه، معلم، وضعیت و حضور و غیاب در یک گزارش قابل فیلتر و چاپ نمایش داده می‌شود.</p>
+        </div>
+        <div class="hero-actions no-print">
+            <button type="button" class="stats-btn stats-btn-light" onclick="window.print()"><i class="cil-print" aria-hidden="true"></i> چاپ داشبورد</button>
+            <a class="stats-btn stats-btn-ghost" href="{{ url_for('report_print_layouts', document='school_statistics') }}"><i class="cil-settings" aria-hidden="true"></i> طراحی چاپ</a>
+            <a class="stats-btn stats-btn-ghost" href="{{ url_for('index') }}"><i class="cil-home" aria-hidden="true"></i> صفحه اصلی</a>
+        </div>
+     </section>
+
+     <section class="print-breakdown-panel no-print" aria-labelledby="printBreakdownTitle">
+         <div class="print-breakdown-panel__head"><div><h2 id="printBreakdownTitle"><i class="cil-print" aria-hidden="true"></i> چاپ جدول ترکیبی آمار</h2><p>یک یا چند دسته را انتخاب کنید؛ هر دسته جداگانه در همان جدول چاپ می‌شود.</p></div><span class="filter-pill neutral">قابل استفاده با فیلترهای بالا</span></div>
+         <div class="print-breakdown-options">{% for option in stat_breakdown_options %}<label><input type="checkbox" value="{{ option.key }}" data-print-breakdown{% if not selected_breakdowns or option.key in selected_breakdowns %} checked{% endif %}> {{ option.label }}</label>{% endfor %}</div>
+         <div class="print-breakdown-panel__actions"><button class="stats-btn stats-btn-primary" type="button" id="printSelectedBreakdowns"><i class="cil-print" aria-hidden="true"></i> چاپ انتخاب‌شده‌ها در یک جدول</button><span class="print-breakdown-panel__hint">با انتخاب فقط «جنسیت»، خروجی تک‌جدولی جنسیت می‌گیرید؛ با انتخاب چند مورد، همه در یک جدول ادغام می‌شوند.</span></div>
+     </section>
+
+     {% if print_breakdown_mode %}
+     <section class="section-card combined-breakdown-card" aria-labelledby="combinedBreakdownTitle">
+         <div class="section-heading"><div><h2 id="combinedBreakdownTitle"><i class="cil-list" aria-hidden="true"></i> جدول ترکیبی آمار انتخاب‌شده</h2><p>{% for option in stat_breakdown_options if option.key in selected_breakdowns %}{{ option.label }}{% if not loop.last %}، {% endif %}{% endfor %}</p></div><span class="filter-pill">{{ combined_breakdown_rows|length }} ردیف</span></div>
+         <div class="table-wrap"><table class="stats-table combined-stats-table"><thead><tr><th>نوع آمار</th><th>مقدار</th><th>کل</th><th>فعال</th><th>فارغ‌التحصیل</th><th>ترک‌تحصیل</th><th>سهم</th></tr></thead><tbody>{% for item in combined_breakdown_rows %}<tr><td><strong>{{ item.dimension_label }}</strong></td><td>{{ item.label }}</td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-blue">{{ item.graduate_count }}</span></td><td><span class="badge badge-red">{{ item.dropout_count }}</span></td><td>{{ item.share }}٪</td></tr>{% else %}<tr><td class="empty-row" colspan="7">برای این انتخاب داده‌ای وجود ندارد.</td></tr>{% endfor %}</tbody></table></div>
+     </section>
+     {% endif %}
+
+    <section class="filter-panel no-print">
+        <div class="section-heading">
+            <div><h2><i class="cil-filter" aria-hidden="true"></i> فیلترهای دقیق گزارش</h2><p>همه فیلترها در کوئری دیتابیس اعمال می‌شوند؛ مخفی‌کردن ظاهری نیست.</p></div>
+            <span class="filter-pill neutral">سطح دسترسی: {{ {'admin':'مدیر سیستم','manager':'مدیر','teacher':'معلم'}.get(current_role, current_role or 'کاربر') }}</span>
+        </div>
+        <form method="get" action="{{ url_for('statistics') }}">
+            <div class="filter-grid">
+                <div class="filter-field"><label for="date_from">از تاریخ شمسی</label><input id="date_from" name="date_from" type="text" inputmode="numeric" placeholder="۱۴۰۵/۰۱/۰۱" value="{{ date_from or '' }}" data-jdate></div>
+                <div class="filter-field"><label for="date_to">تا تاریخ شمسی</label><input id="date_to" name="date_to" type="text" inputmode="numeric" placeholder="۱۴۰۵/۱۲/۲۹" value="{{ date_to or '' }}" data-jdate></div>
+                <div class="filter-field"><label for="status">وضعیت دانش‌آموز</label><select id="status" name="status">{% for key,label in status_options.items() %}<option value="{{ key }}" {% if status_filter == key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+                <div class="filter-field"><label for="gender">جنسیت</label><select id="gender" name="gender"><option value="">همه جنسیت‌ها</option>{% for item in gender_list %}<option value="{{ item }}" {% if gender == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+                <div class="filter-field"><label for="grade">پایه</label><select id="grade" name="grade"><option value="">همه پایه‌ها</option>{% for item in grade_list %}<option value="{{ item }}" {% if grade == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+                <div class="filter-field"><label for="class_name">کلاس مدرسه</label><select id="class_name" name="class_name"><option value="">همه کلاس‌ها</option>{% for item in class_list %}<option value="{{ item }}" {% if class_name == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+                <div class="filter-field"><label for="sida_class">کلاس سیدا</label><select id="sida_class" name="sida_class"><option value="">همه کلاس‌های سیدا</option>{% for item in sida_list %}<option value="{{ item }}" {% if sida_class == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></div>
+                <div class="filter-field"><label for="teacher_code">معلم</label><select id="teacher_code" name="teacher_code"><option value="">همه معلمان</option>{% for teacher in teachers_list %}<option value="{{ teacher.code }}" {% if teacher_code == teacher.code %}selected{% endif %}>{{ teacher.first_name }} {{ teacher.last_name }}</option>{% endfor %}</select></div>
+                <div class="filter-actions"><button class="stats-btn stats-btn-primary" type="submit"><i class="cil-search" aria-hidden="true"></i> اعمال فیلتر</button><a class="stats-btn stats-btn-muted" href="{{ url_for('statistics') }}">پاک‌سازی</a></div>
+            </div>
+        </form>
+        {% if date_error %}<div class="filter-error"><i class="cil-warning" aria-hidden="true"></i> {{ date_error }}</div>{% endif %}
+        <div class="filter-meta"><span class="filter-pill">محدوده: {{ scope_label }}</span><span>تعداد در محدوده: <strong>{{ selected_count|default(0, true) }}</strong></span>{% if filter_active_count %}<span>فیلترهای فعال: {{ filter_active_count }}</span>{% endif %}</div>
+    </section>
+
+    <section class="print-filter-context print-only">
+        <strong>دامنه و فیلترهای گزارش:</strong>
+        محدوده دسترسی: {{ scope_label }} · وضعیت: {{ status_options.get(status_filter, 'همه وضعیت‌ها') }} ·
+        از تاریخ: {{ date_from or 'همه تاریخ‌ها' }} · تا تاریخ: {{ date_to or 'همه تاریخ‌ها' }} ·
+        جنسیت: {{ 'ثبت نشده' if gender == '__empty__' else (gender or 'همه') }} ·
+        پایه: {{ 'ثبت نشده' if grade == '__empty__' else (grade or 'همه') }} ·
+        کلاس مدرسه: {{ 'ثبت نشده' if class_name == '__empty__' else (class_name or 'همه') }} ·
+        کلاس سیدا: {{ 'ثبت نشده' if sida_class == '__empty__' else (sida_class or 'همه') }} ·
+        معلم: {{ teacher_code or 'همه معلمان' }} · تعداد پس از فیلتر: {{ selected_count|default(0, true) }} · تاریخ چاپ: {{ jalali_datetime }}
+    </section>
+
+    {% if data_quality.missing_gender or data_quality.missing_sida or data_quality.missing_class or data_quality.unassigned_teacher %}
+    <section class="quality-alert">
+        <div><strong><i class="cil-warning" aria-hidden="true"></i> کیفیت داده‌های همین محدوده</strong><br>موارد ثبت‌نشده حذف نشده‌اند و در جدول‌ها با برچسب «ثبت نشده» یا «بدون معلم/کد نامعتبر» شمارش می‌شوند.</div>
+        <div class="quality-items">
+            {% if data_quality.missing_gender %}<span class="quality-chip">جنسیت ثبت‌نشده: {{ data_quality.missing_gender }}</span>{% endif %}
+            {% if data_quality.missing_sida %}<span class="quality-chip">کلاس سیدا ثبت‌نشده: {{ data_quality.missing_sida }}</span>{% endif %}
+            {% if data_quality.missing_class %}<span class="quality-chip">کلاس مدرسه ثبت‌نشده: {{ data_quality.missing_class }}</span>{% endif %}
+            {% if data_quality.unassigned_teacher %}<span class="quality-chip">معلم بدون انتساب معتبر: {{ data_quality.unassigned_teacher }}</span>{% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="kpi-grid">
+        <div class="kpi kpi-blue"><div class="kpi-label">جمعیت محدوده انتخابی</div><div class="kpi-value">{{ selected_count|default(0, true) }}</div><div class="kpi-note">پس از تمام فیلترها</div></div>
+        <div class="kpi kpi-green"><div class="kpi-label">نرخ حضور دانش‌آموزان</div><div class="kpi-value">{{ attendance_stats.attendance_rate|default(0, true) }}٪</div><div class="kpi-note">حاضر + تأخیر</div></div>
+        <div class="kpi kpi-red"><div class="kpi-label">رکورد غیبت</div><div class="kpi-value">{{ attendance_stats.absent|default(0, true) }}</div><div class="kpi-note">در بازه انتخابی</div></div>
+        <div class="kpi kpi-amber"><div class="kpi-label">نیازمند پیگیری</div><div class="kpi-value">{{ attendance_stats.at_risk_students|default(0, true) }}</div><div class="kpi-note">۳ غیبت یا بیشتر</div></div>
+        <div class="kpi kpi-purple"><div class="kpi-label">نرخ حضور معلمان</div><div class="kpi-value">{{ teacher_attendance_stats.attendance_rate|default(0, true) }}٪</div><div class="kpi-note">گزارش‌های ثبت‌شده</div></div>
+        <div class="kpi kpi-cyan"><div class="kpi-label">کل در فیلترها</div><div class="kpi-value">{{ total_stats.total_students|default(0, true) }}</div><div class="kpi-note">بدون فیلتر وضعیت</div></div>
+    </section>
+
+    <section class="status-grid">
+        <div class="status-card status-total"><div class="top"><span>کل</span><span>۱۰۰٪</span></div><strong>{{ total_stats.total_students|default(0, true) }}</strong><div class="status-track"><span style="--status-width:100%"></span></div></div>
+        <div class="status-card status-active"><div class="top"><span>فعال</span><span>{{ ((total_stats.active / total * 100 if total else 0)|round(1)) }}٪</span></div><strong>{{ total_stats.active|default(0, true) }}</strong><div class="status-track"><span style="--status-width:{{ ((total_stats.active / total * 100) if total else 0)|round(1) }}%"></span></div></div>
+        <div class="status-card status-graduate"><div class="top"><span>فارغ‌التحصیل</span><span>{{ ((total_stats.graduate / total * 100 if total else 0)|round(1)) }}٪</span></div><strong>{{ total_stats.graduate|default(0, true) }}</strong><div class="status-track"><span style="--status-width:{{ ((total_stats.graduate / total * 100) if total else 0)|round(1) }}%"></span></div></div>
+        <div class="status-card status-dropout"><div class="top"><span>ترک‌تحصیل</span><span>{{ ((total_stats.dropout / total * 100 if total else 0)|round(1)) }}٪</span></div><strong>{{ total_stats.dropout|default(0, true) }}</strong><div class="status-track"><span style="--status-width:{{ ((total_stats.dropout / total * 100) if total else 0)|round(1) }}%"></span></div></div>
+        <div class="status-card status-other"><div class="top"><span>سایر</span><span>{{ ((total_stats.other / total * 100 if total else 0)|round(1)) }}٪</span></div><strong>{{ total_stats.other|default(0, true) }}</strong><div class="status-track"><span style="--status-width:{{ ((total_stats.other / total * 100) if total else 0)|round(1) }}%"></span></div></div>
+    </section>
+
+    <section class="dashboard-grid">
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-filter" aria-hidden="true"></i> کیفیت حضور</h2><p>نسبت حضور و غیبت ثبت‌شده</p></div></div><div class="donut-wrap"><div id="attendanceDonut" class="donut"><div class="donut-label"><strong>{{ attendance_stats.attendance_rate|default(0, true) }}٪</strong><small>حضور مؤثر</small></div></div><div class="legend"><div class="legend-row"><i class="legend-dot dot-green"></i>حاضر: {{ attendance_stats.present|default(0, true) }}</div><div class="legend-row"><i class="legend-dot dot-amber"></i>تأخیر: {{ attendance_stats.late|default(0, true) }}</div><div class="legend-row"><i class="legend-dot dot-red"></i>غایب: {{ attendance_stats.absent|default(0, true) }}</div><div class="muted">کل رکوردها: {{ attendance_stats.total_records|default(0, true) }}</div></div></div></article>
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-chart-line" aria-hidden="true"></i> روند غیبت و تأخیر</h2><p>حداکثر ۳۰ تاریخ آخر در محدوده گزارش</p></div></div><div id="trendChart" class="chart-box" aria-label="نمودار روند غیبت و تأخیر"></div><div class="legend" style="display:flex;margin-top:12px;gap:14px"><div class="legend-row"><i class="legend-dot dot-red"></i>غیبت</div><div class="legend-row"><i class="legend-dot dot-amber"></i>تأخیر</div></div></article>
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-user-follow" aria-hidden="true"></i> وضعیت معلمان</h2><p>گزارش‌های ثبت‌شده در همین بازه</p></div></div><div class="teacher-mini"><div class="teacher-mini-row"><span>کل رکوردها</span><strong>{{ teacher_attendance_stats.total_records|default(0, true) }}</strong></div><div class="teacher-mini-row"><span>حاضر</span><span class="badge badge-green">{{ teacher_attendance_stats.present|default(0, true) }}</span><div class="mini-track"><span style="--mini-width:{{ ((teacher_attendance_stats.present / teacher_attendance_stats.total_records * 100) if teacher_attendance_stats.total_records else 0)|round(1) }}%"></span></div></div><div class="teacher-mini-row"><span>غایب</span><span class="badge badge-red">{{ teacher_attendance_stats.absent|default(0, true) }}</span><div class="mini-track"><span style="--mini-width:{{ ((teacher_attendance_stats.absent / teacher_attendance_stats.total_records * 100) if teacher_attendance_stats.total_records else 0)|round(1) }}%;background:#ef4444"></span></div></div><div class="teacher-mini-row"><span>تأخیر</span><span class="badge badge-amber">{{ teacher_attendance_stats.late|default(0, true) }}</span><div class="mini-track"><span style="--mini-width:{{ ((teacher_attendance_stats.late / teacher_attendance_stats.total_records * 100) if teacher_attendance_stats.total_records else 0)|round(1) }}%;background:#f59e0b"></span></div></div><div class="muted">دقایق تأخیر: {{ teacher_attendance_stats.late_minutes|default(0, true) }}</div></div></article>
+    </section>
+
+    <section class="content-grid">
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-user-follow" aria-hidden="true"></i> آمار بر اساس معلم</h2><p>هیچ دانش‌آموزی به‌دلیل کد نامعتبر حذف نمی‌شود.</p></div></div><div class="table-wrap"><table class="stats-table"><thead><tr><th>معلم</th><th>کل</th><th>فعال</th><th>غیبت</th><th>سهم</th></tr></thead><tbody>{% for item in teacher_stats %}<tr><td><strong>{{ item.teacher_name }}</strong><br><span class="muted">{% if item.code == unassigned_teacher_value %}بدون انتساب معتبر{% else %}{{ item.code }}{% endif %}</span></td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-red">{{ item.absent_count|default(0, true) }}</span></td><td class="progress-cell">{{ item.share }}٪<div class="progress"><span style="--progress-width:{{ item.share }}%"></span></div></td></tr>{% else %}<tr><td class="empty-row" colspan="5">در این محدوده داده‌ای وجود ندارد.</td></tr>{% endfor %}</tbody></table></div></article>
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-people" aria-hidden="true"></i> آمار بر اساس جنسیت</h2><p>مقادیر خالی نیز با برچسب «ثبت نشده» نمایش داده می‌شوند.</p></div></div><div class="table-wrap"><table class="stats-table"><thead><tr><th>جنسیت</th><th>کل</th><th>فعال</th><th>فارغ‌التحصیل</th><th>ترک‌تحصیل</th><th>سهم</th></tr></thead><tbody>{% for item in gender_stats %}<tr><td><strong>{{ item.label }}</strong></td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-blue">{{ item.graduate_count }}</span></td><td><span class="badge badge-red">{{ item.dropout_count }}</span></td><td>{{ item.share }}٪</td></tr>{% else %}<tr><td class="empty-row" colspan="6">داده‌ای وجود ندارد.</td></tr>{% endfor %}</tbody></table></div></article>
+    </section>
+
+    <section class="content-grid">
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-tags" aria-hidden="true"></i> آمار بر اساس کلاس سیدا</h2><p>کلاس‌های سیدا از ستون مستقل دیتابیس خوانده می‌شوند.</p></div></div><div class="table-wrap"><table class="stats-table"><thead><tr><th>کلاس سیدا</th><th>کل</th><th>فعال</th><th>فارغ‌التحصیل</th><th>ترک‌تحصیل</th><th>سهم</th></tr></thead><tbody>{% for item in sida_stats %}<tr><td><strong>{{ item.label }}</strong></td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-blue">{{ item.graduate_count }}</span></td><td><span class="badge badge-red">{{ item.dropout_count }}</span></td><td>{{ item.share }}٪</td></tr>{% else %}<tr><td class="empty-row" colspan="6">کلاس سیدایی برای نمایش وجود ندارد.</td></tr>{% endfor %}</tbody></table></div></article>
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-school" aria-hidden="true"></i> آمار بر اساس کلاس مدرسه</h2><p>کلاس مدرسه و موارد ثبت‌نشده همزمان قابل مشاهده‌اند.</p></div></div><div class="table-wrap"><table class="stats-table"><thead><tr><th>کلاس</th><th>کل</th><th>فعال</th><th>فارغ‌التحصیل</th><th>ترک‌تحصیل</th><th>سهم</th></tr></thead><tbody>{% for item in class_stats %}<tr><td><strong>{{ item.label }}</strong></td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-blue">{{ item.graduate_count }}</span></td><td><span class="badge badge-red">{{ item.dropout_count }}</span></td><td>{{ item.share }}٪</td></tr>{% else %}<tr><td class="empty-row" colspan="6">کلاسی برای نمایش وجود ندارد.</td></tr>{% endfor %}</tbody></table></div></article>
+    </section>
+
+    <section class="content-grid">
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-book" aria-hidden="true"></i> آمار بر اساس پایه</h2><p>تعداد و وضعیت دانش‌آموزان هر پایه</p></div></div><div class="table-wrap"><table class="stats-table"><thead><tr><th>پایه</th><th>کل</th><th>فعال</th><th>فارغ‌التحصیل</th><th>ترک‌تحصیل</th><th>سهم</th></tr></thead><tbody>{% for item in grade_stats %}<tr><td><strong>{{ item.label }}</strong></td><td><span class="badge badge-blue">{{ item.total }}</span></td><td><span class="badge badge-green">{{ item.active_count }}</span></td><td><span class="badge badge-blue">{{ item.graduate_count }}</span></td><td><span class="badge badge-red">{{ item.dropout_count }}</span></td><td>{{ item.share }}٪</td></tr>{% else %}<tr><td class="empty-row" colspan="6">پایه‌ای برای نمایش وجود ندارد.</td></tr>{% endfor %}</tbody></table></div></article>
+        <article class="section-card"><div class="section-heading"><div><h2><i class="cil-warning" aria-hidden="true"></i> دانش‌آموزان نیازمند پیگیری</h2><p>سه غیبت یا بیشتر در محدوده گزارش</p></div><span class="badge badge-amber">{{ attendance_stats.at_risk_students|default(0, true) }}</span></div><div class="risk-list">{% for item in absentee_students %}<div class="risk-row"><div><div class="risk-name">{{ item.first_name }} {{ item.last_name }}</div><div class="risk-meta">{{ item.grade or 'بدون پایه' }} • {{ item.class_name or 'بدون کلاس' }}</div></div><span class="badge badge-red">{{ item.absent_count }} غیبت</span></div>{% else %}<div class="empty-row">در این محدوده دانش‌آموز پرخطر ثبت نشده است.</div>{% endfor %}</div></article>
+    </section>
+
+    <section class="section-card"><div class="section-heading"><div><h2><i class="cil-credit-card" aria-hidden="true"></i> خلاصه خدمات و پرداخت‌ها</h2><p>محدوده دانش‌آموزی جاری؛ برای جزئیات از بخش مالی استفاده کنید.</p></div></div><div class="finance-grid"><div class="finance-item"><small>رکورد خدمات</small><strong>{{ service_stats.records|default(0, true) }}</strong></div><div class="finance-item"><small>مبلغ کل</small><strong>{{ service_stats.billed|default(0, true) }} <small style="display:inline">تومان</small></strong></div><div class="finance-item"><small>پرداخت‌شده</small><strong style="color:#059669">{{ service_stats.paid|default(0, true) }} <small style="display:inline">تومان</small></strong></div><div class="finance-item"><small>مانده</small><strong style="color:#dc2626">{{ service_stats.outstanding|default(0, true) }} <small style="display:inline">تومان</small></strong></div></div></section>
+
+    <div class="stats-print-footer{% if not school_statistics_layout.show_footer %} print-layout-hidden{% endif %}" data-report-element="footer">{{ config.SCHOOL_NAME }} · گزارش آمار مدرسه · تاریخ چاپ: {{ jalali_datetime }}</div>
+    <div class="page-footer-actions no-print"><span class="print-note"><i class="cil-info" aria-hidden="true"></i> فیلترها را اعمال کنید و سپس چاپ داشبورد را بزنید؛ جدول‌های آماری در چاپ نیز باقی می‌مانند.</span><a class="stats-btn stats-btn-muted" href="{{ url_for('index') }}">بازگشت به صفحه اصلی</a></div>
+</div>
+
+<script>
+(function(){
+    const selectors={
+        hero:'.stats-hero',quality:'.quality-alert',kpi:'.kpi-grid',status:'.status-grid',
+        attendance:'.dashboard-grid > .section-card:nth-child(1)',trend:'.dashboard-grid > .section-card:nth-child(2)',
+        teachers:'.dashboard-grid > .section-card:nth-child(3)',
+        breakdowns:'.content-grid .section-card:has(.stats-table),.combined-breakdown-card',
+        risk:'.risk-list',finance:'.section-card:has(.finance-grid)',
+    };
+    Object.entries(selectors).forEach(([key,selector])=>document.querySelectorAll(selector).forEach(element=>element.dataset.reportElement=key));
+})();
+(function(){
+    const attendanceRate=Number({{ attendance_stats.attendance_rate|default(0,true) }}), donut=document.getElementById('attendanceDonut');
+    if(donut){const rate=Math.max(0,Math.min(100,attendanceRate));donut.style.background=`conic-gradient(#059669 0 ${rate}%,#dc2626 ${rate}% 100%)`}
+    const data={{ trend_data|tojson }}, chart=document.getElementById('trendChart');
+    if(chart&&data.length){const max=Math.max(1,...data.map(x=>Number(x.absent||0)+Number(x.late||0)));const short=v=>String(v||'').replace(/^14(\d{2})\/(\d{2})\/(\d{2})$/,'$1/$2/$3');chart.innerHTML=data.map(x=>{const a=Number(x.absent||0),l=Number(x.late||0),ah=Math.max(a?3:0,a/max*132),lh=Math.max(l?3:0,l/max*132);return `<div class="bar-col" title="${short(x.label)} | غیبت: ${a} | تأخیر: ${l}"><div class="bar-stack"><span class="bar-segment" style="height:${ah}px;background:#ef4444"></span><span class="bar-segment" style="height:${lh}px;background:#f59e0b"></span></div><small class="bar-label">${short(x.label)}</small></div>`}).join('')}else if(chart){chart.innerHTML='<div class="chart-empty">برای این محدوده هنوز رکورد حضور و غیاب وجود ندارد.</div>'}
+})();
+(function(){
+    const choices=Array.from(document.querySelectorAll('[data-print-breakdown]'));
+    const button=document.getElementById('printSelectedBreakdowns');
+    if(!choices.length||!button)return;
+    function selected(){return choices.filter(x=>x.checked).map(x=>x.value)}
+    button.addEventListener('click',function(){
+        const values=selected();
+        if(!values.length){window.alert('حداقل یک دسته آماری را انتخاب کنید.');return}
+        const target=new URL(window.location.href);
+        target.searchParams.set('print_breakdowns',values.join(','));
+        target.searchParams.set('autoprint','1');
+        window.open(target.toString(),'_blank','noopener');
+    });
+    if({{ 'true' if auto_print else 'false' }})window.addEventListener('load',function(){window.setTimeout(function(){window.print()},250)});
+})();
+</script>
+{% endblock %}

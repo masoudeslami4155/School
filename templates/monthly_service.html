@@ -1,0 +1,490 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت سرویس ماهانه{% endblock %}
+{% block page_title %}<i class="cil-info" aria-hidden="true"></i> مدیریت هزینه‌ها و صدور سرویس ماهانه{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='monthly_service.css') }}">
+{% endblock %}
+{% block content %}
+{% set status_meta = {'کامل': ('cil-check-circle', 'full', 'تسویه کامل'), 'جزئی': ('cil-sync', 'partial', 'پرداخت جزئی'), 'پرداخت نشده': ('cil-x', 'unpaid', 'پرداخت نشده'), 'فاقد سرویس': ('cil-info', 'noservice', 'فاقد سرویس')} %}
+<div class="monthly-service" data-print-url="{{ url_for('monthly_service_print') }}">
+
+    <div class="ms-print-header">
+        <h1>گزارش مالی سرویس ماهانه</h1>
+        <div class="ms-print-sub">{{ config.SCHOOL_NAME }} · {{ jalali_datetime }}</div>
+    </div>
+
+    <section class="ms-stats" aria-label="آمار مالی">
+        <div class="ms-stat ms-stat--billed">
+            <span class="ms-stat__label"><i class="cil-money" aria-hidden="true"></i> مجموع مطالبات</span>
+            <strong class="ms-stat__value">{{ summary.billed|format_number|fa_digits }}</strong>
+            <small class="ms-stat__note">تومان</small>
+        </div>
+        <div class="ms-stat ms-stat--paid">
+            <span class="ms-stat__label"><i class="cil-check-circle" aria-hidden="true"></i> کل واریزی‌ها</span>
+            <strong class="ms-stat__value">{{ summary.paid|format_number|fa_digits }}</strong>
+            <small class="ms-stat__note">{% if summary.collection_rate is not none %}نرخ وصول {{ summary.collection_rate|fa_digits }}٪{% else %}—{% endif %}</small>
+        </div>
+        <div class="ms-stat ms-stat--remaining">
+            <span class="ms-stat__label"><i class="cil-x" aria-hidden="true"></i> مانده بدهی</span>
+            <strong class="ms-stat__value">{{ summary.remaining|format_number|fa_digits }}</strong>
+            <small class="ms-stat__note">تومان</small>
+        </div>
+        <div class="ms-stat ms-stat--debtors">
+            <span class="ms-stat__label"><i class="cil-user" aria-hidden="true"></i> بدهکاران</span>
+            <strong class="ms-stat__value">{{ summary.debtors|format_number|fa_digits }}</strong>
+            <small class="ms-stat__note">{% if summary.debtors %}میانگین هر نفر {{ summary.average_remaining|format_number|fa_digits }} تومان{% else %}بدون بدهی{% endif %}</small>
+        </div>
+        <div class="ms-stat ms-stat--records">
+            <span class="ms-stat__label"><i class="cil-file" aria-hidden="true"></i> رکوردهای فیلترشده</span>
+            <strong class="ms-stat__value">{{ summary.records|format_number|fa_digits }}</strong>
+            <small class="ms-stat__note">از کل سوابق</small>
+        </div>
+    </section>
+
+    <section class="ms-toolbar no-print" aria-label="عملیات">
+        <div class="ms-toolbar__actions">
+            <button class="btn btn--primary" type="button" data-toggle-filters aria-expanded="false" aria-controls="msFilters"><i class="cil-search" aria-hidden="true"></i> فیلترها</button>
+            <a class="btn btn--muted" href="{{ export_url }}"><i class="cil-cloud-download" aria-hidden="true"></i> خروجی اکسل سالانه</a>
+            <a class="btn btn--muted" href="{{ print_both_url }}" target="_blank" rel="noopener"><i class="cil-print" aria-hidden="true"></i> چاپ درخواست پرداخت و رسید دریافت</a>
+            <a class="btn btn--muted" href="{{ print_requests_url }}" target="_blank" rel="noopener"><i class="cil-file" aria-hidden="true"></i> چاپ برگه‌های درخواست پرداخت</a>
+            <a class="btn btn--muted" href="{{ print_receipts_url }}" target="_blank" rel="noopener"><i class="cil-description" aria-hidden="true"></i> چاپ رسیدهای دریافت وجه</a>
+            <a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='service_receipt') }}"><i class="cil-settings" aria-hidden="true"></i> استودیو طراحی چاپ</a>
+            <button class="btn btn--muted" type="button" onclick="window.print()"><i class="cil-print" aria-hidden="true"></i> چاپ جدول</button>
+        </div>
+    </section>
+
+    <details class="ms-filters no-print" id="msFilters"{% if filters.q or filters.year or filters.month or filters.status or filters.service_type or filters.class_name %} open{% endif %}>
+        <summary><i class="cil-search" aria-hidden="true"></i> فیلتر و جست‌وجو</summary>
+        <form method="GET" action="{{ url_for('monthly_service') }}">
+            <div class="ms-filter-grid">
+                <div class="ms-field">
+                    <label for="msYear">سال تحصیلی</label>
+                    <select id="msYear" name="year">
+                        <option value="">همه سال‌ها</option>
+                        {% for y in years %}<option value="{{ y }}" {% if filters.year == y %}selected{% endif %}>{{ y|fa_digits }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msMonth">ماه</label>
+                    <select id="msMonth" name="month">
+                        <option value="">همه ماه‌ها</option>
+                        {% for m in months %}<option value="{{ m }}" {% if filters.month == m %}selected{% endif %}>{{ m }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msStatus">وضعیت</label>
+                    <select id="msStatus" name="status">
+                        <option value="">همه وضعیت‌ها</option>
+                        {% for key, label in status_filters.items() %}
+                            <option value="{{ key }}" {% if filters.status == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msType">نوع سرویس</label>
+                    <select id="msType" name="service_type">
+                        <option value="">همه</option>
+                        {% for type in service_types %}<option value="{{ type }}" {% if filters.service_type == type %}selected{% endif %}>{{ type }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msClass">کلاس</label>
+                    <select id="msClass" name="class_name">
+                        <option value="">همه کلاس‌ها</option>
+                        {% for class_name in class_options %}<option value="{{ class_name }}" {% if filters.class_name == class_name %}selected{% endif %}>{{ class_name }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msSort">ترتیب</label>
+                    <select id="msSort" name="sort">
+                        {% for key, label in sort_options.items() %}
+                            <option value="{{ key }}" {% if filters.sort == key %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="msPerPage">تعداد در صفحه</label>
+                    <select id="msPerPage" name="per_page">
+                        {% for option in per_page_options %}<option value="{{ option }}" {% if per_page == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field ms-field--search">
+                    <label for="msSearch">جست‌وجوی نام یا کد</label>
+                    <input id="msSearch" name="q" type="search" value="{{ filters.q or '' }}" placeholder="نام، نام خانوادگی یا کد دانش‌آموز" autocomplete="off">
+                </div>
+            </div>
+            <div class="ms-filter-actions">
+                <button class="btn btn--primary" type="submit"><i class="cil-search" aria-hidden="true"></i> اعمال فیلتر</button>
+                <a class="btn btn--muted" href="{{ url_for('monthly_service') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن فیلترها</a>
+            </div>
+        </form>
+    </details>
+
+    <div class="ms-chips no-print">
+        {% if filters.year %}<span class="ms-chip">سال: {{ filters.year|fa_digits }}</span>{% endif %}
+        {% if filters.month %}<span class="ms-chip">ماه: {{ filters.month }}</span>{% endif %}
+        {% if filters.status %}<span class="ms-chip">وضعیت: {{ status_filters[filters.status] }}</span>{% endif %}
+        {% if filters.service_type %}<span class="ms-chip">نوع: {{ filters.service_type }}</span>{% endif %}
+        {% if filters.class_name %}<span class="ms-chip">کلاس: {{ filters.class_name }}</span>{% endif %}
+        {% if filters.q %}<span class="ms-chip">جست‌وجو: {{ filters.q }}</span>{% endif %}
+    </div>
+
+    <details class="ms-panel no-print"{% if total_records <= 300 %} open{% endif %}>
+        <summary><i class="cil-chart" aria-hidden="true"></i> تحلیل مالی ({{ trend|length|fa_digits }} دوره · {{ classes_summary|length|fa_digits }} کلاس)</summary>
+
+        <div class="ms-card">
+            <h3>روند ماهانه</h3>
+            {% set max_billed = (trend|map(attribute='billed')|max) or 0 %}
+            <div class="ms-bars">
+                {% for item in trend %}
+                    <div class="ms-bar-row">
+                        <span class="ms-bar-label">{{ item.label }}</span>
+                        <span class="ms-bar-track">
+                            <span class="ms-bar ms-bar--billed" style="width: {{ (item.billed * 100 / max_billed)|round(1) if max_billed else 0 }}%" title="مطالبات: {{ item.billed }}"></span>
+                            <span class="ms-bar ms-bar--paid" style="width: {{ (item.paid * 100 / max_billed)|round(1) if max_billed else 0 }}%" title="واریزی: {{ item.paid }}"></span>
+                        </span>
+                        <span class="ms-bar-value">
+                            {{ item.billed|format_number|fa_digits }}
+                            <small>{% if item.rate is not none %}{{ item.rate|fa_digits }}٪{% endif %}</small>
+                        </span>
+                    </div>
+                {% else %}
+                    <p class="ms-muted">داده‌ای برای نمایش نیست.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="ms-grid-2">
+            <div class="ms-card">
+                <h3>مقایسه کلاس‌ها</h3>
+                <div class="ms-table-scroll">
+                    <table class="ms-mini-table">
+                        <caption class="visually-hidden">وضعیت مالی کلاس‌ها</caption>
+                        <thead>
+                            <tr><th scope="col">کلاس</th><th scope="col">مانده</th><th scope="col">بدهکاران</th><th scope="col">نرخ وصول</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for item in classes_summary %}
+                                <tr>
+                                    <td>{{ item.class_name }}</td>
+                                    <td>{{ item.remaining|format_number|fa_digits }}</td>
+                                    <td>{{ item.debtors|fa_digits }}</td>
+                                    <td>{% if item.rate is not none %}<span class="ms-rate{{ ' is-low' if item.rate < 70 }}">{{ item.rate|fa_digits }}٪</span>{% else %}—{% endif %}</td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="4" class="ms-muted">داده‌ای نیست.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="ms-card">
+                <h3>بیشترین بدهکاران</h3>
+                <div class="ms-table-scroll">
+                    <table class="ms-mini-table">
+                        <caption class="visually-hidden">دانش‌آموزان با بیشترین مانده بدهی</caption>
+                        <thead>
+                            <tr><th scope="col">دانش‌آموز</th><th scope="col">کلاس</th><th scope="col">مانده</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for item in top_debtors %}
+                                <tr>
+                                    <td class="ms-mini-table__name">{{ item.first_name }} {{ item.last_name }}</td>
+                                    <td>{{ item.class_name }}</td>
+                                    <td class="ms-due">{{ item.remaining|format_number|fa_digits }}</td>
+                                </tr>
+                            {% else %}
+                                <tr><td colspan="3" class="ms-muted">بدهکاری وجود ندارد.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </details>
+
+    <details class="ms-panel no-print">
+        <summary><i class="cil-settings" aria-hidden="true"></i> مدیریت سرویس‌ها (مشخصات بانکی، هزینه‌ها، صدور لیست و ثبت پرداخت)</summary>
+
+        <div class="ms-card">
+            <h3><i class="cil-credit-card" aria-hidden="true"></i> مشخصات بانکی آموزشگاه (چاپ روی برگه‌های درخواست)</h3>
+            <form method="post" action="{{ url_for('monthly_service_settings') }}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="ms-filter-grid">
+                    <div class="ms-field">
+                        <label for="schoolCard">شماره کارت آموزشگاه</label>
+                        <input id="schoolCard" name="school_card" value="{{ settings.school_card }}" placeholder="6037-9970-0000-0000" dir="ltr" style="text-align:center">
+                    </div>
+                    <div class="ms-field">
+                        <label for="schoolAccount">شماره حساب آموزشگاه</label>
+                        <input id="schoolAccount" name="school_account" value="{{ settings.school_account }}" placeholder="0100000000000" dir="ltr" style="text-align:center">
+                    </div>
+                    <div class="ms-field">
+                        <label for="schoolAccountName">نام صاحب حساب</label>
+                        <input id="schoolAccountName" name="school_account_name" value="{{ settings.school_account_name }}" placeholder="{{ config.SCHOOL_NAME }}">
+                    </div>
+                </div>
+                <div class="ms-filter-actions">
+                    <button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره مشخصات بانکی</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="ms-card">
+            <h3><i class="cil-users" aria-hidden="true"></i> لیست دانش‌آموزان سرویسی و هزینه ماهانه</h3>
+            <p class="ms-muted">فقط دانش‌آموزانی که مبلغ آن‌ها بزرگ‌تر از صفر است در لیست ماهانه وارد می‌شوند.</p>
+            <form action="{{ url_for('add_student_to_service') }}" method="post" class="ms-inline-form">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="ms-field ms-field--grow">
+                    <label for="addServiceStudent">افزودن دانش‌آموز به سرویس</label>
+                    <select id="addServiceStudent" name="student_code" required>
+                        <option value="">-- انتخاب دانش‌آموز --</option>
+                        {% for st in students %}
+                            <option value="{{ st.code }}">{{ st.first_name }} {{ st.last_name }} ({{ st.code }}) — فعلی: {{ (st.service_fee or 0)|format_number|fa_digits }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="addServiceFee">هزینه ماهانه (تومان)</label>
+                    <input id="addServiceFee" name="fee" type="number" min="0" step="1000" required placeholder="650000">
+                </div>
+                <button type="submit" class="btn btn--primary"><i class="cil-plus" aria-hidden="true"></i> افزودن</button>
+            </form>
+
+            <form action="{{ url_for('update_student_service_fees') }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="ms-table-scroll ms-table-scroll--compact">
+                    <table class="ms-mini-table">
+                        <caption class="visually-hidden">ویرایش هزینه ماهانه دانش‌آموزان سرویسی</caption>
+                        <thead>
+                            <tr><th scope="col">ردیف</th><th scope="col">دانش‌آموز</th><th scope="col">کلاس</th><th scope="col">هزینه ماهانه (تومان)</th><th scope="col">حذف از سرویس</th></tr>
+                        </thead>
+                        <tbody>
+                            {% set service_count = namespace(value=0) %}
+                            {% for st in students if (st.service_fee|int) > 0 %}
+                                {% set service_count.value = service_count.value + 1 %}
+                                <tr>
+                                    <td>{{ service_count.value|fa_digits }}</td>
+                                    <td class="ms-mini-table__name">{{ st.first_name }} {{ st.last_name }}</td>
+                                    <td>{{ st.class_name or '—' }}</td>
+                                    <td><input type="number" name="fee_{{ st.code }}" value="{{ st.service_fee }}" step="1000" min="0" aria-label="هزینه ماهانه {{ st.first_name }} {{ st.last_name }}" style="width:150px;text-align:center;min-height:36px"></td>
+                                    <td>
+                                        <button type="submit" formaction="{{ url_for('remove_student_service_fee', student_code=st.code) }}" formmethod="post"
+                                                class="btn btn--danger" onclick="return confirm('آیا از خروج این دانش‌آموز از سرویس مطمئن هستید؟')"><i class="cil-x" aria-hidden="true"></i> حذف</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            {% if service_count.value == 0 %}
+                                <tr><td colspan="5" class="ms-muted">هیچ دانش‌آموزی در لیست سرویس نیست.</td></tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if service_count.value > 0 %}
+                    <div class="ms-filter-actions">
+                        <button type="submit" class="btn btn--primary"><i class="cil-save" aria-hidden="true"></i> ذخیره تغییرات مبالغ</button>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="ms-card">
+            <h3><i class="cil-bolt" aria-hidden="true"></i> صدور لیست ماهانه برای دانش‌آموزان سرویسی</h3>
+            <form action="{{ url_for('generate_monthly_services') }}" method="post" class="ms-inline-form">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="ms-field">
+                    <label for="generateYear">سال تحصیلی</label>
+                    <select id="generateYear" name="year" required>
+                        {% set year_choices = (years + [jalali_year|string])|unique|sort(reverse=true) %}
+                        {% for y in year_choices %}
+                            <option value="{{ y }}" {% if y|string == jalali_year|string %}selected{% endif %}>{{ y|fa_digits }}-{{ (y|int + 1)|fa_digits }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="generateMonth">ماه</label>
+                    <select id="generateMonth" name="month" required>
+                        {% for m in months %}<option value="{{ m }}">{{ m }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="ms-field">
+                    <label for="generateType">نوع سرویس</label>
+                    <select id="generateType" name="service_type">
+                        {% for type in service_types %}<option value="{{ type }}">{{ type }}</option>{% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn--primary"><i class="cil-plus" aria-hidden="true"></i> صدور لیست این ماه</button>
+            </form>
+            <p class="ms-muted">برای هر دانش‌آموز سرویسی، در هر ماه فقط یک رکورد ساخته می‌شود؛ رکوردهای موجود دست‌نخورده می‌مانند.</p>
+        </div>
+
+        <div class="ms-card">
+            <h3><i class="cil-plus" aria-hidden="true"></i> ثبت رکورد پرداخت جدید</h3>
+            <form action="{{ url_for('monthly_service') }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <div class="ms-filter-grid">
+                    <div class="ms-field ms-field--grow">
+                        <label for="paymentStudent">دانش‌آموز</label>
+                        <select id="paymentStudent" name="student_code" required>
+                            <option value="">-- انتخاب دانش‌آموز --</option>
+                            {% for st in students %}<option value="{{ st.code }}">{{ st.first_name }} {{ st.last_name }} — {{ st.code }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentYear">سال تحصیلی</label>
+                        <input id="paymentYear" name="year" inputmode="numeric" placeholder="1405" required>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentMonth">ماه</label>
+                        <select id="paymentMonth" name="month" required>{% for m in months %}<option value="{{ m }}">{{ m }}</option>{% endfor %}</select>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentType">نوع سرویس</label>
+                        <select id="paymentType" name="service_type">{% for type in service_types %}<option value="{{ type }}">{{ type }}</option>{% endfor %}</select>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentAmount">مبلغ مصوب (تومان)</label>
+                        <input id="paymentAmount" name="amount" type="number" min="0" step="1000" required>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentPaid">مبلغ پرداختی (تومان)</label>
+                        <input id="paymentPaid" name="paid_amount" type="number" min="0" step="1000" value="0" required>
+                    </div>
+                    <div class="ms-field">
+                        <label for="paymentDate">تاریخ پرداخت (شمسی)</label>
+                        <input id="paymentDate" name="payment_date" value="{{ today }}" inputmode="numeric" placeholder="1405/06/20" data-jdate>
+                    </div>
+                    <div class="ms-field ms-field--grow">
+                        <label for="paymentDescription">توضیحات</label>
+                        <input id="paymentDescription" name="description" maxlength="500" placeholder="توضیح اختیاری">
+                    </div>
+                </div>
+                <p class="ms-muted">اگر مبلغ پرداختی بزرگ‌تر از صفر باشد، تاریخ پرداخت الزامی است. برای ماهی که رکورد دارد از «ثبت واریز» همان ردیف استفاده کنید.</p>
+                <div class="ms-filter-actions">
+                    <button type="submit" class="btn btn--primary"><i class="cil-save" aria-hidden="true"></i> ثبت رکورد پرداخت</button>
+                </div>
+            </form>
+        </div>
+    </details>
+
+    <div class="ms-result-bar">
+        <span>نمایش <b>{{ page_start|fa_digits }}</b> تا <b>{{ page_end|fa_digits }}</b> از <b>{{ total_records|format_number|fa_digits }}</b> رکورد</span>
+        <span class="ms-muted">صفحه {{ page|fa_digits }} از {{ total_pages|fa_digits }}</span>
+    </div>
+
+    {% if services %}
+    <div class="ms-table-scroll ms-table-scroll--main">
+        <table class="ms-table">
+            <caption class="visually-hidden">سوابق سرویس ماهانه دانش‌آموزان</caption>
+            <thead>
+                <tr>
+                    <th scope="col" class="no-print"><input type="checkbox" id="msSelectAll" aria-label="انتخاب همه ردیف‌ها"></th>
+                    <th scope="col">#</th>
+                    <th scope="col">دانش‌آموز</th>
+                    <th scope="col">کد</th>
+                    <th scope="col">کلاس</th>
+                    <th scope="col">دوره</th>
+                    <th scope="col">نوع</th>
+                    <th scope="col">مبلغ مصوب</th>
+                    <th scope="col">پرداختی</th>
+                    <th scope="col">مانده</th>
+                    <th scope="col">وضعیت</th>
+                    <th scope="col">تاریخ پرداخت</th>
+                    <th scope="col" class="no-print">عملیات</th>
+                </tr>
+            </thead>
+            <tbody id="msRows">
+                {% for s in services %}
+                    {% set amount = s.amount|int %}
+                    {% set paid = s.paid_amount|int %}
+                    {% set remaining = amount - paid %}
+                    {% set meta = status_meta.get(s.status, ('cil-info', 'noservice', s.status)) %}
+                    <tr data-id="{{ s.id }}" data-amount="{{ amount }}" data-paid="{{ paid }}">
+                        <td class="no-print"><input type="checkbox" class="ms-row-check" value="{{ s.id }}" aria-label="انتخاب {{ s.first_name }} {{ s.last_name }}"></td>
+                        <td data-label="#">{{ loop.index + page_start - 1 }}</td>
+                        <td data-label="دانش‌آموز" class="ms-cell--name">{{ s.first_name }} {{ s.last_name }}</td>
+                        <td data-label="کد">{{ s.code }}</td>
+                        <td data-label="کلاس">{{ s.class_name or '—' }}</td>
+                        <td data-label="دوره">{{ s.month }} {{ s.year|fa_digits }}</td>
+                        <td data-label="نوع">{{ s.service_type or '—' }}</td>
+                        <td data-label="مبلغ مصوب">{{ amount|format_number|fa_digits }}</td>
+                        <td data-label="پرداختی">{{ paid|format_number|fa_digits }}</td>
+                        <td data-label="مانده" class="{{ 'ms-due' if remaining > 0 }}">{{ remaining|format_number|fa_digits }}</td>
+                        <td data-label="وضعیت"><span class="ms-status ms-status--{{ meta[1] }}"><i class="{{ meta[0] }}" aria-hidden="true"></i> {{ meta[2] }}</span></td>
+                        <td data-label="تاریخ پرداخت">{{ (s.payment_date or '—')|fa_digits }}</td>
+                        <td data-label="عملیات" class="no-print">
+                            <span class="ms-row-actions">
+                                <a class="ms-icon-btn" href="{{ url_for('edit_payment', id=s.id) }}" title="ثبت واریز / ویرایش"><i class="cil-pencil" aria-hidden="true"></i></a>
+                                {% if paid > 0 %}
+                                    <a class="ms-icon-btn" href="{{ url_for('monthly_service_print', kind='receipts', ids=s.id) }}" target="_blank" rel="noopener" title="رسید رسمی"><i class="cil-description" aria-hidden="true"></i></a>
+                                {% endif %}
+                                {% if amount > 0 and remaining > 0 %}
+                                    <a class="ms-icon-btn" href="{{ url_for('monthly_service_print', kind='requests', ids=s.id) }}" target="_blank" rel="noopener" title="برگه درخواست"><i class="cil-file" aria-hidden="true"></i></a>
+                                {% endif %}
+                                <form action="{{ url_for('delete_monthly_service', id=s.id) }}" method="post" onsubmit="return confirm('آیا از حذف این رکورد سرویس مطمئن هستید؟')">
+                                    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="ms-icon-btn ms-icon-btn--danger" title="حذف رکورد" aria-label="حذف رکورد {{ s.first_name }} {{ s.last_name }}"><i class="cil-trash" aria-hidden="true"></i></button>
+                                </form>
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="ms-bulk no-print">
+        <button class="btn btn--muted" type="button" id="msSelectAllButton"><i class="cil-check" aria-hidden="true"></i> انتخاب همه</button>
+        <span class="ms-bulk__count" role="status" aria-live="polite">۰ ردیف انتخاب شده</span>
+        <button class="btn btn--primary" type="button" id="msPrintSelected" disabled><i class="cil-print" aria-hidden="true"></i> چاپ برگه‌های انتخاب‌شده</button>
+        <button class="btn btn--muted" type="button" id="msClearSelection" hidden><i class="cil-x" aria-hidden="true"></i> پاک‌کردن انتخاب</button>
+        <span class="ms-muted">در هر صفحه A4، حداکثر چهار برگه شامل درخواست پرداخت و رسید دریافت چاپ می‌شود.</span>
+    </div>
+
+    {% if total_pages > 1 %}
+    <nav class="ms-pagination no-print" aria-label="صفحه‌بندی">
+        {% if prev_url %}<a class="ms-page" href="{{ prev_url }}" rel="prev">‹ قبلی</a>{% endif %}
+        {% for item in page_numbers %}
+            {% if item.number %}
+                <a class="ms-page{{ ' is-active' if item.active }}" href="{{ item.url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.number|fa_digits }}</a>
+            {% else %}
+                <span class="ms-page ms-page--gap">…</span>
+            {% endif %}
+        {% endfor %}
+        {% if next_url %}<a class="ms-page" href="{{ next_url }}" rel="next">بعدی ›</a>{% endif %}
+    </nav>
+    {% endif %}
+    {% else %}
+    <div class="ms-empty">
+        <span aria-hidden="true"><i class="cil-inbox" aria-hidden="true"></i></span>
+        <strong>رکوردی با این فیلترها پیدا نشد</strong>
+        <p>فیلترها را تغییر دهید یا برای ماه مورد نظر لیست صادر کنید.</p>
+        <a class="btn btn--primary" href="{{ url_for('monthly_service') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن فیلترها</a>
+    </div>
+    {% endif %}
+
+    <details class="ms-danger no-print">
+        <summary><i class="cil-settings" aria-hidden="true"></i> نگهداری و پاک‌سازی</summary>
+        <div class="ms-danger__actions">
+            <form action="{{ url_for('rebuild_monthly_status') }}" method="post" onsubmit="return confirm('وضعیت همه رکوردها بر اساس مبالغ بازسازی شود؟')">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn--muted"><i class="cil-recycle" aria-hidden="true"></i> بازسازی وضعیت‌ها</button>
+            </form>
+            {% if zero_total > 0 %}
+            <form action="{{ url_for('delete_zero_monthly_services') }}" method="post" onsubmit="return confirm('تمام رکوردهای با مبلغ و پرداختی صفر حذف شوند؟')">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="btn btn--danger"><i class="cil-brush" aria-hidden="true"></i> حذف رکوردهای صفر ({{ zero_total|format_number|fa_digits }} مورد)</button>
+            </form>
+            {% endif %}
+        </div>
+    </details>
+
+    <div class="ms-print-footer">
+        گزارش مالی سرویس ماهانه · {{ config.SCHOOL_NAME }} · {{ jalali_datetime }}
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+    <script src="{{ url_for('static', filename='monthly_service.js') }}" defer></script>
+{% endblock %}
