@@ -1,0 +1,45 @@
+# ------------------------------------------------------------------
+# یکدست‌سازی پایان خط‌ها — سامانه مدیریت مدرسه
+# ------------------------------------------------------------------
+# قاعده: هر فایل متنی در مخزن و در پوشهٔ کار با LF ذخیره می‌شود،
+# مستقل از سیستم‌عاملی که پروژه روی آن باز می‌شود. تنها استثنا،
+# فایل‌های دستهٔ ویندوز (.bat) هستند که باید CRLF بمانند.
+
+* text=auto eol=lf
+
+# --- اسکریپت‌های ویندوزی: CRLF اجباری ---
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# --- فایل‌های متنی صریح (خوانا در دیف، بدون تشخیص خودکار) ---
+*.py  text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js  text eol=lf
+*.json text eol=lf
+*.md  text eol=lf
+*.txt text eol=lf
+
+# --- دارایی‌های دودویی: گیت نباید تبدیل یا دیف متنی بگیرد ---
+*.woff2 binary
+*.woff  binary
+*.ttf   binary
+*.eot   binary
+*.otf   binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.svg   text eol=lf
+*.pdf   binary
+*.xlsx  binary
+*.db    binary
+*.zip   binary
+*.bundle binary
+
+# --- پوشه‌های خارج از مخزن (برای وضوح خواننده) ---
+backups/** -text
+logs/** -text
+static/uploads/** -text

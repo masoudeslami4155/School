@@ -1,0 +1,54 @@
+# ------------------------------------------------------------------
+# سامانه مدیریت مدرسه — فایل‌هایی که هرگز نباید در گیت ثبت شوند
+# ------------------------------------------------------------------
+
+# --- دادهٔ واقعی مدرسه و نشست محلی ---
+school.db
+school.db-shm
+school.db-wal
+*.db-journal
+.secret_key
+initial_credentials.txt
+
+# --- پشتیبان‌ها، لاگ‌ها و فایل‌های بارگذاری‌شدهٔ کاربران ---
+backups/
+logs/
+static/uploads/
+
+# --- بسته‌های پشتیبان آفلاین (مخزن + داده، ساخته‌شده با tools/offline_backup.py) ---
+offline_backups/
+*.bundle
+tools/backup_target.txt
+
+# --- پایتون ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- ابزارها و ویرایشگرها ---
+.freebuff/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- متغیرهای محیطی و رمزها ---
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.log
+
+# --- بسته‌های ZIP پروژه ---
+# آرشیو ZIP این پروژه شامل school.db، .secret_key و initial_credentials.txt است
+# و هرگز نباید در گیت ثبت شود.
+*.zip
