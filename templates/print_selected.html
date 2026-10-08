@@ -1,0 +1,8 @@
+{% extends 'print_student.html' %}
+{% block records %}
+{% for row in print_rows %}
+{% with student=row.student, profile_sections=row.profile_sections, grade_repeat_rows=row.grade_repeat_rows, siblings=row.siblings %}
+{% include 'partials/student_print_record.html' %}
+{% endwith %}
+{% else %}<p class="print-note">پرونده‌ای برای چاپ پیدا نشد.</p>{% endfor %}
+{% endblock %}

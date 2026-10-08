@@ -1,0 +1,42 @@
+{% macro item_style(key) -%}
+left:{{ layout.elements[key].x }}%;top:{{ layout.elements[key].y }}%;width:{{ layout.elements[key].w }}%;height:{{ layout.elements[key].h }}%;font-size:calc({{ layout.elements[key].font }}cqw * {{ layout.font_scale }})
+{%- endmacro %}
+<div class="certificate-page" data-orientation="{{ layout.orientation }}" data-paper="{{ layout.paper_size }}" style="--frame-margin:{{ layout.frame_margin }}mm;--frame-border:{{ layout.border_width }}mm">
+  <article class="certificate">
+    {% if photo_url %}
+    <img class="certificate__element certificate__photo" data-cert-element="photo" style="{{ item_style('photo') }}" src="{{ photo_url }}" alt="عکس دانش‌آموز">
+    {% elif studio_mode %}
+    <div class="certificate__element certificate__photo certificate__photo--placeholder" data-cert-element="photo" style="{{ item_style('photo') }}">عکس دانش‌آموز</div>
+    {% endif %}
+    <div class="certificate__element certificate__number" data-cert-element="number" style="{{ item_style('number') }}">شماره: <b>{{ values.certificate_number|fa_digits or '—' }}</b></div>
+    <div class="certificate__element certificate__masthead-item" data-cert-element="country" style="{{ item_style('country') }}">جمهوری اسلامی ایران</div>
+    <div class="certificate__element certificate__masthead-item" data-cert-element="ministry" style="{{ item_style('ministry') }}">وزارت آموزش و پرورش</div>
+    <div class="certificate__element certificate__masthead-item" data-cert-element="period" style="{{ item_style('period') }}">دوره تحصیلی: <b>{{ values.education_period }}</b></div>
+    <h1 class="certificate__element certificate__title" data-cert-element="title" style="{{ item_style('title') }}">گواهی اشتغال به تحصیل</h1>
+
+    <div class="certificate__element certificate__field certificate__field--statement" data-cert-element="statement" style="{{ item_style('statement') }}"><b>بدین‌وسیله گواهی می‌شود {{ values.full_name }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="national_id" style="{{ item_style('national_id') }}"><span>کد ملی</span><b>{{ values.national_id|fa_digits or '—' }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="father" style="{{ item_style('father') }}"><span>فرزند:</span><b>{{ values.father_name or '—' }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="id_number" style="{{ item_style('id_number') }}"><span>شماره شناسنامه:</span><b>{{ values.national_id|fa_digits or '—' }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="birth_date" style="{{ item_style('birth_date') }}"><span>تاریخ تولد:</span><b>{{ values.birth_date|fa_digits or '—' }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="academic_year" style="{{ item_style('academic_year') }}"><span>سال تحصیلی:</span><b>{{ values.academic_year|fa_digits or '—' }}</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="school" style="{{ item_style('school') }}"><span>در مدرسه:</span><b>{{ values.school_short_name }} ({{ values.school_code|fa_digits }})</b></div>
+    <div class="certificate__element certificate__field" data-cert-element="grade" style="{{ item_style('grade') }}"><span>در پایه:</span><b>{{ grade_line }}</b></div>
+    <div class="certificate__element certificate__field certificate__field--program" data-cert-element="program" style="{{ item_style('program') }}"><span>رشته:</span><b>{{ values.study_program }}</b></div>
+
+    <div class="certificate__element certificate__status" data-cert-element="status" style="{{ item_style('status') }}">مشغول به تحصیل می‌باشد</div>
+    <div class="certificate__element certificate__request-label" data-cert-element="request_label" style="{{ item_style('request_label') }}">این گواهی طبق تقاضای مورخ:</div>
+    <div class="certificate__element certificate__request-value" data-cert-element="issue_date" style="{{ item_style('issue_date') }}">{{ values.issue_date|fa_digits }}</div>
+    <div class="certificate__element certificate__request-label" data-cert-element="purpose_label" style="{{ item_style('purpose_label') }}">فقط به منظور ارائه به:</div>
+    <div class="certificate__element certificate__request-value" data-cert-element="purpose" style="{{ item_style('purpose') }}">{{ values.purpose }}</div>
+    <div class="certificate__element certificate__request-disclaimer" data-cert-element="disclaimer" style="{{ item_style('disclaimer') }}">صادر گردیده و فاقد هرگونه ارزش دیگری می‌باشد.</div>
+    <div class="certificate__element certificate__warning" data-cert-element="warning" style="{{ item_style('warning') }}">بدون تأیید و مهر و امضای زنده مدیر مدرسه، این گواهی فاقد اعتبار می‌باشد</div>
+    <div class="certificate__element certificate__signature-title" data-cert-element="signature_title" style="{{ item_style('signature_title') }}">مهر و امضا مدیر مدرسه</div>
+    <div class="certificate__element certificate__signature-name" data-cert-element="signature_name" style="{{ item_style('signature_name') }}">{{ values.director_name }} - {{ values.school_short_name }}</div>
+    {% if studio_mode %}
+    <div class="certificate__element certificate__qr certificate__qr--placeholder" data-cert-element="qr" style="{{ item_style('qr') }}">QR</div>
+    {% else %}
+    <img class="certificate__element certificate__qr" data-cert-element="qr" data-qr-position="right" style="{{ item_style('qr') }}" src="{{ qr_data_uri }}" alt="QR گواهی اشتغال به تحصیل">
+    {% endif %}
+  </article>
+</div>

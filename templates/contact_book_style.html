@@ -1,0 +1,24 @@
+{# استایل مشترک جدول‌های دفترچه — داخل <style> هر دو قالب (نمایش و چاپ) قرار می‌گیرد. #}
+.contact-book{font-family:VazirmatnLocal,Vazirmatn,Tahoma,sans-serif;color:#111;font-size:{{ font_size }}px;line-height:1.2;background:#fff}
+.book-title{font-size:14px;text-align:center;margin:2px 0 5px;font-weight:700;color:#222}
+.columns-1{column-count:1}.columns-2{column-count:2}.columns-3{column-count:3}.columns-4{column-count:4}
+.contact-book .columns-1,.contact-book .columns-2,.contact-book .columns-3,.contact-book .columns-4{column-gap:{{ col_gap }};column-fill:auto}
+.book{break-inside:auto}
+.section{break-inside:avoid;page-break-inside:avoid;margin-bottom:4px}
+.section-title{font-size:10px;font-weight:700;background:{{ sec_bg }};color:{{ sec_fg }};padding:0 6px;border:{{ border_w }}px solid {{ border_color }};border-bottom:none;line-height:{{ title_h }}px;height:{{ title_h }}px;letter-spacing:.5px;text-align:center}
+.contact-book table{width:100%;border-collapse:collapse;table-layout:fixed}
+.contact-book th,.contact-book td{border:{{ border_w }}px solid {{ border_color }};padding:0;text-align:center;vertical-align:middle;font-size:{{ font_size }}px;line-height:{{ cell_h }}px;height:{{ cell_h }}px;overflow:hidden;white-space:nowrap}
+.contact-book th{background:{{ hdr_bg }};font-weight:700;font-size:{{ font_size }}px;color:{{ hdr_fg }};height:{{ hdr_h }}px;line-height:{{ hdr_h }}px}
+.contact-book tr:nth-child(even){background:{{ even_bg }}}
+.contact-book tr:nth-child(odd){background:{{ odd_bg }}}
+.contact-book.no-stripe tr,.contact-book.no-stripe tr:nth-child(even){background:{{ odd_bg }}}
+.col-name{text-align:right!important;padding:0 4px 0 2px!important;font-weight:500;direction:rtl}
+.col-phone{text-align:center;direction:ltr;font-weight:700;color:#000;background:{{ phone_bg }};letter-spacing:0}
+.contact-book tr:nth-child(even) .col-phone{background:{{ phone_bg }}}
+.col-text{text-align:center;font-weight:500;direction:rtl;padding:0 3px!important}
+.col-no{text-align:center;font-weight:700;color:#555}
+.cell-empty{font-weight:400;color:#999}
+.contact-type{font-size:7px;color:#666;font-weight:700}
+.blank-line{display:inline-block;width:60%;min-width:6mm;max-width:22mm;height:1em;border-bottom:1px solid #777;vertical-align:bottom}
+.new-page{break-before:page;page-break-before:always}
+.extra-row td{background:transparent}

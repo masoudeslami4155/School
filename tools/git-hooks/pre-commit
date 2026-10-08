@@ -1,0 +1,145 @@
+#!/bin/sh
+# ------------------------------------------------------------------
+# هوک پیش از کامیت — سامانهٔ مدیریت مدرسه
+#   ۱) کامپایل همهٔ فایل‌های پایتون
+#   ۲) بررسی مستندات، هم‌خوانی نسخه و پیوندها (tests/docs_consistency_test.py)
+#   ۳) اجرای اسموکتست مسیرهای GET (tests/smoke_get_routes.py)
+#   ۴) آزمون تنظیمات دفترچه تلفن (tests/contact_book_settings_test.py)
+#   ۵) آزمون طراحی چیدمان چاپ A4 (tests/print_layouts_test.py)
+#   ۶) آزمون تنظیمات چاپ گزارش‌ها (tests/report_print_layouts_test.py)
+#   ۷) آزمون چاپ ترکیبی آمار (tests/statistics_print_test.py)
+# خروج با کد غیرصفر یعنی کامیت انجام نمی‌شود.
+#
+# رد کردن اضطراری یک کامیت:   SKIP_SMOKE=1 git commit ... — همهٔ مراحل زیر رد می‌شوند.
+# این هوک‌ها از tools/git-hooks خوانده می‌شوند و پس از کلون تازه
+# به‌طور خودکار فعالند؛ نیازی به کپی دستی نیست.
+# ------------------------------------------------------------------
+set -u
+
+# چاپ متن فارسی با نمایش درست در کنسول کلاسیک ویندوز
+# (اگر پایتون یا ابزار موجود نبود: چاپ ساده — هیچ‌وقت کامیت را نمی‌شکند)
+say() {
+    if [ -n "${PY:-}" ] && [ -f tools/console_text.py ]; then
+        $PY tools/console_text.py --echo "$1" 2>/dev/null || printf '%s\n' "$1"
+    else
+        printf '%s\n' "$1"
+    fi
+}
+
+if [ "${SKIP_SMOKE:-0}" = "1" ]; then
+    say "→ SKIP_SMOKE=1: بررسی پیش از کامیت رد شد."
+    exit 0
+fi
+
+PY=""
+if command -v python >/dev/null 2>&1; then
+    PY="python"
+elif command -v python3 >/dev/null 2>&1; then
+    PY="python3"
+elif command -v py >/dev/null 2>&1; then
+    PY="py -3"
+fi
+
+if [ -z "$PY" ]; then
+    say "⚠ پایتون در محیط گیت پیدا نشد؛ بررسی پیش از کامیت انجام نشد." >&2
+    say "  برای بررسی دستی: python tests/smoke_get_routes.py" >&2
+    exit 0
+fi
+
+# خروجی یونیکد در کنسول کلاسیک ویندوز (cp1252): بدون این دو متغیر
+# چاپ «✓» و متن فارسی در آزمون‌ها با UnicodeEncodeError می‌شکند.
+export PYTHONUTF8=1
+export PYTHONIOENCODING=utf-8
+
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || exit 0
+cd "$ROOT" || exit 1
+
+say "── بررسی پیش از کامیت ──"
+COMPILE_LOG="${TMPDIR:-/tmp}/school_compileall.log"
+
+say "۱/۷ کامپایل فایل‌های پایتون..."
+if ! $PY -m compileall -q . -x '(\.freebuff|__pycache__|backups|logs)' >"$COMPILE_LOG" 2>&1; then
+    say "✗ خطای کامپایل پایتون — کامیت انجام نشد:" >&2
+    sed 's/^/    /' "$COMPILE_LOG" | head -40 >&2
+    exit 1
+fi
+say "  ✓ همهٔ فایل‌های پایتون سالماند."
+
+if [ -f tests/docs_consistency_test.py ]; then
+    say "۲/۷ بررسی مستندات، هم‌خوانی نسخه و پیوندها..."
+    if ! $PY tests/docs_consistency_test.py; then
+        say "✗ بررسی مستندات شکست خورد — کامیت انجام نشد." >&2
+        say "  گزارش کامل: python tests/docs_consistency_test.py" >&2
+        exit 1
+    fi
+else
+    say "۲/۷ فایل آزمون مستندات نبود؛ رد شد."
+fi
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+CODE=$(printf '%s\n' "$STAGED" | grep -E '(\.py$|\.html$|\.css$|\.js$|\.json$)' || true)
+
+if [ -z "$CODE" ]; then
+    say "در این کامیت تغییری در کد نبود؛ آزمون‌های وابسته به کد اجرا نشدند."
+    say "✓ بررسی پیش از کامیت تمام شد."
+    exit 0
+fi
+
+if [ ! -f tests/smoke_get_routes.py ]; then
+    say "⚠ فایل tests/smoke_get_routes.py پیدا نشد؛ اسموکتست اجرا نشد." >&2
+    exit 1
+fi
+
+say "۳/۷ اسموکتست مسیرهای GET..."
+if ! $PY tests/smoke_get_routes.py --brief; then
+    say "✗ اسموکتست شکست خورد — کامیت انجام نشد." >&2
+    say "  گزارش کامل: python tests/smoke_get_routes.py" >&2
+    exit 1
+fi
+
+if [ -f tests/contact_book_settings_test.py ]; then
+    say "۴/۷ آزمون تنظیمات دفترچه تلفن..."
+    if ! $PY tests/contact_book_settings_test.py --brief; then
+        say "✗ آزمون تنظیمات دفترچه تلفن شکست خورد — کامیت انجام نشد." >&2
+        say "  گزارش کامل: python tests/contact_book_settings_test.py" >&2
+        exit 1
+    fi
+else
+    say "۴/۷ فایل آزمون دفترچه تلفن نبود؛ رد شد."
+fi
+
+if [ -f tests/print_layouts_test.py ]; then
+    say "۵/۷ آزمون طراحی چیدمان چاپ A4..."
+    if ! $PY tests/print_layouts_test.py; then
+        say "✗ آزمون طراحی چیدمان چاپ شکست خورد — کامیت انجام نشد." >&2
+        say "  گزارش کامل: python tests/print_layouts_test.py" >&2
+        exit 1
+    fi
+else
+    say "۵/۷ فایل آزمون طراحی چیدمان نبود؛ رد شد."
+fi
+
+if [ -f tests/report_print_layouts_test.py ]; then
+    say "۶/۷ آزمون تنظیمات چاپ گزارش‌ها..."
+    if ! $PY tests/report_print_layouts_test.py; then
+        say "✗ آزمون تنظیمات چاپ گزارش‌ها شکست خورد — کامیت انجام نشد." >&2
+        say "  گزارش کامل: python tests/report_print_layouts_test.py" >&2
+        exit 1
+    fi
+else
+    say "۶/۷ فایل آزمون تنظیمات چاپ گزارش‌ها نبود؛ رد شد."
+fi
+
+if [ -f tests/statistics_print_test.py ]; then
+    say "۷/۷ آزمون چاپ ترکیبی آمار..."
+    if ! $PY tests/statistics_print_test.py; then
+        say "✗ آزمون چاپ ترکیبی آمار شکست خورد — کامیت انجام نشد." >&2
+        say "  گزارش کامل: python tests/statistics_print_test.py" >&2
+        exit 1
+    fi
+else
+    say "۷/۷ فایل آزمون چاپ ترکیبی آمار نبود؛ رد شد."
+fi
+
+say "✓ بررسی پیش از کامیت تمام شد."
+exit 0

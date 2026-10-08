@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+{% block title %}جدول ستون‌های دلخواه دانش‌آموزان{% endblock %}
+{% block page_title %}🧮 جدول ستون‌های دلخواه دانش‌آموزان{% endblock %}
+{% block head %}
+<style>
+/* همه چیز درون همین صفحه؛ min-width:0 تا جدول عریض، صفحه را نشکند (grid blowout) */
+.sc-wrap{display:grid;gap:14px;min-width:0}
+.sc-wrap>*{min-width:0}
+.sc-card{min-width:0;max-width:100%;background:#fff;border:1px solid var(--line,#dbe3ec);border-radius:16px;padding:15px;box-shadow:0 10px 24px rgba(20,33,61,.05)}
+.sc-card h2{margin:0 0 4px;font-size:15.5px}
+.sc-head{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.sc-head>div{min-width:0}
+.sc-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-width:0}
+.sc-hint{color:#64748b;font-size:11px;line-height:1.9;margin:0}
+.sc-search{width:100%;max-width:230px;min-height:34px;border:1px solid #cbd5e1;border-radius:9px;padding:6px 10px;font-size:12px;background:#fff}
+.sc-count{background:#eef8ff;color:#175cd3;border:1px solid #b2ddff;border-radius:99px;padding:5px 10px;font-size:11px;font-weight:700;white-space:nowrap}
+.sc-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px;min-width:0}
+.sc-group{min-width:0;border:1px solid #e2e8f0;border-radius:12px;background:#fbfdff;overflow:hidden}
+.sc-group>summary{cursor:pointer;padding:9px 11px;font-weight:700;font-size:12.5px;color:#0f172a;background:#f1f5f9;overflow-wrap:anywhere}
+.sc-group>summary .sc-count{float:left;font-weight:700}
+.sc-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,168px),1fr));gap:4px;padding:9px 11px}
+.sc-item{display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #e2e8f0;border-radius:9px;padding:6px 8px;font-size:11.5px;cursor:pointer;margin:0;min-width:0}
+.sc-item span{overflow-wrap:anywhere}
+.sc-item input{flex:0 0 auto;width:auto;min-height:0;margin:0}
+.sc-item.is-hidden{display:none}
+.sc-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));gap:10px;min-width:0}
+.sc-field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.sc-field label,.sc-field span{font-size:11px;color:#475569;font-weight:700}
+.sc-field input,.sc-field select{width:100%;min-height:34px;border:1px solid #cbd5e1;border-radius:9px;padding:6px;font-size:12px;background:#fff}
+.sc-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:#f8fafc;border:1px solid var(--line,#dbe3ec);border-radius:14px;padding:10px 12px;min-width:0}
+.sc-actions .btn{flex:0 1 auto}
+.sc-actions .sc-field{min-width:180px;max-width:100%}
+.sc-actions__spacer{flex:1 1 130px}
+.sc-table{min-width:0}
+.sc-card .table-wrapper{max-width:100%;border-radius:12px}
+.sc-table table{width:100%;border-collapse:collapse;font-size:11.5px;min-width:0}
+.sc-table th{border-bottom:1px solid #e5e7eb;padding:7px 8px;text-align:right;white-space:nowrap;background:#0b4f6c;color:#fff;font-weight:800}
+.sc-table td{border-bottom:1px solid #e5e7eb;padding:7px 8px;text-align:right;overflow-wrap:anywhere;word-break:break-word}
+.sc-table tbody tr:nth-child(even){background:#f7fafc}
+.sc-table td.is-empty{color:#94a3b8}
+.sc-table td.idx,.sc-table th.idx{width:46px;min-width:38px;color:#475569;font-weight:700}
+.sc-scroll-hint{display:none;margin:8px 2px 0;color:#64748b;font-size:11px}
+.sc-warn{margin:10px 0 0;background:#fffaeb;border:1px solid #fedf89;color:#7a2e0b;border-radius:12px;padding:9px 11px;font-size:11.5px;line-height:1.9}
+/* موبایل: با نقطه شکست سایدبار هماهنگ است (۷۰۰ پیکسل) */
+@media(max-width:700px){
+    .sc-card{padding:11px;border-radius:13px}
+    .sc-head{align-items:stretch;flex-direction:column}
+    .sc-search{max-width:none}
+    .sc-actions{flex-direction:column;align-items:stretch}
+    .sc-actions .btn{width:100%}
+    .sc-actions .sc-field{min-width:0}
+    .sc-actions__spacer{display:none}
+    .sc-table{font-size:11px}
+    .sc-scroll-hint{display:block}
+}
+@media print{.sc-actions,.sc-tools,.sc-search,.sc-filters,.sc-warn,.sc-scroll-hint{display:none!important}}
+</style>
+{% endblock %}
+{% block content %}
+<section class="notice no-print">
+    <span>🧮</span>
+    <div>
+        <strong>ستون‌های دلخواه دانش‌آموزان</strong><br>
+        هر اطلاعاتی که می‌خواهید در جدول ببینید تیک بزنید؛ انتخاب شما برای همین کاربر ذخیره می‌شود و در بازدیدهای بعدی همان‌ها نمایش داده می‌شوند. ستون «ردیف» همیشه خودکار اضافه می‌شود.
+        {% if restricted %}<br>🔒 نقش معلم: فقط دانش‌آموزان منتسب به شما و ستون‌های مجاز آموزشی و عمومی نمایش داده می‌شود.{% endif %}
+    </div>
+</section>
+<form method="post" action="{{ url_for('student_columns') }}" id="scForm" class="sc-wrap">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <section class="sc-card">
+        <div class="sc-head">
+            <div>
+                <h2>۱) ستون‌های مورد نظر شما</h2>
+                <p class="sc-hint">گروه‌ها را باز کنید و موارد دلخواه را تیک بزنید. جست‌وجو فقط نمایش گزینه‌ها را کوتاه می‌کند و چیزی حذف نمی‌شود.</p>
+            </div>
+            <div class="sc-tools">
+                <input class="sc-search" type="search" id="scSearch" placeholder="جست‌وجوی نام ستون…" autocomplete="off" aria-label="جست‌وجوی نام ستون">
+                <button class="btn btn--muted btn-sm" type="button" data-sc-all>تیک همه</button>
+                <button class="btn btn--muted btn-sm" type="button" data-sc-none>برداشتن همه</button>
+                <button class="btn btn--muted btn-sm" type="button" data-sc-default>ستون‌های پیش‌فرض</button>
+                <span class="sc-count" id="scCount">…</span>
+            </div>
+        </div>
+        <div class="sc-groups">
+            {% for group in groups %}
+            <details class="sc-group" {% if loop.index <= 2 or (group['items']|selectattr('key','in',selected)|list|length) %}open{% endif %}>
+                <summary>{{ group.title }} <span class="sc-count">{{ group['items']|length|fa_digits }}</span></summary>
+                <div class="sc-items">
+                    {% for item in group['items'] %}
+                    <label class="sc-item" data-sc-item data-label="{{ item.label }}" data-default="{{ 1 if item.key in default_keys else 0 }}">
+                        <input type="checkbox" name="columns" value="{{ item.key }}" {% if item.key in selected %}checked{% endif %}>
+                        <span>{{ item.label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </details>
+            {% endfor %}
+        </div>
+        <p class="sc-warn" id="scWarn" hidden>برای چاپ خوانا روی کاغذ A4 بهتر است تعداد ستون‌ها کم باشد؛ بیش از {{ wide_hint|fa_digits }} ستون ممکن است نوشته‌ها را ریز کند. برای جدول‌های عریض، جهت کاغذ را «افقی» بگذارید.</p>
+    </section>
+
+    <section class="sc-card no-print">
+        <div class="sc-head">
+            <div>
+                <h2>۲) فیلتر دانش‌آموزان</h2>
+                <p class="sc-hint">مثل داشبورد: پایه، کلاس مدرسه، کلاس سیدا، جنسیت، معلم و جست‌وجوی سریع. برای نقش معلم همیشه فقط دانش‌آموزان منتسب اعمال می‌شود.</p>
+            </div>
+            <a class="btn btn--muted btn-sm" href="{{ url_for('student_columns') }}">↺ پاک‌کردن فیلترها</a>
+        </div>
+        <div class="sc-filters">
+            <div class="sc-field">
+                <label for="q">جست‌وجوی سریع</label>
+                <input id="q" name="q" type="search" value="{{ filters.q }}" placeholder="نام، کد، پایه، کلاس…" autocomplete="off">
+            </div>
+            <div class="sc-field">
+                <label for="grade">پایه</label>
+                <select id="grade" name="grade">
+                    <option value="">همه پایه‌ها</option>
+                    {% for option in filter_options.grades %}<option value="{{ option.value }}" {% if filters.grade == option.value %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="sc-field">
+                <label for="class_name">کلاس مدرسه</label>
+                <select id="class_name" name="class_name">
+                    <option value="">همه کلاس‌ها</option>
+                    {% for option in filter_options.classes %}<option value="{{ option.value }}" {% if filters.class_name == option.value %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="sc-field">
+                <label for="sida_class">کلاس سیدا</label>
+                <select id="sida_class" name="sida_class">
+                    <option value="">همه کلاس‌های سیدا</option>
+                    {% for option in filter_options.sida_classes %}<option value="{{ option.value }}" {% if filters.sida_class == option.value %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="sc-field">
+                <label for="gender">جنسیت</label>
+                <select id="gender" name="gender">
+                    <option value="">همه</option>
+                    {% for option in filter_options.genders %}<option value="{{ option.value }}" {% if filters.gender == option.value %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+            {% if current_role != 'teacher' %}
+            <div class="sc-field">
+                <label for="teacher_code">معلم</label>
+                <select id="teacher_code" name="teacher_code">
+                    <option value="">همه معلمان</option>
+                    {% for option in filter_options.teachers %}<option value="{{ option.value }}" {% if filters.teacher_code == option.value %}selected{% endif %}>{{ option.label }}</option>{% endfor %}
+                </select>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <section class="sc-actions no-print" aria-label="عملیات جدول">
+        <button class="btn btn--primary" type="submit">💾 نمایش و ذخیره ستون‌ها</button>
+        <button class="btn btn--dark" type="submit" formaction="{{ url_for('student_columns_print') }}" formtarget="_blank" rel="noopener">🖨️ چاپ A4</button>
+        <button class="btn btn--success" type="submit" formaction="{{ url_for('student_columns_export') }}">📥 خروجی اکسل</button>
+        <div class="sc-field">
+            <span>جهت کاغذ چاپ</span>
+            <select name="orientation" aria-label="جهت کاغذ چاپ">
+                <option value="landscape" {% if orientation == 'landscape' %}selected{% endif %}>افقی (مناسب ستون زیاد)</option>
+                <option value="portrait" {% if orientation == 'portrait' %}selected{% endif %}>عمودی</option>
+            </select>
+        </div>
+        <span class="sc-actions__spacer"></span>
+        <span class="sc-hint">چاپ، برگه A4 و خروجی اکسل دقیقاً از همین ستون‌های انتخابی ساخته می‌شوند.</span>
+    </section>
+
+    <section class="sc-card">
+        <div class="sc-head">
+            <div>
+                <h2>۳) جدول با {{ columns|length|fa_digits }} ستون</h2>
+                <p class="sc-hint">
+                    {{ student_count|format_number|fa_digits }} دانش‌آموز نمایش داده می‌شود از مجموع
+                    {{ scope_total|format_number|fa_digits }} دانش‌آموز در دسترس شما
+                    · انتخاب ذخیره‌شده فعلی: {{ saved_count|fa_digits }} ستون
+                </p>
+            </div>
+        </div>
+        <div class="table-wrapper sc-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">ردیف</th>
+                        {% for column in columns %}<th scope="col">{{ column.label }}</th>{% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td class="idx">{{ row.index|fa_digits }}</td>
+                        {% for value in row.cells %}<td {% if value == empty_label %}class="is-empty"{% endif %}>{{ value }}</td>{% endfor %}
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="{{ columns|length + 1 }}"><div class="empty-state">دانش‌آموزی با این فیلترها پیدا نشد.</div></td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p class="sc-scroll-hint">💡 اگر ستونها در عرض صفحه جا نشدند، جدول را با انگشت به چپ و راست بکشید یا تعداد ستونها را کمتر کنید.</p>
+    </section>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+    var form = document.getElementById('scForm');
+    if (!form) { return; }
+    var items = Array.prototype.slice.call(form.querySelectorAll('[data-sc-item]'));
+    var boxes = items.map(function (item) { return item.querySelector('input[type="checkbox"]'); });
+    var search = document.getElementById('scSearch');
+    var counter = document.getElementById('scCount');
+    var warning = document.getElementById('scWarn');
+    var wideLimit = Number('{{ wide_hint|int }}') || 15;
+
+    function refresh() {
+        var chosen = boxes.filter(function (box) { return box.checked; }).length;
+        if (counter) { counter.textContent = chosen.toLocaleString('fa-IR') + ' ستون انتخاب شده'; }
+        if (warning) { warning.hidden = chosen <= wideLimit; }
+    }
+    boxes.forEach(function (box) { box.addEventListener('change', refresh); });
+
+    if (search) {
+        search.addEventListener('input', function () {
+            var query = this.value.trim().toLocaleLowerCase('fa');
+            items.forEach(function (item) {
+                var label = (item.getAttribute('data-label') || '').toLocaleLowerCase('fa');
+                item.classList.toggle('is-hidden', !!query && label.indexOf(query) === -1);
+            });
+            Array.prototype.forEach.call(form.querySelectorAll('.sc-group'), function (group) {
+                var visible = group.querySelectorAll('[data-sc-item]:not(.is-hidden)').length;
+                group.hidden = !visible;
+                if (query && visible) { group.open = true; }
+            });
+        });
+    }
+
+    function setAll(value) {
+        items.forEach(function (item, index) {
+            if (!item.classList.contains('is-hidden')) { boxes[index].checked = value; }
+        });
+        refresh();
+    }
+    var allButton = form.querySelector('[data-sc-all]');
+    var noneButton = form.querySelector('[data-sc-none]');
+    var defaultButton = form.querySelector('[data-sc-default]');
+    if (allButton) { allButton.addEventListener('click', function () { setAll(true); }); }
+    if (noneButton) { noneButton.addEventListener('click', function () { setAll(false); }); }
+    if (defaultButton) {
+        defaultButton.addEventListener('click', function () {
+            items.forEach(function (item, index) {
+                boxes[index].checked = item.getAttribute('data-default') === '1';
+            });
+            refresh();
+        });
+    }
+    refresh();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,99 @@
+﻿{% set total_columns = columns|length + 1 %}
+{% set base_font = 8.6 if total_columns <= 6 else (7.8 if total_columns <= 9 else (6.9 if total_columns <= 13 else (5.9 if total_columns <= 18 else (5.0 if total_columns <= 26 else 4.2)))) %}
+{% set cell_pad = 3 if total_columns <= 14 else 2 %}
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>چاپ جدول ستون‌های دلخواه دانش‌آموزان | {{ config.SCHOOL_NAME }}</title>
+<style>
+/* Vazirmatn برای چاپ — همان الگوی app.css و کارت دیواری، کاملاً آفلاین */
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+
+@page{size:A4 {{ 'landscape' if orientation == 'landscape' else 'portrait' }};margin:7mm}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:#111827;font-family:Vazirmatn,Tahoma,"Segoe UI",Arial,sans-serif;font-size:{{ base_font }}px;line-height:1.3}
+.print-container{max-width:{{ '283mm' if orientation == 'landscape' else '196mm' }};margin:auto}
+.print-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:4px;margin-bottom:5px;border-bottom:1.5px solid #0b4f6c}
+.title{font-size:12px;font-weight:900;color:#0b4f6c}
+.subtitle{font-size:7.8px;color:#475569;margin-top:2px}
+.header-right{text-align:left;color:#64748b;font-size:7.5px;white-space:nowrap}
+.scope{padding:3px 5px;margin:0 0 5px;border:1px solid #cbd5e1;background:#f8fafc;color:#334155;font-size:7.5px;line-height:1.6}
+.print-note{padding:3px 5px;margin-bottom:5px;border:1px solid #bae6fd;background:#f0f9ff;color:#075985;font-size:7.5px;line-height:1.6}
+.column-list{padding:3px 5px;margin:0 0 5px;border:1px dashed #cbd5e1;color:#475569;font-size:7px;line-height:1.7}
+.col-table{width:100%;border-collapse:collapse}
+.col-table th,.col-table td{border:1px solid #cbd5e1;padding:{{ cell_pad }}px 3px;text-align:center;vertical-align:middle;overflow-wrap:anywhere;word-break:break-word}
+.col-table thead th{background:#0b4f6c;color:#fff;font-weight:800}
+.col-table thead{display:table-header-group}
+.col-table tr{break-inside:avoid;page-break-inside:avoid}
+.col-table tbody tr:nth-child(even){background:#f7fafc}
+.col-table th.idx,.col-table td.idx{width:26px;background:#eef3f7;font-weight:700}
+.empty{color:#94a3b8}
+.footer{display:flex;justify-content:space-between;gap:8px;margin-top:6px;padding-top:4px;border-top:1px solid #cbd5e1;color:#475569;font-size:7px}
+.buttons{margin:12px 0;display:flex;gap:8px}
+.buttons button{border:0;border-radius:8px;padding:9px 15px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;background:#0b4f6c;color:#fff}
+.buttons button.close{background:#e2e8f0;color:#334155}
+@media print{.no-print{display:none!important}.col-table tbody tr:nth-child(even){background:transparent}}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body><main class="print-container">
+<header class="print-header">
+    <div>
+        <div class="title">🧮 جدول ستون‌های دلخواه دانش‌آموزان</div>
+        <div class="subtitle">{{ config.SCHOOL_NAME }} · {{ columns|length|fa_digits }} ستون انتخاب‌شده · ستون‌ها به انتخاب کاربر سامانه است</div>
+    </div>
+    <div class="header-right">تعداد ردیف: <strong>{{ student_count|fa_digits }}</strong><br>تاریخ چاپ: {{ jalali_datetime }}</div>
+</header>
+{% set ns = namespace(any_filter=false) %}
+{% for key, value in filters.items() %}{% if value %}{% set ns.any_filter = true %}{% endif %}{% endfor %}
+<div class="scope"><strong>دامنه چاپ:</strong>
+{% if ns.any_filter %}
+{% if filters.q %}جست‌وجو: {{ filters.q }} · {% endif %}
+{% if filters.grade %}پایه: {{ filters.grade if filters.grade != '__empty__' else 'ثبت نشده' }} · {% endif %}
+{% if filters.class_name %}کلاس مدرسه: {{ filters.class_name if filters.class_name != '__empty__' else 'ثبت نشده' }} · {% endif %}
+{% if filters.sida_class %}کلاس سیدا: {{ filters.sida_class if filters.sida_class != '__empty__' else 'ثبت نشده' }} · {% endif %}
+{% if filters.gender %}جنسیت: {{ filters.gender if filters.gender != '__empty__' else 'ثبت نشده' }} · {% endif %}
+{% if filters.teacher_code %}معلم: {{ filters.teacher_code }}{% endif %}
+{% else %}همه دانش‌آموزان فعال در دسترس این کاربر{% endif %}
+</div>
+{% if restricted %}
+<div class="print-note">🔒 به دلیل نقش معلم، فقط دانش‌آموزان منتسب به این کاربر و فقط ستون‌های مجاز آموزشی و عمومی در جدول آمده است؛ محدودیت دسترسی در داده، چاپ و اکسل یکسان اعمال می‌شود.</div>
+{% else %}
+<div class="print-note">✅ این برگه فقط ستون‌هایی را دارد که کاربر خودش انتخاب کرده است؛ مقدار خالی با «{{ empty_label }}» نمایش داده می‌شود و ستون «ردیف» خودکار اضافه شده است. برنامه‌نویس: {{ config.PROGRAMMER_NAME }}</div>
+{% endif %}
+<div class="column-list"><strong>ستون‌های این جدول:</strong>
+{% for column in columns %}{{ column.label }}{% if not loop.last %} · {% endif %}{% endfor %}
+</div>
+<div class="table-wrapper">
+<table class="col-table">
+    <thead>
+        <tr>
+            <th scope="col" class="idx">ردیف</th>
+            {% for column in columns %}<th scope="col">{{ column.label }}</th>{% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td class="idx">{{ row.index|fa_digits }}</td>
+            {% for value in row.cells %}<td {% if value == empty_label %}class="empty"{% endif %}>{{ value }}</td>{% endfor %}
+        </tr>
+        {% else %}
+        <tr><td colspan="{{ columns|length + 1 }}" class="empty">دانش‌آموزی با این فیلترها پیدا نشد.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+<footer class="footer">
+    <span>{{ config.SCHOOL_NAME }} · جدول ستون‌های دلخواه دانش‌آموزان</span>
+    <span>برنامه‌نویس: {{ config.PROGRAMMER_NAME }}</span>
+    <span>{{ student_count|fa_digits }} ردیف · {{ columns|length|fa_digits }} ستون</span>
+</footer>
+<div class="no-print buttons">
+    <button type="button" onclick="window.print()">🖨️ چاپ</button>
+    <button type="button" class="close" onclick="window.close()">✖️ بستن</button>
+</div>
+</main></body></html>

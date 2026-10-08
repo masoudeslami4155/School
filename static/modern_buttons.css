@@ -1,0 +1,92 @@
+/* Modern buttons inspired by v-dashboard — fully offline, no JS deps.
+   Activated via class .btn (core) or .btn--variant modifiers.
+   Respects html[data-theme="dark"] from app.css.
+*/
+
+/* Base button reset */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font: 400 13px/1.2 Vazirmatn,"Segoe UI",Tahoma,Roboto,sans-serif;
+  -webkit-font-smoothing: antialiased;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.05s ease;
+}
+
+/* Elevations / variants */
+.btn--primary {
+  background: var(--primary, #0b6374);
+  color: #fff;
+}
+.btn--primary:hover {
+  background: var(--primary2, #0b4f6c);
+  box-shadow: 0 10px 24px rgba(11, 99, 116, 0.30);
+}
+
+.btn--outline {
+  background: transparent;
+  border-color: var(--line, #e4eaf2);
+  color: var(--ink, #14213d);
+}
+.btn--outline:hover {
+  background: var(--soft, #f6f8fb);
+  box-shadow: 0 6px 14px rgba(20, 33, 61, 0.08);
+}
+
+.btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: var(--ink, #14213d);
+}
+.btn--ghost:hover {
+  background: rgba(20, 33, 61, 0.05);
+}
+
+.btn--icon {
+  padding: 0.4rem;
+  aspect-ratio: 1/1;
+}
+
+/* Size helpers */
+.btn-sm { padding: 0.3rem 0.7rem; font-size: 12px; }
+.btn-lg { padding: 0.7rem 1.2rem; font-size: 15px; }
+
+/* Press-down effect */
+.btn:active { transform: scale(0.975); }
+
+/* Focus ring for accessibility */
+.btn:focus-visible {
+  outline: 2px solid var(--primary, #0b6374);
+  outline-offset: 2px;
+}
+
+/* Disabled state */
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Dark theme alignment */
+html[data-theme="dark"] {
+  --btn-bg: #2d3748;
+  --btn-ink: #e2e8f0;
+  --btn-border: #4a5568;
+}
+
+/* Print-friendly */
+@media print {
+  .btn { box-shadow: none; }
+}

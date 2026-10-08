@@ -1,0 +1,395 @@
+{% extends 'base.html' %}
+{% block title %}لیست چسباننده به پشت پرونده{% endblock %}
+{% block page_title %}🏷️ لیست چسباننده به پشت پرونده{% endblock %}
+{% block page_actions %}
+<a class="btn btn--outline no-print" href="{{ url_for('features_hub') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به مرکز امکانات</a>
+{% endblock %}
+{% block head %}
+<style>
+.lff-toolbar{display:flex;flex-direction:column;gap:6px;padding:12px 16px;margin-bottom:14px;border:1px solid var(--line);border-radius:14px;background:var(--surface-soft)}
+.lff-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.lff-grp{display:flex;flex-direction:column;gap:3px;padding:7px 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);min-width:0}
+.lff-grp__title{font-size:8.5px;font-weight:800;color:var(--primary);letter-spacing:.4px;text-transform:uppercase;margin-bottom:1px}
+.lff-fld{display:flex;flex-direction:column;gap:2px}
+.lff-fld label{font-size:9.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+.lff-fld select,.lff-fld input[type="number"]{height:28px;padding:0 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:10.5px;cursor:pointer;transition:border-color .15s ease}
+.lff-fld select:focus,.lff-fld input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(11,99,116,.12)}
+.lff-actions{display:flex;gap:5px;align-items:center;padding-top:2px}
+.lff-hint{margin:0;color:var(--muted);font-size:10px;line-height:1.6}
+.lff-hint strong{color:var(--ink)}
+.lff-pages{display:flex;flex-direction:column;gap:0}
+.lff-page{display:grid;background:#fff;break-after:page;page-break-after:always;margin:0 auto}
+.lff-card{position:relative;display:flex;flex-direction:column;overflow:hidden;page-break-inside:avoid;break-inside:avoid}
+.lff-card--resizable{resize:both;overflow:auto;min-width:60mm;min-height:80mm;max-width:100%}
+.lff-card--resizable::after{content:'⟷';position:absolute;top:2px;left:2px;font-size:10px;color:var(--muted);opacity:0;pointer-events:none;transition:opacity .15s ease}
+.lff-card--resizable:hover::after{opacity:1}
+.lff-card__teacher{display:flex;align-items:flex-start;justify-content:space-between;gap:3mm}
+.lff-card__name{font-weight:900;line-height:1.3}
+.lff-card__meta{font-weight:400;line-height:1.4}
+.lff-card__count{font-weight:800;padding:.4mm 1.4mm;white-space:nowrap;border-radius:2mm;flex-shrink:0}
+.lff-card__students{flex:1;min-height:0;line-height:1.5}
+.lff-card__student-row{display:flex;justify-content:space-between;align-items:center}
+.lff-card__student-row:last-child{border-bottom:none}
+.lff-card__stu-name{font-weight:600}
+.lff-card__stu-grade{white-space:nowrap}
+.lff-card__photo{object-fit:cover;flex-shrink:0;display:block}
+.lff-card__photo-placeholder{display:grid;place-items:center;flex-shrink:0;font-size:9pt;color:#94a3b8;background:#f8fafc;border-radius:1.5mm}
+.lff-card__empty{color:#94a3b8;font-size:7pt;text-align:center;padding-top:8mm}
+.lff-header{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;margin-bottom:8px;background:linear-gradient(135deg,#0b4f6c,#0f766e);color:#fff;border-radius:11px}
+.lff-header__title{font-size:12px;font-weight:900}
+.lff-header__sub{font-size:9.5px;opacity:.85;margin-top:1px}
+@media(max-width:900px){.lff-page{width:100%!important;height:auto!important}}
+@media print{
+    @page{size:A4 landscape;margin:5mm}
+    .topbar,.dashboard-nav,.app-footer,.page-heading,.no-print,.lff-toolbar,.lff-header,.flash-stack{display:none!important;background:none!important;color:inherit!important}
+    .page-container{max-width:none!important;padding:0!important;margin:0!important}
+    html,body,.app-shell{background:#fff!important;color:#111!important}
+    .lff-pages{display:block!important}
+    .lff-card__name,.lff-card__students,.lff-card__stu-name{color:#111!important}
+    .lff-card__meta{color:#444!important}
+    .lff-card__count{background:#111!important;color:#fff!important}
+    .lff-card__empty{color:#aaa!important}
+}
+</style>
+{% endblock %}
+{% block content %}
+{% set print_url = url_for('list_for_folders_print',
+    cols=cols, rows=rows,
+    card_gap=card_gap, card_padding=card_padding,
+    tea_font=tea_font, meta_font=meta_font, count_font=count_font, stu_font=stu_font,
+    stu_name_size=stu_name_size, stu_grade_size=stu_grade_size,
+    tea_weight=tea_weight, stu_weight=stu_weight, meta_weight=meta_weight, count_weight=count_weight,
+    line_height=line_height, stu_spacing=stu_spacing,
+    border_style=border_style, border_width=border_width, border_color=border_color,
+    bg_card=bg_card, radius=radius,
+    primary_color=primary_color, count_radius=count_radius,
+    tea_border_color=tea_border_color, count_bg_color=count_bg_color,
+    row_divider_style=row_divider_style,
+    row_divider_color=row_divider_color, row_divider_width=row_divider_width,
+    photo_width=photo_width, photo_height=photo_height,
+    photo_shape=photo_shape, show_photo=show_photo,
+    show_grade=show_grade, show_subject=show_subject,
+    show_numbering=show_numbering, max_students=max_students,
+    card_shadow=card_shadow,
+    show_divider_below_teacher=show_divider_below_teacher,
+    heading_align=heading_align,
+    stu_name_align=stu_name_align, grade_align=grade_align,
+     photo_border=photo_border,
+     photo_border_color=photo_border_color, photo_radius=photo_radius,
+     teacher_code=selected_code if selected_code else None,
+     orientation=orientation
+ ) %}
+<div class="lff-header no-print">
+    <div>
+        <div class="lff-header__title">🏷️ لیست چسباننده به پشت پرونده</div>
+        <div class="lff-header__sub">{{ config.SCHOOL_NAME }} · برچسب فشرده برای اتصال به پشت پوشهٔ دانشآموز</div>
+    </div>
+        <a class="btn" style="background:#fff;color:#0b4f6c;font-weight:900;padding:7px 14px;border-radius:9px;cursor:pointer;font:inherit;border:0;text-decoration:none;display:inline-flex;align-items:center;gap:5px"
+       href="{{ print_url }}" target="_blank" rel="noopener">
+         <i class="cil-print" aria-hidden="true"></i> چاپ A4 {{ 'عمودی' if orientation == 'portrait' else 'افقی' }}
+     </a>
+     <a class="btn" style="background:rgba(255,255,255,.16);color:#fff;font-weight:900;padding:7px 14px;border-radius:9px;cursor:pointer;font:inherit;border:1px solid rgba(255,255,255,.45);text-decoration:none;display:inline-flex;align-items:center;gap:5px" href="{{ url_for('report_print_layouts', document='folder_labels') }}"><i class="cil-settings" aria-hidden="true"></i> طراحی چاپ</a>
+</div>
+
+<section class="lff-toolbar no-print" aria-label="تنظیمات فهرست">
+<form method="get" action="{{ url_for('list_for_folders') }}">
+<input type="hidden" name="orientation" value="{{ orientation }}">
+<input type="hidden" name="teacher_code" value="{{ selected_code or '' }}">
+
+<!-- ردیف ۱: آرایش صفحه -->
+<div class="lff-row">
+<div class="lff-grp">
+<div class="lff-grp__title">📐 آرایش صفحه</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>ستون</label><select name="cols" onchange="this.form.submit()">
+{% for n in range(1,7) %}<option value="{{ n }}" {% if cols==n %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>ردیف</label><select name="rows" onchange="this.form.submit()">
+{% for n in range(1,7) %}<option value="{{ n }}" {% if rows==n %}selected{% endif %}>{{ n }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>فاصله</label><select name="card_gap" onchange="this.form.submit()">
+{% for v in ['0.5mm','1mm','1.5mm','1.8mm','2mm','2.5mm','3mm'] %}<option value="{{ v }}" {% if card_gap==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>حاشیه کارت</label><select name="card_padding" onchange="this.form.submit()">
+{% for v in ['2mm 3mm','2.5mm 3mm','3mm 3.5mm','3.5mm 4mm','4mm 5mm','5mm 6mm'] %}<option value="{{ v }}" {% if card_padding==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۲: اندازه فونت -->
+<div class="lff-grp">
+<div class="lff-grp__title">✏️ اندازه فونت (pt)</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>نام معلم</label><input type="number" name="tea_font" min="7" max="18" value="{{ tea_font }}" onchange="this.form.submit()"></div>
+<div class="lff-fld"><label>توضیح معلم</label><input type="number" name="meta_font" min="4" max="10" value="{{ meta_font }}" onchange="this.form.submit()"></div>
+<div class="lff-fld"><label>نام شاگرد</label><input type="number" name="stu_name_size" min="4" max="10" value="{{ stu_name_size }}" onchange="this.form.submit()"></div>
+<div class="lff-fld"><label>پایه</label><input type="number" name="stu_grade_size" min="3" max="8" value="{{ stu_grade_size }}" onchange="this.form.submit()"></div>
+<div class="lff-fld"><label>نشانگر</label><input type="number" name="count_font" min="4" max="10" value="{{ count_font }}" onchange="this.form.submit()"></div>
+<div class="lff-fld"><label>خط کلی</label><input type="number" name="stu_font" min="5" max="14" value="{{ stu_font }}" onchange="this.form.submit()"></div>
+</div>
+</div>
+
+<!-- ردیف ۳: وزن خطوط -->
+<div class="lff-grp">
+<div class="lff-grp__title">🔤 وزن خطوط</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>نام معلم</label><select name="tea_weight" onchange="this.form.submit()">
+{% for w,l in [('400','نرمال'),('500','متوسط'),('600','شدید'),('700','بولد'),('800','خیلی-bold'),('900','تیره')] %}<option value="{{ w }}" {% if tea_weight==w %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>نام شاگرد</label><select name="stu_weight" onchange="this.form.submit()">
+{% for w,l in [('400','نرمال'),('500','متوسط'),('600','شدید'),('700','بولد'),('800','خیلی-bold')] %}<option value="{{ w }}" {% if stu_weight==w %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>توضیح معلم</label><select name="meta_weight" onchange="this.form.submit()">
+{% for w,l in [('400','نرمال'),('500','متوسط'),('600','شدید'),('700','بولd')] %}<option value="{{ w }}" {% if meta_weight==w %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>نشانگر</label><select name="count_weight" onchange="this.form.submit()">
+{% for w,l in [('400','نرمال'),('500','متوسط'),('600','شدید'),('700','بولd'),('800','خیلی-bold'),('900','تیره')] %}<option value="{{ w }}" {% if count_weight==w %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>فاصله خطوط</label><select name="line_height" onchange="this.form.submit()">
+{% for v in ['1.2','1.3','1.4','1.5','1.6','1.8'] %}<option value="{{ v }}" {% if line_height==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>فاصله ردیف</label><select name="stu_spacing" onchange="this.form.submit()">
+{% for v in ['0mm','0.2mm','0.3mm','0.4mm','0.5mm','0.6mm','0.8mm'] %}<option value="{{ v }}" {% if stu_spacing==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۴: حاشیه و شکل کارت -->
+<div class="lff-grp">
+<div class="lff-grp__title">🎨 ظاهر کارت</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>خط حاشیه</label><select name="border_style" onchange="this.form.submit()">
+{% for v,t in [('dashed','خطچین'),('solid','ممتد'),('dotted','نقطه‌ای')] %}<option value="{{ v }}" {% if border_style==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>ضخامت</label><select name="border_width" onchange="this.form.submit()">
+{% for v in ['0.8','1.0','1.2','1.5','2.0'] %}<option value="{{ v }}" {% if border_width==v %}selected{% endif %}>{{ v }}mm</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>رنگ حاشیه</label><select name="border_color" onchange="this.form.submit()">
+{% for c in ['#6b7280','#334155','#1e3a5f','#0f172a','#1e40af','#047857','#b91c1c','#7c3aed','#b45309','#dc2626','#2563eb','#16a34a','#475569','#94a3b8','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#84cc16','#f97316','#ec4899'] %}<option value="{{ c }}" {% if border_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>پسزمینه</label><select name="bg_card" onchange="this.form.submit()">
+{% for c in ['#ffffff','#fafaf8','#f0f9ff','#f0fdf4','#fefce8','#faf5ff','#fff7ed','#f1f5f9','#eef2ff','#fef9c3','#fff1f2','#fffbeb'] %}<option value="{{ c }}" {% if bg_card==c %}selected{% endif %} style="background:{{ c }};padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>گردی گوشه</label><select name="radius" onchange="this.form.submit()">
+{% for v in ['0mm','1mm','2mm','3mm','4mm','5mm','6mm','8mm','10mm','12mm'] %}<option value="{{ v }}" {% if radius==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۵: رنگ‌های تاکیدی -->
+<div class="lff-grp">
+<div class="lff-grp__title">💎 رنگ‌های تاکیدی</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>رنگ اصلی</label><select name="primary_color" onchange="this.form.submit()">
+{% for c in ['#1e3a5f','#0b4f6c','#047857','#1e40af','#7c3aed','#b91c1c','#b45309','#dc2626','#2563eb','#16a34a','#475569','#0f172a','#6b7280'] %}<option value="{{ c }}" {% if primary_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>خط معلم</label><select name="tea_border_color" onchange="this.form.submit()">
+{% for c in ['#1e3a5f','#0b4f6c','#047857','#1e40af','#7c3aed','#b91c1c','#b45309','#475569','#6b7280','#0f172a','#334155','#000000','#333333','#666666','#999999','#2563eb','#16a34a','#dc2626'] %}<option value="{{ c }}" {% if tea_border_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>پسزمینه نشان</label><select name="count_bg_color" onchange="this.form.submit()">
+{% for c in ['#1e3a5f','#0b4f6c','#047857','#1e40af','#7c3aed','#b91c1c','#b45309','#2563eb','#16a34a','#475569','#0f172a','#334155','#000000','#333333','#666666','#dc2626','#f59e0b','#ec4899'] %}<option value="{{ c }}" {% if count_bg_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>گردی نشان</label><select name="count_radius" onchange="this.form.submit()">
+{% for v in ['0mm','.5mm','.8mm','1mm','1.5mm','2mm','3mm','4mm','999px'] %}<option value="{{ v }}" {% if count_radius==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۶: خط جداکننده ردیف‌ها -->
+<div class="lff-grp">
+<div class="lff-grp__title">➖ جداکننده ردیف‌ها</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>سبک</label><select name="row_divider_style" onchange="this.form.submit()">
+{% for v,t in [('none','بدون'),('dotted','نقطه‌ای'),('dashed','خطچین'),('solid','ممتد')] %}<option value="{{ v }}" {% if row_divider_style==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>رنگ</label><select name="row_divider_color" onchange="this.form.submit()">
+{% for c in ['#cbd5e1','#94a3b8','#e2e8f0','#64748b','#475569','#334155','#1e3a5f','#f1f5f9','#f8fafc','#000000','#333333'] %}<option value="{{ c }}" {% if row_divider_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>ضخامت</label><select name="row_divider_width" onchange="this.form.submit()">
+{% for v in ['0','.3','.5','.8','1.0','1.2'] %}<option value="{{ v }}" {% if row_divider_width==v %}selected{% endif %}>{{ v }}px</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۷: عکس -->
+<div class="lff-grp">
+<div class="lff-grp__title">📷 عکس</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>عرض (mm)</label><input type="number" name="photo_width" min="4" max="30" step="1" value="{{ photo_width }}" onchange="this.form.submit()" style="height:28px;padding:0 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:10.5px;width:64px"></div>
+<div class="lff-fld"><label>ارتفاع (mm)</label><input type="number" name="photo_height" min="4" max="30" step="1" value="{{ photo_height }}" onchange="this.form.submit()" style="height:28px;padding:0 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:10.5px;width:64px"></div>
+<div class="lff-fld"><label>شکل</label><select name="photo_shape" onchange="this.form.submit()">
+{% for v,t in [('square','مربع'),('rounded','گرد'),('circle','دایره')] %}<option value="{{ v }}" {% if photo_shape==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>گردی عکس</label><select name="photo_radius" onchange="this.form.submit()">
+{% for v in ['0mm','.4mm','.6mm','1mm','1.5mm','2mm','3mm','4mm','5mm'] %}<option value="{{ v }}" {% if photo_radius==v %}selected{% endif %}>{{ v }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>حاشیه عکس</label><select name="photo_border" onchange="this.form.submit()">
+<option value="yes" {% if photo_border=='yes' %}selected{% endif %}>دارد</option>
+<option value="no"  {% if photo_border=='no'  %}selected{% endif %}>ندارد</option>
+</select></div>
+<div class="lff-fld"><label>رنگ حاشیه</label><select name="photo_border_color" onchange="this.form.submit()">
+{% for c in ['#aaa','#94a3b8','#e2e8f0','#64748b','#475569','#334155','#1e3a5f','#fff','#0f172a','#000000','#333333'] %}<option value="{{ c }}" {% if photo_border_color==c %}selected{% endif %} style="background:{{ c }};color:#fff;padding:1px 5px">{{ c }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- ردیف ۸: نمایش محتوا -->
+<div class="lff-grp">
+<div class="lff-grp__title">👁️ نمایش محتوا</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>عکس شاگرد</label><select name="show_photo" onchange="this.form.submit()">
+<option value="yes" {% if show_photo=='yes' %}selected{% endif %}>نمایش</option>
+<option value="no"  {% if show_photo=='no'  %}selected{% endif %}>مخفی</option>
+</select></div>
+<div class="lff-fld"><label>پایه تحصیلی</label><select name="show_grade" onchange="this.form.submit()">
+<option value="yes" {% if show_grade=='yes' %}selected{% endif %}>نمایش</option>
+<option value="no"  {% if show_grade=='no'  %}selected{% endif %}>مخفی</option>
+</select></div>
+<div class="lff-fld"><label>درس معلم</label><select name="show_subject" onchange="this.form.submit()">
+<option value="yes" {% if show_subject=='yes' %}selected{% endif %}>نمایش</option>
+<option value="no"  {% if show_subject=='no'  %}selected{% endif %}>مخفی</option>
+</select></div>
+<div class="lff-fld"><label>شماره ردیف</label><select name="show_numbering" onchange="this.form.submit()">
+<option value="yes" {% if show_numbering=='yes' %}selected{% endif %}>نمایش</option>
+<option value="no"  {% if show_numbering=='no'  %}selected{% endif %}>مخفی</option>
+</select></div>
+<div class="lff-fld"><label>حد بیشینه</label><input type="number" name="max_students" min="3" max="30" value="{{ max_students }}" onchange="this.form.submit()" style="height:28px;padding:0 7px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:10.5px;width:52px"></div>
+<div class="lff-fld"><label>خط جدا معلم</label><select name="show_divider_below_teacher" onchange="this.form.submit()">
+<option value="yes" {% if show_divider_below_teacher=='yes' %}selected{% endif %}>دارد</option>
+<option value="no"  {% if show_divider_below_teacher=='no'  %}selected{% endif %}>ندارد</option>
+</select></div>
+</div>
+</div>
+
+<!-- ردیف ۹: ترازها -->
+<div class="lff-grp">
+<div class="lff-grp__title">⬌ تراز متن</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<div class="lff-fld"><label>سربرگ کارت</label><select name="heading_align" onchange="this.form.submit()">
+{% for v,t in [('right','راست'),('center','وسط'),('left','چپ')] %}<option value="{{ v }}" {% if heading_align==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>نام شاگرد</label><select name="stu_name_align" onchange="this.form.submit()">
+{% for v,t in [('right','راست'),('center','وسط'),('left','چپ')] %}<option value="{{ v }}" {% if stu_name_align==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+<div class="lff-fld"><label>پایه</label><select name="grade_align" onchange="this.form.submit()">
+{% for v,t in [('right','راست'),('center','وسط'),('left','چپ')] %}<option value="{{ v }}" {% if grade_align==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></div>
+</div>
+</div>
+
+<!-- دکمه‌ها -->
+<div class="lff-actions">
+<a class="btn btn--outline btn--sm" href="{{ url_for('list_for_folders', teacher_code=selected_code) }}"><i class="cil-reload" aria-hidden="true"></i> بازنشانی</a>
+</div>
+</form>
+<p class="lff-hint" style="margin-top:4px">
+    صفحه A4 افقی: <strong>{{ cols }} × {{ rows }} = {{ cols * rows }}</strong> کارت · هر کارت: یک معلم + {{ max_students }} دانشآموز
+</p>
+</section>
+
+<p class="lff-hint no-print">⚠️ فقط دانشآموزان <strong>فعال</strong> نمایش داده میشوند.</p>
+
+{% if lists %}
+<div class="lff-pages">
+     <section class="lff-page lff-page--{{ orientation }}"
+    style="width:{{ '210mm' if orientation == 'portrait' else '297mm' }};height:{{ '297mm' if orientation == 'portrait' else '210mm' }};margin:0 auto;grid-template-columns:repeat({{ cols }},1fr);grid-template-rows:repeat({{ rows }},1fr);gap:{{ card_gap }};padding:{{ folder_layout.margin.top }}mm {{ folder_layout.margin.right }}mm"
+    aria-label="پیش‌نمایش — {{ cols }}×{{ rows }} = {{ cols*rows }} کارت">
+    {% for item in lists %}
+    <article class="lff-card lff-card--resizable"
+        style="border:{{ border_width }}px {{ border_style }} {{ border_color }};border-radius:{{ radius }};padding:{{ card_padding }};gap:{{ card_gap }};background:{{ bg_card }};page-break-inside:avoid;box-sizing:border-box{% if card_shadow == 'yes' %};box-shadow:0 1px 4px rgba(0,0,0,.08){% endif %}"
+        data-resizeable="true">
+        <header class="lff-card__teacher" style="padding-bottom:2mm;margin-bottom:.5mm;{%- if show_divider_below_teacher == 'yes' %}border-bottom:1.5px solid {{ tea_border_color }};{%- endif %}text-align:{{ heading_align }}">
+            <div style="min-width:0">
+                <div class="lff-card__name" style="font-size:{{ tea_font }}pt;font-weight:{{ tea_weight }};color:#0f172a;line-height:{{ line_height }}">{{ (item.teacher.first_name or '') ~ ' ' ~ (item.teacher.last_name or '')|trim or 'معلم ثبت نشده' }}</div>
+                {% if show_subject == 'yes' %}
+                <div class="lff-card__meta" style="font-size:{{ meta_font }}pt;font-weight:{{ meta_weight }};color:#475569;line-height:{{ line_height }}">
+                    {% if item.teacher.subject %}{{ item.teacher.subject }}{% endif %}{% if item.teacher.class_name %}{% if item.teacher.subject %} · {% endif %}{{ item.teacher.class_name }}{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <span class="lff-card__count" style="font-size:{{ count_font }}pt;font-weight:{{ count_weight }};background:{{ count_bg_color }};color:#fff;border-radius:{{ count_radius }};padding:.5mm 1.5mm">{{ item.students|length }} نفر</span>
+        </header>
+        <div class="lff-card__students" style="font-size:{{ stu_font }}pt;color:#1e293b;line-height:{{ line_height }}">
+            {% for s in item.students[:max_students] %}
+            <div class="lff-card__student-row" style="padding:{{ stu_spacing }} 0;border-bottom:{% if row_divider_style != 'none' %}{{ row_divider_width }}px {{ row_divider_style }} {{ row_divider_color }}{% else %}none{% endif %}">
+                {% if show_numbering == 'yes' %}
+                <span style="font-size:{{ stu_grade_size }}pt;font-weight:700;color:#888;min-width:4mm;text-align:center;flex-shrink:0">{{ loop.index }}</span>
+                {% endif %}
+                <span class="lff-card__stu-name" style="font-size:{{ stu_name_size }}pt;font-weight:{{ stu_weight }};color:#1e293b;text-align:{{ stu_name_align }}">{{ (s.first_name or '') ~ ' ' ~ (s.last_name or '')|trim or 'ثبت نشده' }}</span>
+                {% if show_grade == 'yes' %}
+                <span class="lff-card__stu-grade" style="font-size:{{ stu_grade_size }}pt;color:#64748b;text-align:{{ grade_align }}">{{ s.grade or '—' }}</span>
+                {% endif %}
+                {% if show_photo == 'yes' %}
+                {% set _pr = {'square':'0mm','rounded':photo_radius,'circle':'999px'}.get(photo_shape,'0mm') %}
+                {% if s.photo %}
+                <img class="lff-card__photo" src="/static/uploads/{{ s.photo }}" alt="" loading="lazy" style="width:{{ photo_width }}mm;height:{{ photo_height }}mm;object-fit:cover;border-radius:{{ _pr }};{% if photo_border == 'yes' %}border:0.5px solid {{ photo_border_color }};{% endif %}flex-shrink:0;display:block">
+                {% else %}
+                <div class="lff-card__photo-placeholder" aria-hidden="true" style="width:{{ photo_width }}mm;height:{{ photo_height }}mm;border-radius:{{ _pr }};{% if photo_border == 'yes' %}border:0.5px dashed {{ photo_border_color }};{% endif %}flex-shrink:0;display:grid;place-items:center;font-size:9pt;color:#94a3b8;background:#f8fafc">؟</div>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="lff-card__empty" style="color:#94a3b8;font-size:7pt;text-align:center;padding-top:8mm">دانشآموز فعال ثبت نشده</div>
+            {% endfor %}
+            {% if item.students|length > max_students %}<div class="lff-card__empty" style="padding-top:2mm;color:#94a3b8;font-size:7pt">... و {{ item.students|length - max_students }} نفر دیگر</div>{% endif %}
+        </div>
+    </article>
+    {% endfor %}
+    {% for _ in range((cols * rows) - lists|length) %}
+    <article class="lff-card lff-card--resizable" aria-hidden="true" style="border:{{ border_width }}px {{ border_style }} {{ border_color }};border-radius:{{ radius }};background:{{ bg_card }};page-break-inside:avoid" data-placeholder="true"></article>
+    {% endfor %}
+</section>
+</div>
+{% else %}
+<section class="card no-print" style="text-align:center;padding:30px;color:var(--muted)">
+    <i class="cil-info" aria-hidden="true" style="font-size:28px;margin-bottom:10px;display:block"></i>
+    <p>معلم یا دانشآموز فعال مطابق انتخاب فعلی پیدا نشد.</p>
+</section>
+{% endif %}
+
+<script>
+// Drag-to-resize: allow users to resize cards by dragging edges/corners
+(function(){
+    var cards = document.querySelectorAll('.lff-card--resizable');
+    var handles = ['n','s','e','w','ne','nw','se','sw'];
+    var cursorMap = {n:'ns-resize',s:'ns-resize',e:'ew-resize',w:'ew-resize',ne:'nesw-resize',nw:'nwse-resize',se:'nesw-resize',sw:'nwse-resize'};
+
+    function addHandles(card){
+        if(card.dataset.hasHandles) return;
+        card.dataset.hasHandles = '1';
+        handles.forEach(function(dir){
+            var h = document.createElement('div');
+            h.className = 'resize-handle';
+            h.dataset.dir = dir;
+            h.setAttribute('aria-label','کشیدن برای تغییر اندازه');
+            h.title = 'برای تغییر اندازه کارت، لبه را بکشید';
+            card.appendChild(h);
+        });
+    }
+
+    cards.forEach(addHandles);
+
+    // Make resize handles visible with CSS via JS injection
+    var style = document.getElementById('lff-resize-style') || document.createElement('style');
+    style.id = 'lff-resize-style';
+    if(!style.parentNode) document.head.appendChild(style);
+    style.textContent = '' +
+        '.lff-card--resizable .resize-handle{position:absolute;z-index:10;transition:background .12s}' +
+        '.lff-card--resizable:hover .resize-handle{background:rgba(11,99,116,.18)}' +
+        '.lff-card--resizable[data-dragging] .resize-handle{background:rgba(11,99,116,.35)}' +
+        '.resize-handle.n,.resize-handle.s{left:15%;right:15%;height:6px;cursor:ns-resize}' +
+        '.resize-handle.e,.resize-handle.w{top:15%;bottom:15%;width:6px;cursor:ew-resize}' +
+        '.resize-handle.n{top:-3px;cursor:ns-resize}.resize-handle.s{bottom:-3px;cursor:ns-resize}' +
+        '.resize-handle.e{right:-3px;cursor:ew-resize}.resize-handle.w{left:-3px;cursor:ew-resize}' +
+        '.resize-handle.ne{top:-4px;left:calc(50% - 8px);width:16px;height:10px;cursor:nesw-resize}' +
+        '.resize-handle.nw{top:-4px;right:calc(50% - 8px);width:16px;height:10px;cursor:nwse-resize}' +
+        '.resize-handle.se{bottom:-4px;left:calc(50% - 8px);width:16px;height:10px;cursor:nwse-resize}' +
+        '.resize-handle.sw{bottom:-4px;right:calc(50% - 8px);width:16px;height:10px;cursor:nesw-resize}' +
+        '.lff-card--resizable[aria-hidden]{pointer-events:none}' +
+        '.lff-card--resizable[aria-hidden] .resize-handle{display:none}';
+
+    document.addEventListener('mousedown', function(e){
+        var handle = e.target.closest('.resize-handle');
+        if(!handle || e.target.closest('.lff-toolbar') || e.target.closest('.lff-header')) return;
+        var card = handle.parentElement;
+        if(card.getAttribute('aria-hidden') === 'true') return;
+        e.preventDefault();
+        card.dataset.dragging = '1';
+        var startX = e.clientX, startY = e.clientY;
+        var startW = card.offsetWidth, startH = card.offsetHeight;
+        var dir = handle.dataset.dir;
+        var dragDir = dir.charAt(0);
+
+        function onMove(ev){
+            var dx = ev.clientX - startX, dy = ev.clientY - startY;
+            var nw = startW, nh = startH;
+            if(dragDir === 'e') nw = Math.max(60, startW + dx);
+            else if(dragDir === 'w') nw = Math.max(60, startW - dx);
+            if(dragDir === 's') nh = Math.max(80, startH + dy);
+            else if(dragDir === 'n') nh = Math.max(80, startH - dy);
+            card.style.width = nw + 'px';
+            card.style.height = nh + 'px';
+        }
+        function onUp(){
+            card.dataset.dragging = '';
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+})();
+</script>
+{% endblock %}

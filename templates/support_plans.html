@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}مشاوره و توانبخشی{% endblock %}
+{% block page_title %}مشاوره، مددکاری و توانبخشی{% endblock %}
+{% block head %}<style>
+.support-plans-table .table-subtext{display:block;color:var(--muted,#667085);font-size:11px;margin-top:3px}.support-plans-table td{vertical-align:top}.table-actions{display:flex;gap:6px;align-items:center}.table-actions form{margin:0}.support-time{direction:ltr;unicode-bidi:isolate;white-space:nowrap}
+@media(max-width:768px){.support-plans-table{min-width:980px}.support-plans-table-wrap{overflow-x:auto}.form-card .form-row{gap:10px}.form-card .field-group{flex:1 1 100%!important}.support-plans-table td,.support-plans-table th{font-size:11px}.table-actions .btn{min-width:38px;padding:8px}}
+</style>{% endblock %}
+{% block header_buttons %}<span class="header-badge">{{ plans|length|format_number }} پیگیری</span>{% endblock %}
+{% block content %}
+<section class="form-card no-print">
+  <div class="section-heading"><div><h2>برنامه‌ریزی و ثبت پیگیری</h2><p class="muted-text">برای هر دانش‌آموز، مشاور یا مددکار، موضوع، مدرک، هزینه، تعداد جلسات و نتیجه را ثبت کنید.</p></div><span class="badge">محرمانه و مدیریتی</span></div>
+  <form method="post" enctype="multipart/form-data" action="{{ url_for('support_plans') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label for="student_code">دانش‌آموز <span class="required-star">*</span></label><select id="student_code" name="student_code" required><option value="">انتخاب دانش‌آموز</option>{% for s in students %}<option value="{{ s.code }}">{{ s.first_name }} {{ s.last_name }} · {{ s.code }}{% if s.grade %} · {{ s.grade }}{% endif %}</option>{% endfor %}</select></div>
+      <div class="field-group"><label for="provider_role">نوع خدمت <span class="required-star">*</span></label><select id="provider_role" name="provider_role" required><option value="">انتخاب نوع خدمت</option><option>مشاور</option><option>مددکار اجتماعی</option><option>توانبخشی</option><option>روان‌شناس</option><option>روان‌پزشک</option><option>گفتاردرمانگر</option><option>کاردرمانگر</option><option>سایر</option></select></div>
+      <div class="field-group"><label for="provider_name">نام مشاور/مددکار</label><input id="provider_name" name="provider_name" maxlength="200" placeholder="نام و نام خانوادگی"></div>
+      <div class="field-group"><label for="provider_phone">شماره تماس</label><input id="provider_phone" name="provider_phone" maxlength="40"></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label for="referral_type">نوع ارجاع</label><select id="referral_type" name="referral_type"><option>داخل مدرسه</option><option>خارج از مدرسه</option></select></div>
+      <div class="field-group"><label for="referral_destination">مقصد ارجاع</label><input id="referral_destination" name="referral_destination" maxlength="250" placeholder="مثلاً مشاور مدرسه یا مرکز تخصصی"></div>
+      <div class="field-group"><label for="provider_org">مرکز یا محل خدمت</label><input id="provider_org" name="provider_org" maxlength="200"></div>
+      <div class="field-group"><label for="planned_date">تاریخ برنامه‌ریزی</label><input id="planned_date" name="planned_date" value="{{ today }}" data-jdate placeholder="۱۴۰۵/۰۱/۰۱"></div>
+      <div class="field-group"><label for="status">وضعیت پیگیری</label><select id="status" name="status"><option>برنامه‌ریزی‌شده</option><option>در حال پیگیری</option><option>تکمیل‌شده</option><option>متوقف‌شده</option></select></div>
+      <div class="field-group"><label for="cost">هزینه (ریال)</label><input id="cost" name="cost" type="number" min="0" inputmode="numeric" value="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="field-group"><label for="session_date">تاریخ جلسه</label><input id="session_date" name="session_date" data-jdate placeholder="۱۴۰۵/۰۱/۰۱"></div>
+      <div class="field-group"><label for="session_start_time">ساعت شروع جلسه</label><input id="session_start_time" name="session_start_time" type="time" inputmode="numeric"></div>
+      <div class="field-group"><label for="session_end_time">ساعت پایان جلسه</label><input id="session_end_time" name="session_end_time" type="time" inputmode="numeric"></div>
+      <div class="field-group"><label for="planned_sessions">جلسات برنامه‌ریزی‌شده</label><input id="planned_sessions" name="planned_sessions" type="number" min="0" max="999" value="0"></div>
+      <div class="field-group"><label for="completed_sessions">جلسات انجام‌شده</label><input id="completed_sessions" name="completed_sessions" type="number" min="0" max="999" value="0"></div>
+      <div class="field-group" style="flex-basis:48%"><label for="topic">موضوع و نیاز دانش‌آموز <span class="required-star">*</span></label><input id="topic" name="topic" maxlength="1000" required placeholder="نیاز به مشاوره، ارزیابی یا توانبخشی…"></div>
+    </div>
+    <div class="form-row"><div class="field-group" style="flex-basis:48%"><label for="outcome">نتیجه و پیشنهاد بعدی</label><textarea id="outcome" name="outcome" maxlength="1500" rows="3"></textarea></div><div class="field-group" style="flex-basis:48%"><label for="notes">یادداشت محرمانه</label><textarea id="notes" name="notes" maxlength="1500" rows="3"></textarea></div></div>
+    <div class="form-row"><div class="field-group" style="flex-basis:48%"><label for="document">مدرک یا معرفی‌نامه</label><input id="document" name="document" type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"><small class="field-help">PDF، Word یا تصویر؛ حداکثر ۵ مگابایت</small></div></div>
+    <div class="form-actions"><button class="btn-submit" type="submit"><i class="cil-save" aria-hidden="true"></i> ثبت پیگیری</button></div>
+  </form>
+</section>
+<section class="card">
+  <div class="section-heading"><div><h2>برنامه‌ها و سوابق ثبت‌شده</h2><p class="muted-text">اطلاعات این بخش فقط برای مدیر و مدیر مدرسه قابل مشاهده است.</p></div></div>
+  <div class="table-wrapper support-plans-table-wrap"><table class="support-plans-table"><thead><tr><th>دانش‌آموز</th><th>خدمت و مسئول</th><th>ارجاع</th><th>موضوع</th><th>تاریخ/ساعت جلسه</th><th>جلسات</th><th>هزینه</th><th>وضعیت</th><th>نتیجه</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for p in plans %}<tr><td><strong>{{ p.first_name }} {{ p.last_name }}</strong><small class="table-subtext">{{ p.grade or 'ثبت نشده' }}{% if p.class_name %} · {{ p.class_name }}{% endif %}</small></td><td>{{ p.provider_role }}<small class="table-subtext">{{ p.provider_name or 'نام ثبت نشده' }}{% if p.provider_org %} · {{ p.provider_org }}{% endif %}</small></td><td>{{ p.referral_type or 'داخل مدرسه' }}<small class="table-subtext">{{ p.referral_destination or 'مقصد ثبت نشده' }}</small></td><td style="white-space:normal;min-width:180px">{{ p.topic }}</td><td>{{ p.session_date or p.planned_date or 'ثبت نشده' }}{% if p.session_start_time %}<small class="table-subtext support-time">{{ p.session_start_time }}{% if p.session_end_time %} تا {{ p.session_end_time }}{% endif %}</small>{% endif %}</td><td>{{ p.completed_sessions or 0 }} از {{ p.planned_sessions or 0 }}</td><td>{{ (p.cost or 0)|format_number }} ریال</td><td><span class="status-pill">{{ p.status }}</span></td><td style="white-space:normal;min-width:180px">{{ p.outcome or 'ثبت نشده' }}</td><td class="no-print"><div class="table-actions">{% if p.document_path %}<a class="btn btn--outline btn-sm" href="{{ url_for('download_support_document', plan_id=p.id) }}" title="دریافت مدرک"><i class="cil-cloud-download" aria-hidden="true"></i></a>{% endif %}<form method="post" action="{{ url_for('delete_support_plan', plan_id=p.id) }}" onsubmit="return confirm('این سابقه حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger btn-sm" type="submit" title="حذف"><i class="cil-trash" aria-hidden="true"></i></button></form></div></td></tr>{% else %}<tr><td colspan="10" class="empty-state">هنوز پیگیری مشاوره یا توانبخشی ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

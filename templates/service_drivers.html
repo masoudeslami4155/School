@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}رانندگان سرویس{% endblock %}
+{% block page_title %}<i class="cil-bus-alt" aria-hidden="true"></i> رانندگان سرویس{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='service_drivers.css') }}">
+{% endblock %}
+{% block page_actions %}
+    <a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='service_drivers') }}"><i class="cil-settings" aria-hidden="true"></i> طراحی چاپ جدول</a>
+    <a class="btn btn--primary" href="{{ url_for('service_drivers_print') }}" target="_blank" rel="noopener"><i class="cil-print" aria-hidden="true"></i> چاپ جدول A4</a>
+{% endblock %}
+{% block content %}
+{% set assigned_students = namespace(count=0) %}
+{% set destination_count = namespace(count=0) %}
+{% for student in students %}{% if student.service_driver_id %}{% set assigned_students.count = assigned_students.count + 1 %}{% endif %}{% endfor %}
+{% for driver in drivers %}{% set destination_count.count = destination_count.count + (driver.destinations|length) %}{% endfor %}
+
+<div class="service-dashboard" data-destination-map='{{ destination_map|tojson }}'>
+    <header class="sd-hero">
+        <div class="sd-hero__copy">
+            <div class="sd-kicker">مدیریت سرویس · راننده و مقصد</div>
+            <h2>همه‌چیز برای سرویس مدرسه، یک‌جا</h2>
+            <p>راننده‌ها را ثبت کنید، مقصدها را مرتب نگه دارید و انتساب دانش‌آموزان را به‌صورت تکی یا گروهی انجام دهید.</p>
+        </div>
+        <div class="sd-hero__meta">
+            <span class="sd-hero__date"><i class="cil-bus-alt" aria-hidden="true"></i> دفتر سرویس</span>
+            <small>نسخه متمرکز و قابل چاپ</small>
+        </div>
+    </header>
+
+    <section class="sd-metrics" aria-label="خلاصه سرویس">
+        <div class="sd-metric"><span class="sd-metric__icon"><i class="cil-people" aria-hidden="true"></i></span><span class="sd-metric__text"><span class="sd-metric__label">رانندگان ثبت‌شده</span><strong class="sd-metric__value">{{ drivers|length|fa_digits }}</strong></span></div>
+        <div class="sd-metric"><span class="sd-metric__icon"><i class="cil-user" aria-hidden="true"></i></span><span class="sd-metric__text"><span class="sd-metric__label">دانش‌آموزان فعال</span><strong class="sd-metric__value">{{ students|length|fa_digits }}</strong></span></div>
+        <div class="sd-metric"><span class="sd-metric__icon"><i class="cil-map" aria-hidden="true"></i></span><span class="sd-metric__text"><span class="sd-metric__label">مقصدهای ثبت‌شده</span><strong class="sd-metric__value">{{ destination_count.count|fa_digits }}</strong></span></div>
+        <div class="sd-metric sd-metric--warning"><span class="sd-metric__icon"><i class="cil-warning" aria-hidden="true"></i></span><span class="sd-metric__text"><span class="sd-metric__label">بدون راننده</span><strong class="sd-metric__value">{{ (students|length - assigned_students.count)|fa_digits }}</strong></span></div>
+    </section>
+
+    <div class="sd-layout">
+        <section class="sd-panel" aria-labelledby="driverFormTitle">
+            <div class="sd-panel__heading">
+                <div><h2 id="driverFormTitle">{% if edit_driver %}ویرایش راننده{% else %}ثبت راننده جدید{% endif %}</h2><p>اطلاعات راننده را ثبت کنید؛ مقصدها را می‌توانید بعداً هم ویرایش کنید.</p></div>
+                <span class="sd-panel__heading-icon"><i class="cil-user-plus" aria-hidden="true"></i></span>
+            </div>
+            <form class="sd-form" method="post" action="{{ url_for('service_drivers') }}">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" value="save_driver">
+                <input type="hidden" name="driver_id" value="{{ edit_driver.id if edit_driver else '' }}">
+                <div class="sd-field sd-field--full"><label for="driverName">نام و نام خانوادگی *</label><input id="driverName" name="driver_name" required value="{{ edit_driver.driver_name if edit_driver else '' }}" placeholder="مثلاً علی رضایی"></div>
+                <div class="sd-field"><label for="driverPhone">شماره تماس</label><input id="driverPhone" name="phone" inputmode="tel" value="{{ edit_driver.phone if edit_driver else '' }}" placeholder="شماره تماس"></div>
+                <div class="sd-field"><label for="driverVehicle">نوع خودرو</label><input id="driverVehicle" name="vehicle" value="{{ edit_driver.vehicle if edit_driver else '' }}" placeholder="ون، مینی‌بوس..."></div>
+                <div class="sd-field"><label for="driverPlate">شماره پلاک</label><input id="driverPlate" name="plate" value="{{ edit_driver.plate if edit_driver else '' }}" placeholder="شماره پلاک"></div>
+                <div class="sd-destinations" id="destinationFields">
+                    <div class="sd-destinations__head"><span class="sd-destinations__label">مقصدها</span><button class="sd-link-button" id="addDestination" type="button"><i class="cil-plus" aria-hidden="true"></i> افزودن مقصد</button></div>
+                    {% if edit_driver and edit_driver.destinations %}
+                        {% for destination in edit_driver.destinations %}<div class="sd-destination-row"><input name="destinations[]" value="{{ destination.destination }}" placeholder="شهر یا روستای مقصد"><button class="sd-link-button sd-remove-destination" type="button">حذف</button></div>{% endfor %}
+                    {% else %}<div class="sd-destination-row"><input name="destinations[]" placeholder="مثلاً روستای ..."><button class="sd-link-button sd-remove-destination" type="button">حذف</button></div>{% endif %}
+                </div>
+                <div class="sd-form-actions"><button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> {% if edit_driver %}ذخیره ویرایش{% else %}ثبت راننده{% endif %}</button>{% if edit_driver %}<a class="btn btn--outline" href="{{ url_for('service_drivers') }}"><i class="cil-x" aria-hidden="true"></i> انصراف</a>{% endif %}</div>
+            </form>
+        </section>
+
+        <section class="sd-panel" aria-labelledby="driverListTitle">
+            <div class="sd-panel__heading"><div><h2 id="driverListTitle">فهرست رانندگان</h2><p>مدیریت سریع اطلاعات، مقصدها و انتساب‌های هر راننده.</p></div><span class="sd-panel__heading-icon"><i class="cil-list" aria-hidden="true"></i></span></div>
+            <div class="sd-driver-list">
+                {% for driver in drivers %}
+                <article class="sd-driver-card">
+                    <div class="sd-driver-card__main"><div class="sd-driver-card__name"><span class="sd-driver-card__avatar">{{ (driver.driver_name or 'ر')[:1] }}</span>{{ driver.driver_name }}</div><span class="sd-driver-card__meta">{{ driver.phone or 'بدون تلفن' }}{% if driver.vehicle %} · {{ driver.vehicle }}{% endif %}{% if driver.plate %} · پلاک {{ driver.plate }}{% endif %} · {{ driver.student_count|fa_digits }} دانش‌آموز</span>{% if driver.destinations %}<div class="sd-driver-card__destinations">{% for destination in driver.destinations %}<span class="sd-chip"><i class="cil-location-pin" aria-hidden="true"></i>{{ destination.destination }}</span>{% endfor %}</div>{% else %}<span class="sd-status sd-status--unassigned"><i class="cil-warning" aria-hidden="true"></i> مقصدی ثبت نشده</span>{% endif %}</div>
+                    <div class="sd-driver-card__actions"><a class="btn btn--outline btn-sm" href="{{ url_for('service_drivers', edit=driver.id) }}"><i class="cil-pencil" aria-hidden="true"></i> ویرایش</a><form method="post" action="{{ url_for('service_drivers') }}" onsubmit="return confirm('این راننده حذف شود و انتساب دانش‌آموزان آن برداشته شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="delete_driver"><input type="hidden" name="driver_id" value="{{ driver.id }}"><button class="btn btn--danger btn-sm" type="submit"><i class="cil-trash" aria-hidden="true"></i> حذف</button></form></div>
+                </article>
+                {% else %}<div class="sd-empty"><strong>هنوز راننده‌ای ثبت نشده است</strong>برای شروع، فرم ثبت راننده را تکمیل کنید.</div>{% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <section class="sd-panel sd-bulk-panel" aria-labelledby="bulkDestTitle">
+        <div class="sd-bulk-panel__header"><div><h2 id="bulkDestTitle"><i class="cil-map" aria-hidden="true"></i> مدیریت گروهی مقصدها</h2><p>مقصدهای هر راننده را در همین صفحه اصلاح کنید و همه را یک‌جا ذخیره کنید.</p></div><span class="sd-status"><i class="cil-info" aria-hidden="true"></i> ذخیره امن و یک‌جا</span></div>
+        <form id="bulkDestForm" method="post" action="{{ url_for('service_drivers') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="save_all_destinations"><input type="hidden" id="destinationsJson" name="destinations_json">
+            <div class="sd-bulk-rows" id="bulkDriverRows">
+                {% for driver in drivers %}<div class="sd-bulk-row" data-driver-id="{{ driver.id }}"><span class="sd-bulk-row__driver"><i class="cil-user" aria-hidden="true"></i> {{ driver.driver_name }}</span><div class="sd-bulk-dsts" data-dests-container>{% for destination in driver.destinations %}<span class="sd-bulk-dst-chip" data-destination="{{ destination.destination }}">{{ destination.destination }}<button type="button" class="sd-bulk-dst-remove" title="حذف مقصد" aria-label="حذف {{ destination.destination }}">×</button></span>{% endfor %}<input type="text" class="sd-bulk-dst-input" placeholder="شهر یا روستا"></div><button type="button" class="btn btn--muted btn-sm sd-bulk-add-btn"><i class="cil-plus" aria-hidden="true"></i> افزودن</button></div>{% else %}<div class="sd-empty">برای مدیریت گروهی، ابتدا حداقل یک راننده ثبت کنید.</div>{% endfor %}
+            </div>
+            {% if drivers %}<div class="sd-bulk-actions"><button class="btn btn--success" type="submit" id="saveAllBtn"><i class="cil-save" aria-hidden="true"></i> ذخیره همه مقصدها</button></div>{% endif %}
+        </form>
+    </section>
+
+    <section class="sd-panel sd-assignment-panel" aria-labelledby="assignmentTitle">
+        <div class="sd-panel__heading"><div><h2 id="assignmentTitle"><i class="cil-people" aria-hidden="true"></i> انتساب دانش‌آموزان</h2><p>برای هر دانش‌آموز راننده و مقصد مستقل انتخاب کنید؛ یا چند نفر را هم‌زمان انتساب دهید.</p></div><span class="sd-status sd-status--assigned" id="selectionSummary">۰ نفر انتخاب شده</span></div>
+        <div class="sd-assignment-toolbar"><div class="sd-assignment-toolbar__search"><i class="cil-search" aria-hidden="true"></i><label class="sd-visually-hidden" for="studentSearch">جست‌وجوی دانش‌آموز</label><input id="studentSearch" type="search" placeholder="جست‌وجوی نام، پایه یا کلاس..." autocomplete="off"></div><label class="sd-selection"><input id="selectAllStudents" type="checkbox"> انتخاب همه نتایج</label><span class="sd-status" id="visibleStudentCount">{{ students|length|fa_digits }} دانش‌آموز</span></div>
+        <form id="bulkAssignForm" method="post" action="{{ url_for('service_drivers') }}">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="assign_students">
+            <div class="sd-bulk-assign"><span class="sd-bulk-assign__label">انتساب گروهی</span><select id="bulkDriver" name="driver_id" aria-label="راننده انتخاب‌شده"><option value="">بدون راننده / حذف انتساب</option>{% for driver in drivers %}<option value="{{ driver.id }}">{{ driver.driver_name }}{% if driver.vehicle %} · {{ driver.vehicle }}{% endif %}</option>{% endfor %}</select><select id="bulkDestination" name="destination_id" aria-label="مقصد انتخاب‌شده" disabled><option value="">بدون مقصد مشخص</option></select><button class="btn btn--success" type="submit"><i class="cil-check" aria-hidden="true"></i> ثبت برای انتخاب‌شده‌ها</button></div>
+        </form>
+        <div class="sd-students" id="studentList">
+            {% for student in students %}<div class="sd-student" data-search="{{ student.first_name }} {{ student.last_name }} {{ student.class_name }} {{ student.grade }}"><input class="student-check" type="checkbox" data-student-id="{{ student.id }}" aria-label="انتخاب {{ student.first_name }} {{ student.last_name }}"><div class="sd-student__identity"><strong class="sd-student__name">{{ student.first_name }} {{ student.last_name }}</strong><span class="sd-student__meta">{{ student.grade or 'بدون پایه' }} · {{ student.class_name or 'بدون کلاس' }} · کد {{ student.code|fa_digits }}</span>{% if student.driver_name %}<span class="sd-status sd-status--assigned"><i class="cil-check" aria-hidden="true"></i>{{ student.driver_name }}{% if student.service_destination %} · {{ student.service_destination }}{% else %} · مقصد مشخص نشده{% endif %}</span>{% else %}<span class="sd-status sd-status--unassigned"><i class="cil-warning" aria-hidden="true"></i>بدون راننده</span>{% endif %}</div><form class="sd-student-form" method="post" action="{{ url_for('service_drivers') }}"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="assign_student"><input type="hidden" name="student_id" value="{{ student.id }}"><select class="sd-student-driver" name="driver_id" aria-label="راننده {{ student.first_name }} {{ student.last_name }}" data-current-destination="{{ student.service_destination_id or '' }}"><option value="">بدون راننده</option>{% for driver in drivers %}<option value="{{ driver.id }}"{% if student.service_driver_id == driver.id %} selected{% endif %}>{{ driver.driver_name }}</option>{% endfor %}</select><select class="sd-student-destination" name="destination_id" aria-label="مقصد {{ student.first_name }} {{ student.last_name }}"></select><button class="btn btn--outline" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره</button></form></div>{% else %}<div class="sd-empty"><strong>دانش‌آموز فعالی برای نمایش وجود ندارد</strong>فهرست دانش‌آموزان فعال در این بخش نمایش داده می‌شود.</div>{% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='service_drivers.js') }}" defer></script>{% endblock %}

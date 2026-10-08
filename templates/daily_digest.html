@@ -1,0 +1,89 @@
+﻿{% extends 'base.html' %}
+{% block title %}گزارش پایان روز{% endblock %}
+{% block page_title %}🌇 گزارش پایان روز{% endblock %}
+{% block page_actions %}<span class="badge">{{ date }}</span>{% endblock %}
+{% block content %}
+<style>
+.digest{max-width:920px;margin:0 auto}
+.digest-head{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+.digest-head h2{margin:0;font-size:17px;color:var(--ink)}
+.digest-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
+.digest-num{display:inline-flex;border-radius:99px;background:var(--primary);color:#fff;font-size:11.5px;padding:4px 12px;font-weight:700}
+.digest-num--danger{background:#b42318}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.digest-sec{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+.digest-sec h3{margin:0 0 10px;font-size:14px;color:var(--ink);border-bottom:2px solid var(--line);padding-bottom:8px}
+.digest-sec ul{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.digest-sec li{font-size:12.5px;background:var(--soft);border-right:3px solid var(--primary);border-radius:0 6px 6px 0;padding:6px 10px;color:var(--ink);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.digest-sec li small{color:var(--muted)}
+.digest-sec--danger li{border-right-color:#b42318}
+.digest-sec--task li{border-right-color:#7d3c98}
+.digest-sec--done li{border-right-color:#067647}
+.digest-sec .empty{color:var(--muted);font-size:12px;background:none;border:none;padding:2px 0}
+.digest-foot{text-align:center;color:var(--muted);font-size:11px;margin-top:10px}
+@media print{@page{size:A4;margin:12mm}.no-print{display:none!important}.digest-sec{break-inside:avoid;box-shadow:none}.dgrid{grid-template-columns:1fr 1fr}}
+</style>
+<div class="digest">
+  <div class="digest-head">
+    <div>
+      <h2>🌇 گزارش پایان روز</h2>
+      <p>{{ config.SCHOOL_NAME }} · تاریخ: {{ date }} · برنامه‌نویس: {{ config.PROGRAMMER_NAME }}</p>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <span class="digest-num">{{ events_today|length + tasks_today|length }} مورد برای امروز</span>
+      <span class="digest-num digest-num--danger">{{ (events_overdue|length) + (tasks_overdue|length) }} عقب‌افتاده</span>
+    </div>
+  </div>
+
+  <div class="dgrid">
+    <section class="digest-sec">
+      <h3>📌 رویدادهای امروز ({{ events_today|length }})</h3>
+      <ul>
+      {% for e in events_today %}<li><span><b>{{ e.time or 'بدون ساعت' }}</b> · {{ e.title }}</span><small>{{ e.type or 'سایر' }} · {{ e.priority or 'عادی' }}</small></li>{% else %}<li class="empty">رویدادی برای امروز ثبت نشده است.</li>{% endfor %}
+      </ul>
+    </section>
+    <section class="digest-sec digest-sec--task">
+      <h3>✅ کارهای امروز — باز ({{ tasks_today|length }})</h3>
+      <ul>
+      {% for t in tasks_today %}<li><span><b>{{ t.due_time or 'بدون ساعت' }}</b> · {{ t.title }}</span><small>{{ t.category or 'کار' }} · {{ t.priority or 'عادی' }}</small></li>{% else %}<li class="empty">کار بازی برای امروز نیست.</li>{% endfor %}
+      </ul>
+    </section>
+    <section class="digest-sec digest-sec--done">
+      <h3>✔️ امروز انجام شد ({{ tasks_done_today|length }})</h3>
+      <ul>
+      {% for t in tasks_done_today %}<li><span>{{ t.title }}</span><small>{{ t.completed_at[:16] if t.completed_at }}</small></li>{% else %}<li class="empty">امروز کاری تکمیل نشده است.</li>{% endfor %}
+      </ul>
+    </section>
+    <section class="digest-sec digest-sec--danger">
+      <h3>⚠️ عقب‌افتاده — نیازمند پیگیری ({{ (events_overdue|length) + (tasks_overdue|length) }})</h3>
+      <ul>
+      {% for e in events_overdue %}<li><span><b>{{ e.date }}</b> · {{ e.title }}</span><small>رویداد</small></li>{% endfor %}
+      {% for t in tasks_overdue %}<li><span><b>{{ t.due_date }}</b> · {{ t.title }}</span><small>کار</small></li>{% endfor %}
+      {% if not events_overdue and not tasks_overdue %}<li class="empty">مورد عقب‌افتاده‌ای وجود ندارد. 🎉</li>{% endif %}
+      </ul>
+    </section>
+    <section class="digest-sec">
+      <h3>⏭️ رویدادهای فردا ({{ events_tomorrow|length }})</h3>
+      <ul>
+      {% for e in events_tomorrow %}<li><span><b>{{ e.time or 'بدون ساعت' }}</b> · {{ e.title }}</span><small>{{ e.type or 'سایر' }} · {{ e.priority or 'عادی' }}</small></li>{% else %}<li class="empty">رویدادی برای فردا نیست.</li>{% endfor %}
+      </ul>
+    </section>
+    <section class="digest-sec digest-sec--task">
+      <h3>📋 کارهای فردا ({{ tasks_tomorrow|length }})</h3>
+      <ul>
+      {% for t in tasks_tomorrow %}<li><span><b>{{ t.due_time or 'بدون ساعت' }}</b> · {{ t.title }}</span><small>{{ t.category or 'کار' }} · {{ t.priority or 'عادی' }}</small></li>{% else %}<li class="empty">کاری برای فردا نیست.</li>{% endfor %}
+      </ul>
+    </section>
+  </div>
+  <div class="digest-foot">گزارش پایان روز · {{ config.SCHOOL_NAME }} · نسخه {{ config.APP_VERSION }}</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  var KEY='digest-auto-print';
+  try{if(sessionStorage.getItem(KEY))return;sessionStorage.setItem(KEY,'1')}catch(e){}
+  setTimeout(function(){try{window.print()}catch(e){}},600);
+})();
+</script>
+{% endblock %}

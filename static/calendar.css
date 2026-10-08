@@ -1,0 +1,169 @@
+/* =========================================================================
+   calendar.css — صفحهٔ «تقویم مدرسه · کارها و آلارم»
+   -------------------------------------------------------------------------
+   ساختار فایل:
+     1) تقویم ماهانه (شبکهٔ گوگل‌مانند)
+     2) مناسبت‌های ماه شمسی (persian-holidays)
+     3) پنجرهٔ ثبت سریع روی روز
+     4) فرم‌های ثبت رویداد و کار
+     5) کارت‌های هشدار
+     6) جزئیات جدول‌ها
+     7) واکنش‌گرا و چاپ
+   ========================================================================= */
+
+/* ---- 1) تقویم ماهانه -------------------------------------------------- */
+.gcal{background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 22px rgba(20,33,61,.06);margin-bottom:18px}
+.gcal-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);flex-wrap:wrap;gap:10px}
+.gcal-title{font-size:19px;font-weight:800;color:var(--ink)}
+.gcal-title small{color:var(--muted);font-weight:400;font-size:12px;margin-right:10px}
+.gcal-actions{display:flex;gap:6px;align-items:center}
+.gcal-actions button,.gcal-actions a{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:7px 16px;cursor:pointer;font-family:inherit;font-size:13px;text-decoration:none}
+.gcal-actions button:hover{background:var(--soft)}
+.gcal-actions .gcal-today{background:var(--primary);border-color:var(--primary);color:#fff}
+.gcal-actions .gcal-link{background:var(--surface);color:var(--ink)}
+.gcal-dow{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--line);background:var(--soft)}
+.gcal-dow div{padding:8px 6px;text-align:center;font-size:11.5px;color:var(--muted);font-weight:700}
+.gcal-dow .gcal-dow-friday{color:#b42318;background:rgba(180,35,24,.08)}
+.gcal-dow-friday small{font-size:9px;font-weight:800}
+.gcal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.gcal-cell{min-height:106px;border-left:1px solid var(--line);border-top:1px solid var(--line);padding:6px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.gcal-cell:nth-child(7n){border-left:none}
+.gcal-cell:hover{background:var(--soft)}
+.gcal-cell.is-other{opacity:.45}
+.gcal-cell.is-today{background:rgba(11,99,116,.08)}
+.gcal-cell.is-weekly-holiday{background:rgba(180,35,24,.045)}
+.gcal-cell.is-weekly-holiday .gcal-num{color:#b42318;font-weight:800}
+.gcal-cell.is-holiday.is-weekly-holiday{background:rgba(180,83,9,.09)}
+.gcal-num{font-size:12px;font-weight:700;color:var(--ink);width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:99px}
+.gcal-cell.is-today .gcal-num{background:var(--primary);color:#fff}
+.gcal-chip{font-size:10.5px;border-radius:6px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-right:3px solid transparent;direction:rtl;text-align:right}
+.gcal-chip[data-kind=event]{background:rgba(23,92,211,.1);color:var(--ink);border-right-color:#175cd3}
+.gcal-chip[data-kind=task]{background:rgba(6,118,71,.12);color:var(--ink);border-right-color:#067647}
+.gcal-chip[data-kind=occasion]{background:rgba(180,83,9,.1);color:var(--ink);border-right-color:#b45309;font-weight:600}
+.gcal-chip[data-kind=weekly-holiday]{background:rgba(180,35,24,.11);color:#b42318;border-right-color:#b42318;font-weight:800}
+.gcal-chip[data-kind=occasion][data-holiday="1"]{background:rgba(180,83,9,.18);border-right-color:#92400e}
+.gcal-chip[data-done="1"]{background:var(--soft);color:var(--muted);text-decoration:line-through;border-right-color:var(--muted)}
+.gcal-chip[data-urgent="1"]{background:rgba(180,35,24,.12);border-right-color:#b42318;font-weight:700}
+.gcal-more{font-size:10px;color:var(--muted);cursor:pointer}
+
+/* ---- 2) مناسبت‌های ماه شمسی ------------------------------------------ */
+.gcal-cell.has-occasion .gcal-num{color:#b45309;font-weight:800}
+.gcal-cell.is-holiday .gcal-num{background:#fef3c7;color:#92400e}
+.gcal-occasions{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 18px;margin-bottom:18px}
+.gcal-occasions h2{margin:0;font-size:15px;color:var(--ink)}
+.gcal-occ-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:6px;margin-top:10px}
+.gcal-occ-row{display:flex;gap:8px;align-items:baseline;border:1px solid var(--line);border-radius:9px;padding:6px 9px;font-size:12px;background:var(--soft)}
+.gcal-occ-row .occ-day{font-weight:800;color:#b45309;white-space:nowrap}
+.gcal-occ-row .occ-title{overflow-wrap:anywhere}
+.gcal-occ-row .occ-tag{margin-inline-start:auto;font-size:10px;color:var(--muted);white-space:nowrap}
+.gcal-occ-row.is-holiday{border-color:rgba(180,83,9,.4)}
+.gcal-occ-row.is-holiday .occ-day{color:#92400e}
+.gcal-occ-row.is-holiday .occ-tag{color:#92400e;font-weight:700}
+.gcal-occ-row.is-weekly-holiday{border-color:rgba(180,35,24,.45)}
+.gcal-occ-row.is-weekly-holiday .occ-day,.gcal-occ-row.is-weekly-holiday .occ-tag{color:#b42318;font-weight:800}
+
+/* ---- 3) پنجرهٔ ثبت سریع ------------------------------------------------ */
+.gcal-add{position:absolute;z-index:90;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 30px rgba(0,0,0,.25);padding:10px;display:none;min-width:200px}
+.gcal-add.is-open{display:block}
+.gcal-add h4{margin:0 0 8px;font-size:13px;color:var(--ink)}
+.gcal-add button{display:block;width:100%;text-align:right;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:8px;padding:7px 10px;margin-bottom:5px;cursor:pointer;font-family:inherit;font-size:12px}
+.gcal-add button:hover{background:var(--soft)}
+
+/* ---- 4) فرم‌های ثبت --------------------------------------------------- */
+.forms-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.calendar-form{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--primary);border-radius:16px;padding:18px}
+.task-form{background:var(--surface);border:1px solid var(--line);border-top:4px solid #7d3c98;border-radius:16px;padding:18px}
+.forms-grid .section-heading h2{font-size:15px;color:var(--ink)}
+.forms-grid .section-heading p{margin:2px 0 0;font-size:11.5px;color:var(--muted)}
+.forms-grid label{display:block;font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.forms-grid input,.forms-grid select,.forms-grid textarea{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
+
+/* ---- 5) کارت‌های هشدار ------------------------------------------------- */
+.alert-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.alert-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 8px 22px rgba(20,33,61,.05)}
+.alert-card h3{margin:0 0 8px;font-size:13.5px;color:var(--ink)}
+.alert-card p{margin:0;color:var(--muted);font-size:11px}
+.alert-card ul{padding:0;margin:10px 0 0;list-style:none;display:grid;gap:6px}
+.alert-card li{font-size:12px;border-right:3px solid var(--primary);padding:5px 8px;background:var(--soft);color:var(--ink);border-radius:0 6px 6px 0}
+.alert-card--danger{border-color:rgba(180,35,24,.35)}
+.alert-card--danger li{border-right-color:#b42318}
+.alert-card--task li{border-right-color:#7d3c98}
+
+/* ---- 6) جزئیات جدول‌ها ------------------------------------------------ */
+.event-priority{display:inline-flex;border-radius:99px;padding:4px 9px;font-size:10px;font-weight:700}
+.priority-فوری{background:#fee4e2;color:#b42318}
+.priority-مهم{background:#fffaeb;color:#b54708}
+.priority-عادی{background:#eff8ff;color:#175cd3}
+.priority-کم{background:#ecfdf3;color:#067647}
+.event-type{font-size:11px;color:var(--muted)}
+.event-description{max-width:260px;white-space:normal;text-align:right}
+.event-actions{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+.event-actions form{display:inline}
+.muted-text{color:var(--muted)}
+.task-done td{opacity:.6;text-decoration:line-through}
+.alarm-on{color:#7d3c98;font-weight:700}
+
+/* ---- 7) واکنش‌گرا و چاپ ----------------------------------------------- */
+@media(max-width:1100px){
+  .forms-grid{grid-template-columns:1fr}
+  .alert-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+  .alert-grid{grid-template-columns:1fr}
+  .gcal-cell{min-height:60px}
+  .gcal-chip{font-size:9px;padding:1px 4px}
+}
+@media print{
+  .gcal-actions,.gcal-add,.forms-grid{display:none!important}
+  .gcal,.gcal-cell{box-shadow:none}
+  .gcal--list-mode .gcal-grid{display:grid!important}
+  .gcal--list-mode .gcal-dow{display:grid!important}
+  .gcal--list-mode .gcal-list{display:none!important}
+}
+
+/* ---- 8) سامان‌دهی جدید تقویم ----------------------------------------- */
+.calendar-page{display:grid;gap:18px}
+.gcal{margin-bottom:0}
+.gcal-heading{min-width:0}
+.gcal-subtitle{margin:4px 0 0;color:var(--muted);font-size:11px}
+.gcal-nav{font-size:20px!important;line-height:1;min-width:38px;padding-inline:8px!important}
+.gcal-divider{width:1px;height:24px;background:var(--line);margin-inline:3px}
+.gcal-view-btn{padding-inline:11px!important;font-size:11px!important}
+.gcal-view-btn.is-active{background:var(--soft);border-color:var(--primary);color:var(--primary);font-weight:800}
+.gcal-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:0 16px 14px;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px}
+.gcal-summary-item{display:flex;align-items:center;gap:9px;min-width:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.gcal-summary-item b{display:block;color:var(--ink);font-size:17px;line-height:1.1}
+.gcal-summary-item small{display:block;color:var(--muted);font-size:10px;margin-top:3px;white-space:nowrap}
+.gcal-summary-icon{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:900;font-size:15px;flex:none}
+.gcal-summary-icon--blue{background:#e8f1ff;color:#175cd3}.gcal-summary-icon--green{background:#e8f7ef;color:#067647}.gcal-summary-icon--amber{background:#fff4d6;color:#a15c00}.gcal-summary-icon--red{background:#ffe8e6;color:#b42318}
+.gcal-list{display:none;padding:10px 12px 14px;background:var(--surface)}
+.gcal--list-mode .gcal-grid,.gcal--list-mode .gcal-dow{display:none}
+.gcal--list-mode .gcal-list{display:grid;gap:8px}
+.gcal-list-day{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.gcal-list-day__head{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:var(--soft);font-weight:800;font-size:12px;color:var(--ink)}
+.gcal-list-day__items{display:grid;gap:5px;padding:8px}
+.gcal-list-item{border-right:3px solid var(--primary);padding:6px 8px;border-radius:6px;background:var(--soft);color:var(--ink);font-size:12px}
+.gcal-list-item--task{border-right-color:#067647}.gcal-list-item--occasion{border-right-color:#b45309}.gcal-list-item--holiday{border-right-color:#92400e;font-weight:700}.gcal-list-item--weekly-holiday{border-right-color:#b42318;background:rgba(180,35,24,.08);color:#b42318;font-weight:800}
+.gcal-list-empty{padding:22px;text-align:center;color:var(--muted);font-size:12px}
+.gcal-occasions{margin-bottom:0}
+.alert-grid,.forms-grid{margin-bottom:0}
+.calendar-page>.card{margin:0}
+@media(max-width:768px){
+  .gcal-head{padding:13px 12px;align-items:flex-start}
+  .gcal-actions{width:100%;display:grid;grid-template-columns:38px 1fr 38px;gap:6px}
+  .gcal-actions .gcal-divider,.gcal-actions .gcal-view-btn,.gcal-actions .gcal-link{display:none}
+  .gcal-actions:after{content:'فهرست';grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:99px;background:var(--soft);color:var(--ink);font:700 12px inherit}
+  .gcal-summary{grid-template-columns:repeat(2,1fr);padding:0 10px 10px;gap:7px}
+  .gcal-summary-item{padding:8px}.gcal-summary-item b{font-size:15px}.gcal-summary-item small{font-size:9px}
+  .gcal-grid{display:none}.gcal-dow{display:none}.gcal-list{display:grid}
+  .gcal{border-radius:14px}.gcal--list-mode .gcal-list{display:grid}
+  .gcal--list-mode .gcal-grid{display:none}
+  .gcal:not(.gcal--list-mode) .gcal-list{display:grid}
+  .forms-grid{gap:12px}.calendar-form,.task-form{padding:13px}
+  .table-wrapper{overflow-x:auto}
+  .calendar-page table{min-width:720px}
+  .gcal-add{position:fixed;right:12px!important;left:12px;bottom:var(--mobile-nav-clearance);top:auto!important;width:auto;min-width:0;z-index:1100}
+}
+@media(min-width:769px){.gcal:not(.gcal--list-mode) .gcal-grid{display:grid}}
+html[data-theme="dark"] .gcal-summary-icon--blue{background:#1a304f;color:#8dbbff}html[data-theme="dark"] .gcal-summary-icon--green{background:#163b31;color:#75d6ad}html[data-theme="dark"] .gcal-summary-icon--amber{background:#46371d;color:#f6ca72}html[data-theme="dark"] .gcal-summary-icon--red{background:#43272a;color:#ff9991}
+@media(max-width:768px){.gcal-actions{display:flex!important;width:100%;flex-wrap:wrap}.gcal-actions .gcal-divider{display:block}.gcal-actions .gcal-view-btn,.gcal-actions .gcal-link{display:block}.gcal-actions:after{display:none}.gcal-actions .gcal-today{flex:1}}

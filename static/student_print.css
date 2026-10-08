@@ -1,0 +1,26 @@
+@font-face{font-family:Vazirmatn;src:url('Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+.student-print-page{margin:0;font-family:Vazirmatn,Tahoma,sans-serif;line-height:var(--record-line-height,1.35)}
+.student-print-page *{box-sizing:border-box}
+.student-print-page .print-container{width:var(--paper-width);max-width:100%;margin:20px auto;padding:0;background:#fff!important;color:#000!important;font-size:var(--record-font);box-shadow:0 2px 14px #0002}
+/* The paper stays monochrome even when the surrounding controls use a dark palette. */
+html[data-ui-palette] body.student-print-page .print-container :is(header,footer,section,article,h1,h2,h3,div,span,p,table,thead,tbody,tr,th,td){background:#fff!important;background-image:none!important;color:#000!important;border-color:#888!important;border-radius:0!important}
+.print-container [hidden]{display:none!important}
+.print-header{display:flex;justify-content:space-between;align-items:center;gap:5mm;padding:3mm 0;border-bottom:2px solid #000;margin-bottom:2mm}
+.school-name{font-size:1.1em;font-weight:700}.print-header h1{font-size:1.45em;margin:1mm 0}.print-date{font-size:.9em;text-align:left}
+.print-note,.scope{font-size:.9em;margin:2mm 0;color:#333}
+.student-record{margin-bottom:4mm;break-inside:auto}
+.student-record-header{display:flex;justify-content:space-between;align-items:center;gap:3mm;border-bottom:1px solid #555;padding:2mm 0;break-inside:avoid;break-after:avoid}
+.student-record-header h2{font-size:1.3em;margin:0 0 1mm}.student-record-header span{font-size:.95em}.header-photo{width:14mm;height:17mm;object-fit:cover;filter:grayscale(1);border:1px solid #aaa}
+.profile-section{margin:2mm 0;break-inside:auto;overflow:visible}
+.section-title{font-size:1.05em;font-weight:700;margin:0;padding:1mm 2mm;border-inline-start:2px solid #000;border-bottom:1px solid #888;break-after:avoid}
+.profile-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:3mm;padding:1mm 0}
+.profile-detail{min-width:0;padding:1mm 0;border-bottom:1px dotted #aaa;overflow-wrap:anywhere;break-inside:avoid}
+.profile-detail--wide{grid-column:1/-1}.profile-detail__label{font-size:.95em;color:#333;font-weight:700}.profile-detail__value{font-size:1em;white-space:pre-wrap;overflow-wrap:anywhere}
+.student-print-page .mini-table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;font-size:.95em;background:#fff!important;color:#000!important}
+.mini-table th,.mini-table td{padding:1mm;border-bottom:1px solid #aaa;text-align:right;overflow-wrap:anywhere;background:#fff!important;color:#000!important}
+.mini-table th{font-weight:700;border-bottom:1px solid #222}.mini-table thead{display:table-header-group}.mini-table tr{break-inside:avoid}
+.footer{display:flex;justify-content:space-between;gap:3mm;border-top:1px solid #000;padding:2mm 0;margin-top:3mm;font-size:.85em;break-inside:avoid}
+@media screen{.student-print-page .print-container{padding:5mm;width:calc(var(--paper-width) + 10mm)} }
+@media screen and (max-width:700px){.student-print-page .print-container{margin:12px auto;padding:10px}.profile-detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.print-header{align-items:flex-start}.footer{flex-wrap:wrap}}
+@media print{body.student-print-page{background:#fff!important;color:#000!important}.student-print-page .print-container{margin:0;padding:0;box-shadow:none;max-width:none}.no-print{display:none!important}.print-container,.print-container *{text-shadow:none!important;box-shadow:none!important}.profile-detail-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}

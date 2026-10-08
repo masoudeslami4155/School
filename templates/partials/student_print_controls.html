@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='student_print_controls.css') }}">
+<section class="student-print-controls no-print" aria-label="تنظیمات چاپ پرونده" data-student-print-controls data-url="{{ url_for('student_print_settings') }}" data-token="{{ csrf_token() }}">
+  <details {% if request.endpoint in ['print_student', 'print_selected', 'print_filtered_students'] %}open{% endif %}>
+    <summary>تنظیمات چاپ پرونده · A4</summary>
+    <p>کدام بخش‌ها چاپ شوند؟ اطلاعات هویتی همیشه باقی می‌ماند. بخش‌های تکمیلی را انتخاب کنید.</p>
+    <div class="student-print-fields">
+      <label>جهت کاغذ <select data-print-orientation><option value="portrait">عمودی</option><option value="landscape">افقی</option></select></label>
+      <label>اندازهٔ متن (پوینت) <input data-print-font type="number" min="5" max="18" step="0.01" value="{{ student_print_options.font_size }}"></label>
+    </div>
+    <div class="student-print-sections">
+      <label><input type="checkbox" data-print-empty-option="hide_empty_fields" {% if student_print_options.hide_empty_fields %}checked{% endif %}> پنهان‌کردن فیلدهای خالی</label>
+      <label><input type="checkbox" data-print-empty-option="hide_empty_sections" {% if student_print_options.hide_empty_sections %}checked{% endif %}> پنهان‌کردن بخش‌های کاملاً خالی</label>
+    </div>
+    <p>صفر و «خیر» اطلاعات ثبت‌شده‌اند و حذف نمی‌شوند؛ ستون‌های جدول برای حفظ ساختار باقی می‌مانند.</p>
+    <fieldset><legend>بخش‌های پرونده</legend><div class="student-print-sections">
+      {% for key, label in student_print_sections %}<label><input type="checkbox" data-print-section="{{ key }}" {% if student_print_options.sections.get(key, true) %}checked{% endif %} {% if key == 'identity' %}disabled{% endif %}> {{ label }}</label>{% endfor %}
+    </div></fieldset>
+    <div class="student-print-actions"><button type="button" data-print-save>ذخیرهٔ تنظیمات برای حساب من</button>{% if request.endpoint in ['print_student', 'print_selected', 'print_filtered_students'] %}<button type="button" data-print-now>چاپ بخش‌های انتخاب‌شده</button>{% endif %}<span role="status" aria-live="polite" data-print-status>{% if request.endpoint in ['print_student', 'print_selected', 'print_filtered_students'] %}انتخاب‌ها پیش از چاپ قابل تغییرند.{% else %}برای اعمال تغییرات در صفحهٔ چاپ، ابتدا تنظیمات را ذخیره کنید.{% endif %}</span></div>
+  </details>
+  <script type="application/json" data-print-config>{{ student_print_options|tojson }}</script>
+</section>
+<script defer src="{{ url_for('static', filename='student_print_controls.js') }}"></script>

@@ -1,0 +1,26 @@
+{% macro number(row, key) -%}
+{% if interactive|default(false) and row.links.get(key) %}<a class="stats-count" href="{{ row.links[key] }}" aria-label="مشاهدهٔ {{ row[key] }} دانش‌آموز: {{ row.label or row.teacher_name or row.grade or 'جمع کل' }}، {{ {'boys':'پسر','girls':'دختر','missing':'ثبت‌نشده','total':'جمع'}[key] }}">{{ row[key] }}</a>{% else %}<span class="stats-number">{{ row[key] }}</span>{% endif %}
+{%- endmacro %}
+<table class="stats-table" id="frequencyTable">
+  <caption class="stats-sr-only">{{ view_options[view] }}؛ {{ scope_label }}؛ مبنای درصد: {{ population }} دانش‌آموز</caption>
+  <thead><tr>{% for col in frequency_columns_view %}<th scope="col">{{ col.label }}{% if col.key=='share' %}<span class="stats-sr-only"> از جمعیت {{ population }} نفری محدودهٔ فیلترشده</span>{% endif %}</th>{% endfor %}</tr></thead>
+  <tbody>
+  {% for row in frequency_display_rows %}
+    {% if row.row_kind=='section' %}<tr class="section-row"><th colspan="{{ frequency_columns_view|length }}">{{ row.label }}</th></tr>
+    {% else %}<tr class="{{ 'subtotal-row grade-subtotal' if row.row_kind=='grade_total' else 'subtotal-row teacher-subtotal' if row.row_kind=='teacher_total' else 'detail-row' }}" data-row-kind="{{ row.row_kind }}">
+      {% for col in frequency_columns_view %}
+      <td data-column="{{ col.key }}">
+        {% if row.row_kind!='detail' and col.key in ('teacher','grade') %}{% if col.key==row.label_column %}<strong>{{ row.label }}</strong>{% endif %}
+        {% elif col.key=='teacher' %}<strong>{{ row.teacher_name }}</strong>{% if row.code and row.code!=unassigned_teacher_value %}<small class="stats-code">{{ row.code }}</small>{% endif %}
+        {% elif col.key=='grade' %}{{ row.grade }}
+        {% elif col.key=='share' %}<span class="stats-share">{{ row.share }}٪</span><span class="stats-meter" aria-hidden="true"><i style="width:{{ row.share }}%"></i></span>
+        {% else %}{{ number(row,col.key) }}{% endif %}
+      </td>
+      {% endfor %}
+    </tr>{% endif %}
+  {% else %}<tr><td colspan="{{ frequency_columns_view|length }}" class="stats-empty">در این محدوده دانش‌آموزی برای نمایش وجود ندارد.</td></tr>{% endfor %}
+  </tbody>
+  {% if frequency_rows %}<tfoot><tr class="grand-total">
+    {% for col in frequency_columns_view %}<td data-column="{{ col.key }}">{% if col.key==totals_label_key %}جمع کل{% elif col.key in ('teacher','grade') %}{% elif col.key=='share' %}{{ frequency_totals.share }}٪{% else %}{{ number(frequency_totals,col.key) }}{% endif %}</td>{% endfor %}
+  </tr></tfoot>{% endif %}
+</table>

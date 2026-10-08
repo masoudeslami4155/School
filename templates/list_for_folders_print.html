@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>لیست چسباننده به پشت پرونده — {{ config.SCHOOL_NAME }}</title>
+<style>{{ folder_layout|report_element_css|safe }}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Black.woff2') format('woff2');font-weight:900;font-display:swap}
+@font-face{font-family:Vazirmatn;src:url('/static/Vazirmatn-Light.woff2') format('woff2');font-weight:300;font-display:swap}
+*{box-sizing:border-box;margin:0;padding:0}
+.print-layout-hidden{display:none!important}
+body{background:#fafaf8;color:#1a1a1a;font-family:Vazirmatn,Tahoma,sans-serif;font-size:{{ folder_layout.font_size }}pt;line-height:{{ folder_layout.line_height }}}
+.print-btn{position:fixed;top:10px;left:10px;z-index:100;padding:8px 18px;border:0;border-radius:7px;background:#1a3a2a;color:#fff;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.print-btn:hover{background:#2d5a3f}
+.sheet-header{text-align:center;padding:3mm 3mm 2mm;border-bottom:1.5px solid #1a3a2a;margin-bottom:1.5mm}
+.sheet-header h1{font-size:13pt;font-weight:900;color:#1a3a2a;letter-spacing:.4px;margin:0}
+.sheet-header p{font-size:7pt;color:#555;font-weight:300;margin-top:.6mm}
+{% set page_width = page_width_mm ~ 'mm' %}{% set page_height = page_height_mm ~ 'mm' %}
+.a4-page{
+    width:{{ page_width }};height:{{ page_height }};
+    margin:0 auto;display:flex;flex-direction:column;
+    gap:0;padding:3mm 3.5mm;
+    break-after:page;page-break-after:always;background:#fff;
+}
+.card-grid{display:grid;flex:1;min-height:0;grid-template-columns:repeat({{ cols }},1fr);grid-template-rows:repeat({{ rows }},1fr);gap:{{ card_gap }}}
+.sheet-header{flex:0 0 auto;text-align:center;padding:0 3mm 1mm;margin:0 0 1mm;border-bottom:1px solid #1a3a2a}
+.sheet-header h1{font-size:10pt}.sheet-header p{font-size:6pt}.sheet-footer{flex:0 0 auto;padding-top:1mm;text-align:center;font-size:6pt;color:#555}
+.a4-page:last-of-type{break-after:auto;page-break-after:auto}
+.card{
+    border:{{ border_width }}px {{ border_style }} {{ border_color }};
+    border-radius:{{ radius }};padding:{{ card_padding }};
+    display:flex;flex-direction:column;gap:1mm;
+    overflow:hidden;background:{{ bg_card }};
+    break-inside:avoid;page-break-inside:avoid;
+}
+.card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:1mm;{%- if show_divider_below_teacher == 'yes' %}padding-bottom:.8mm;margin-bottom:.5mm;border-bottom:1.5px solid {{ tea_border_color }};{%- endif %}text-align:{{ heading_align }};flex-shrink:0}
+.card__head-info{flex:1;min-width:0}
+.card__name{font-size:{{ tea_font }}pt;font-weight:{{ tea_weight }};color:#0f172a;line-height:{{ line_height }};overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card__meta{font-size:{{ meta_font }}pt;font-weight:{{ meta_weight }};color:#475569;line-height:{{ line_height }};margin-top:.4mm;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card__count{font-size:{{ count_font }}pt;font-weight:{{ count_weight }};color:#fff;background:{{ count_bg_color }};border-radius:{{ count_radius }};padding:.5mm 1.2mm;white-space:nowrap;flex-shrink:0}
+.card__list{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between}
+.card__row{display:flex;align-items:center;gap:1mm;padding:{{ stu_spacing }} 0;{%- if row_divider_style != 'none' %}border-bottom:{{ row_divider_width }}px {{ row_divider_style }} {{ row_divider_color }};{%- endif %}min-height:5mm}
+.card__row:last-child{border-bottom:none}
+.card__idx{font-size:7pt;font-weight:700;color:#888;min-width:4mm;text-align:center;flex-shrink:0}
+.card__name-stu{flex:1;font-size:{{ stu_name_size }}pt;font-weight:{{ stu_weight }};color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:{{ stu_name_align }}}
+.card__grade{font-size:{{ stu_grade_size }}pt;color:#64748b;font-weight:400;white-space:nowrap;min-width:9mm;text-align:{{ grade_align }};flex-shrink:0}
+.card__photo,.card__photo-ph{width:{{ photo_width }}mm;height:{{ photo_height }}mm;flex-shrink:0}
+{% set _prs = {'square':'0mm','rounded':photo_radius,'circle':'999px'}.get(photo_shape,'0mm') %}
+.card__photo{object-fit:cover;border-radius:{{ _prs }};{% if photo_border == 'yes' %}border:.4px solid {{ photo_border_color }};background:#f5f5f0{% else %}background:#f5f5f0{% endif %}}
+.card__photo-ph{border-radius:{{ _prs }};{% if photo_border == 'yes' %}border:.5px dashed {{ photo_border_color }};{% endif %}display:grid;place-items:center;font-size:5.5pt;color:#bbb;background:#fafafa}
+.card__empty{color:#bbb;font-size:8pt;text-align:center;padding-top:5mm}
+@media print{
+    @page{size:A4 {{ orientation }};margin:{{ folder_layout.margin.top }}mm {{ folder_layout.margin.right }}mm {{ folder_layout.margin.bottom }}mm {{ folder_layout.margin.left }}mm}
+    body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .print-btn{display:none!important}
+    .a4-page{margin:0!important;width:{{ page_width }}!important;height:{{ page_height }}!important;padding:{{ folder_layout.margin.top }}mm {{ folder_layout.margin.right }}mm!important}
+    .card{border-color:{{ border_color }}!important;border-width:{{ border_width }}px!important;border-style:{{ border_style }}!important;border-radius:{{ radius }}!important;background:{{ bg_card }}!important;padding:{{ card_padding }}!important}
+    .card__head{border-bottom-color:{{ tea_border_color }}!important}
+    .card__name{color:#111!important;font-size:{{ tea_font }}pt!important;font-weight:{{ tea_weight }}!important}
+    .card__meta{color:#444!important;font-size:{{ meta_font }}pt!important;font-weight:{{ meta_weight }}!important}
+    .card__count{background:{{ count_bg_color }}!important;color:#fff!important;font-size:{{ count_font }}pt!important;font-weight:{{ count_weight }}!important}
+    .card__name-stu{color:#111!important;font-size:{{ stu_name_size }}pt!important;font-weight:{{ stu_weight }}!important}
+    .card__grade{color:#555!important;font-size:{{ stu_grade_size }}pt!important}
+    .card__photo,.card__photo-ph{width:{{ photo_width }}mm!important;height:{{ photo_height }}mm!important;border-radius:{{ _prs }}!important}
+    .card__empty{color:#ccc!important}
+}
+</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+<button class="print-btn no-print" onclick="window.print()">🖨️ چاپ</button>
+{% for page_item in pages %}
+<section class="a4-page" aria-label="برگه چاپ">
+    {% if folder_layout.show_header %}<header class="sheet-header" data-report-element="hero"><h1>{{ config.SCHOOL_NAME }}</h1><p>لیست چسباننده به پشت پرونده · {{ cols }}×{{ rows }} = {{ cols*rows }} کارت</p></header>{% endif %}
+    <div class="card-grid" data-report-element="cards">
+    {% for item in page_item %}
+    <article class="card">
+        <header class="card__head">
+            <div class="card__head-info">
+                <div class="card__name{% if not folder_layout.columns.teacher %} print-layout-hidden{% endif %}">{{ (item.teacher.first_name or '') ~ ' ' ~ (item.teacher.last_name or '')|trim or 'معلم ثبت نشده' }}</div>
+                {% if show_subject == 'yes' %}
+                <div class="card__meta{% if not folder_layout.columns.teacher_meta %} print-layout-hidden{% endif %}">
+                    {% if item.teacher.subject %}{{ item.teacher.subject }}{% endif %}{% if item.teacher.class_name %}{% if item.teacher.subject %} · {% endif %}{{ item.teacher.class_name }}{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            <span class="card__count{% if not folder_layout.columns.count %} print-layout-hidden{% endif %}">{{ item.students|length }} نفر</span>
+        </header>
+        <div class="card__list">
+            {% for s in item.students[:max_students] %}
+            <div class="card__row">
+                {% if show_numbering == 'yes' %}
+                <span class="card__idx{% if not folder_layout.columns.student_number %} print-layout-hidden{% endif %}">{{ loop.index }}</span>
+                {% endif %}
+                <span class="card__name-stu{% if not folder_layout.columns.student_name %} print-layout-hidden{% endif %}" title="{{ (s.first_name or '') ~ ' ' ~ (s.last_name or '')|trim }}">{{ (s.first_name or '') ~ ' ' ~ (s.last_name or '')|trim or 'ثبت نشده' }}</span>
+                {% if show_grade == 'yes' %}
+                <span class="card__grade{% if not folder_layout.columns.student_grade %} print-layout-hidden{% endif %}">{{ s.grade or '—' }}</span>
+                {% endif %}
+                {% if show_photo == 'yes' and folder_layout.columns.student_photo %}
+                {% if s.photo %}<img class="card__photo" src="/static/uploads/{{ s.photo }}" alt="" style="width:{{ photo_width }}mm;height:{{ photo_height }}mm">
+                {% else %}<div class="card__photo-ph" aria-hidden="true" style="width:{{ photo_width }}mm;height:{{ photo_height }}mm">؟</div>{% endif %}
+                {% endif %}
+            </div>
+            {% else %}
+            <div class="card__empty">بدون دانشآموز</div>
+            {% endfor %}
+            {% if item.students|length > max_students %}
+            <div class="card__empty" style="padding-top:1mm;font-size:7pt">... {{ item.students|length - max_students }} نفر دیگر</div>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+    {% for _ in range((cols * rows) - page_item|length) %}<article class="card" aria-hidden="true"></article>{% endfor %}
+    </div>
+    {% if folder_layout.show_footer %}<footer class="sheet-footer" data-report-element="footer">{{ config.SCHOOL_NAME }} · پشت پرونده · {{ jalali_datetime }}</footer>{% endif %}
+</section>
+{% endfor %}
+</body>
+</html>

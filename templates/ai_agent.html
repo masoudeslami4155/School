@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}دستیار هوشمند مدرسه{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='ai_agent.css') }}">
+{% endblock %}
+{% block page_title %}<i class="cil-message-dot" aria-hidden="true"></i> دستیار هوشمند مدرسه{% endblock %}
+{% block content %}
+{% set idle_label = ('تنظیم‌شده: ' ~ provider.provider_label ~ ' — ' ~ provider.model)
+                    if provider.configured else 'هوش مصنوعی هنوز تنظیم نشده است' %}
+{% include 'partials/ai_design_studio.html' %}
+<div class="ai-agent" id="aiAgent"
+     data-chat-url="{{ url_for('ai_agent_chat') }}"
+     data-stream-url="{{ url_for('ai_agent_stream') }}"
+     data-apply-url="{{ url_for('ai_agent_apply_change') }}"
+     data-csrf="{{ csrf_token() }}" data-documents-url="{{ url_for('ai_documents') }}"
+     data-configured="{{ '1' if provider.configured else '0' }}"
+     data-idle-label="{{ idle_label }}">
+  <div class="ai-agent__header">
+    <div class="ai-agent__header-row">
+      <div class="ai-agent__status">
+        <span class="ai-agent__dot{{ '' if provider.configured else ' error' }}" id="agentDot" aria-hidden="true"></span>
+        <span id="agentStatusText">{{ idle_label }}</span>
+      </div>
+      <div class="ai-agent__header-actions">
+        {% if current_role == 'admin' %}
+        <a class="btn btn--outline btn--sm" href="{{ url_for('ai_documents_settings') }}"><i class="cil-settings" aria-hidden="true"></i> تنظیم هوش مصنوعی</a>
+        {% endif %}
+        <button class="btn btn--outline btn--sm" id="newChat" type="button">گفتگوی تازه</button>
+        <button class="btn btn--outline btn--sm" id="renameChat" type="button">تغییر نام</button>
+        <button class="btn btn--outline btn--sm" id="clearChat" type="button" title="حذف دائمی این گفتگو و نتایج ذخیره‌شده"><i class="cil-trash" aria-hidden="true"></i> پاک کردن</button>
+      </div>
+    </div>
+    {% if not provider.configured %}
+    <div class="ai-agent__notice" role="status">
+      {% if current_role == 'admin' %}
+      برای فعال‌شدن دستیار، از «تنظیم هوش مصنوعی» سرویس و مدل را ثبت کنید.
+      {% else %}
+      مدیر سامانه هنوز سرویس هوش مصنوعی را تنظیم نکرده است؛ پس از تنظیم، دستیار آمادهٔ پاسخگویی می‌شود.
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="ai-agent__memory">
+    <label>اتصال دستیار برای این حساب<select id="agentProfile"><option value="">پیش‌فرض مدیر</option><option value="__legacy__" {% if provider.get('selection_source') == 'legacy_user' %}selected{% endif %}>انتخاب شخصی قبلی</option>{% for id,p in connections.items() %}{% if p.enabled %}<option value="{{ id }}" {% if provider.get('id') == id and provider.get('selection_source') == 'user' %}selected{% endif %}>{{ p.name }} — {{ p.model }}</option>{% endif %}{% endfor %}</select></label>
+    <button type="button" id="resetAgentProfile" class="btn btn--outline btn--sm">بازگشت به اتصال پیش‌فرض</button><small>منبع انتخاب: {{ {'user':'انتخاب شخصی','default':'پیش‌فرض مدیر','legacy_user':'انتخاب شخصی قبلی','legacy_default':'تنظیمات قبلی'}.get(provider.get('selection_source'),'تنظیمات قبلی') }}</small>
+    <label for="conversationSelect">گفتگوهای من</label>
+    <select id="conversationSelect" aria-label="انتخاب گفتگو"><option value="">گفتگوی تازه</option></select>
+    <small>گفتگوها در حساب شما ذخیره می‌شوند؛ حداکثر ۱۲ گفتگو، ۴۰ پیام و ۱۲ نتیجه در هر گفتگو. «پاک کردن» دادهٔ ذخیره‌شدهٔ همین گفتگو را حذف می‌کند.</small>
+  </div>
+  <div class="ai-agent__messages" id="messages" role="log" aria-live="polite" aria-label="پیام‌های گفتگو">
+    <div class="msg msg--bot">
+      <div class="msg__avatar"><i class="cil-robot" aria-hidden="true"></i></div>
+      <div class="msg__body">
+        <div class="msg__text">سلام! من دستیار هوشمند مدرسه هستم. هر سوالی دربارهٔ دانش‌آموزان، حضور و غیاب، مالی یا آمار مدرسه دارید بپرسید.</div>
+      </div>
+    </div>
+  </div>
+  <div class="ai-agent__input-area">
+    {% if provider.provider != 'ollama' %}<label style="display:block;padding:.5rem"><input type="checkbox" id="agentExternalConsent"> اجازهٔ ارسال این سؤال، زمینهٔ گفتگو و نتایج ابزار به سرویس اینترنتی را می‌دهم (مشروط به سیاست مدیر).</label>{% endif %}
+    <textarea id="chatInput" class="ai-agent__textarea" rows="3" placeholder="سوال خود را بنویسید..." maxlength="2000" aria-label="متن پیام"{% if not provider.configured %} disabled{% endif %}></textarea>
+    <div class="ai-agent__actions">
+      <button class="btn btn--primary" id="sendBtn" type="button"{% if not provider.configured %} disabled{% endif %}><i class="cil-send" aria-hidden="true"></i> ارسال</button>
+    </div>
+  </div>
+  <div class="ai-agent__hint">کلید Enter ارسال می‌کند · Shift+Enter خط جدید · دستیار می‌تواند داده‌ها را بخواند و تغییر پیشنهادی را فقط با تأیید شما اجرا کند</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='ai_design_studio.js') }}" defer></script>
+<script src="{{ url_for('static', filename='ai_agent.js') }}" defer></script>
+{% endblock %}

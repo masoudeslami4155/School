@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}تغییر وضعیت گروهی دانش‌آموزان{% endblock %}
+{% block page_title %}🗂️ تغییر وضعیت گروهی{% endblock %}
+{% block content %}
+<section class="card"><div class="section-heading"><div><h2>تأیید عملیات گروهی</h2><p class="muted-text">{{ students|length|format_number }} دانش‌آموز انتخاب شده‌اند. پرونده‌ها حذف دائمی نمی‌شوند و قابل بازگردانی هستند.</p></div><span class="badge">{{ students|length|format_number }} نفر</span></div>
+<div class="notice__details" style="margin-bottom:18px">{% for s in students %}<span class="badge">{{ s.first_name }} {{ s.last_name }} · {{ s.code or 'بدون کد' }}</span>{% endfor %}</div>
+<form method="post" action="{{ url_for('group_delete') }}"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="ids" value="{{ ids|join(',') }}"><div class="form-row"><div class="field-group"><label for="reason">دلیل تغییر وضعیت</label><select id="reason" name="reason" required><option value="فارغ‌التحصیل">🎓 فارغ‌التحصیل</option><option value="ترک تحصیل">🚫 ترک تحصیل</option><option value="سایر">🔸 سایر</option></select></div></div><div class="form-actions"><button class="btn btn--danger" type="submit">🗑️ تأیید تغییر وضعیت</button><a class="btn btn--muted" href="{{ url_for('index') }}">انصراف</a></div></form>
+</section>
+{% endblock %}

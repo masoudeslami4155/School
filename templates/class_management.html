@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}کلاس‌بندی هوشمند{% endblock %}
+{% block page_title %}📋 کلاس‌بندی هوشمند{% endblock %}
+{% block head %}<style>
+@media print{@page{size:A4 landscape;margin:7mm}}
+.cm-toolbar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;background:var(--card-bg,#fff);padding:.5rem 0}
+.cm-save-btn{font-size:1.02rem;padding:.6rem 1.6rem;white-space:nowrap}
+.cm-bottom-save{margin-top:1rem;text-align:center}
+table input,table select{width:100%;min-width:130px}
+</style>{% endblock %}
+{% block page_actions %}<a class="btn btn--primary" href="{{ url_for('teachers') }}">👩‍🏫 مدیریت معلمان</a>{% endblock %}
+{% block content %}
+<form method="post" action="{{ url_for('class_management') }}" id="class-management-form">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+<section class="card">
+    <div class="cm-toolbar">
+        <div><h2 style="margin:0 0 .2rem">انتساب کلاس، کلاس سیدا و معلم</h2><p class="muted-text" style="margin:0">همهٔ ردیف‌های موردنظر را ویرایش کنید، سپس یک‌بار «ثبت گروهی» بزنید.</p></div>
+        <div style="display:flex;gap:.6rem;align-items:center">
+            <span class="badge">{{ students|length }} دانش‌آموز فعال</span>
+            <button class="btn btn--success cm-save-btn no-print" type="submit">💾 ثبت گروهی تغییرات</button>
+        </div>
+    </div>
+</section>
+<div class="table-wrapper">
+    <table>
+        <thead><tr><th>#</th><th>دانش‌آموز</th><th>کد دانش‌آموزی</th><th>کلاس مدرسه</th><th>کلاس سیدا</th><th>معلم</th></tr></thead>
+        <tbody>
+        {% for s in students %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td><strong>{{ s.first_name }} {{ s.last_name }}</strong><input type="hidden" name="student_ids" value="{{ s.id }}"></td>
+                <td>{{ s.code or 'ثبت نشده' }}</td>
+                <td>
+                    <input name="class_name__{{ s.id }}" value="{{ s.class_name or '' }}" placeholder="کلاس مدرسه" aria-label="کلاس مدرسه {{ s.first_name }} {{ s.last_name }}">
+                </td>
+                <td>
+                    <select name="sida_class__{{ s.id }}" aria-label="کلاس سیدا {{ s.first_name }} {{ s.last_name }}">
+                        <option value="">— انتخاب نشده —</option>
+                        {% for opt in sida_class_options %}
+                            <option value="{{ opt }}" {% if s.sida_class == opt %}selected{% endif %}>{{ opt }}</option>
+                        {% endfor %}
+                        {% if s.sida_class and s.sida_class not in sida_class_options %}
+                            <option value="{{ s.sida_class }}" selected>{{ s.sida_class }} (قدیمی)</option>
+                        {% endif %}
+                    </select>
+                </td>
+                <td>
+                    <select name="teacher_code__{{ s.id }}" aria-label="معلم {{ s.first_name }} {{ s.last_name }}">
+                        <option value="">بدون معلم</option>
+                        {% for t in teachers %}
+                            <option value="{{ t.code }}" {% if s.teacher_code == t.code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }} · {{ t.code }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6" class="empty-state">داده‌ای برای کلاس‌بندی وجود ندارد.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% if students %}
+<div class="cm-bottom-save no-print">
+    <button class="btn btn--success cm-save-btn" type="submit">💾 ثبت گروهی همهٔ تغییرات</button>
+</div>
+{% endif %}
+</form>
+{% endblock %}

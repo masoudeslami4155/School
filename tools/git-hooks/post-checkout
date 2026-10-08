@@ -1,0 +1,14 @@
+#!/bin/sh
+# ------------------------------------------------------------------
+# هوک پس از checkout — تور نجات تنظیم core.hooksPath
+# اگر تنظیم محلی (مثلاً با ویرایش دستی .git/config) پاک شده باشد،
+# همین هوک دوباره آن را روی tools/git-hooks می‌گذارد. اگر مقدار
+# دیگری تنظیم شده باشد (انتخاب خود کاربر)، دست نمی‌زند.
+# ------------------------------------------------------------------
+set -u
+
+CURRENT=$(git config --local --get core.hooksPath 2>/dev/null) || CURRENT=""
+if [ -z "$CURRENT" ]; then
+    git config --local core.hooksPath "tools/git-hooks" 2>/dev/null || true
+fi
+exit 0

@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>چاپ پرونده دانش‌آموزان | {{ config.SCHOOL_NAME }}</title>
+{% include 'partials/user_palette_head.html' %}
+<link rel="stylesheet" href="{{ url_for('static', filename='student_print.css') }}">
+<style>
+{{ student_info_layout|report_element_css|safe }}
+@page{size:A4 {{ student_info_layout.orientation }};margin:{{ student_info_layout.margin.top }}mm {{ student_info_layout.margin.right }}mm {{ student_info_layout.margin.bottom }}mm {{ student_info_layout.margin.left }}mm}
+body.student-print-page{--record-font:{{ student_info_layout.font_size }}pt;--paper-width:{{ (210 if student_info_layout.orientation == 'portrait' else 297) - student_info_layout.margin.left - student_info_layout.margin.right }}mm;--record-line-height:{{ student_info_layout.line_height }}}
+</style>
+</head>
+<body class="student-print-page">
+{% include 'partials/student_print_controls.html' %}
+<main class="print-container">
+<header class="print-header" data-report-element="hero" {% if not student_info_layout.show_header %}hidden{% endif %}><div><div class="school-name">{{ config.SCHOOL_NAME }}</div><h1>پروندهٔ دانش‌آموز{% if print_rows is defined %}ان{% endif %}</h1></div><div class="print-date">تاریخ چاپ: {{ jalali_datetime }}{% if count is defined %}<br>{{ count }} پرونده{% endif %}</div></header>
+{% if selected_filters is defined %}<div class="scope">دامنهٔ چاپ: {% for key, label in [('q','جست‌وجو'),('grade','پایه'),('class_name','کلاس'),('sida_class','سیدا'),('gender','جنسیت'),('teacher_code','معلم')] %}{% if selected_filters.get(key) %}{{ label }}: {{ selected_filters[key] if selected_filters[key] != '__empty__' else 'ثبت نشده' }}؛ {% endif %}{% endfor %}فهرست انتخابی</div>{% endif %}
+<p class="print-note">بخش‌های انتخاب‌شدهٔ پرونده · مقدار خالی: «ثبت نشده»{% if restricted %} · فقط اطلاعات مجاز نقش معلم{% endif %}</p>
+{% block records %}{% include 'partials/student_print_record.html' %}{% endblock %}
+<footer class="footer" data-report-element="footer" {% if not student_info_layout.show_footer %}hidden{% endif %}><span>{{ config.SCHOOL_NAME }}</span><span>امضای مسئول: ــــــــــــــــــــــ</span><span>امضای ولی: ــــــــــــــــــــــ</span></footer>
+</main>
+</body></html>

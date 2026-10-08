@@ -1,0 +1,29 @@
+{# ============================================================
+   دکمه فلزی مایع — معادل Jinja کامپوننت React (LiquidMetalButton)
+   استفاده:
+     {% from 'partials/liquid_button.html' import liquid_button %}
+     {{ liquid_button('ورود به سامانه', type='submit', icon='cil-lock-locked') }}
+     {{ liquid_button('شروع', href=url_for('index'), mode='icon', icon='cil-sparkles') }}
+   پارامترها:
+     label  متن دکمه (یا aria-label در حالت آیکونی)
+     href   اگر داده شود، تگ <a> ساخته می‌شود
+     type   نوع دکمه (button | submit) — پیش‌فرض button
+     icon   کلاس آیکون محلی پروژه، مثل cil-plus
+     mode   text | icon
+     block  تمام‌عرض در موبایل
+     name/value  برای ارسال مقدار در فرم
+     extra  کلاس‌های اضافه
+   ============================================================ #}
+{% macro liquid_button(label='', href=None, type='button', icon=None, mode='text', block=False, name=None, value=None, extra='', attrs='') -%}
+{%- set cls = 'lmb' ~ (' lmb--icon' if mode == 'icon' else '') ~ (' ' ~ extra if extra else '') -%}
+{%- if href -%}
+<a class="{{ cls }}" href="{{ href }}" data-liquid-button data-liquid-mode="{{ mode }}"{% if block %} data-liquid-block{% endif %}{% if not label %} aria-label="دکمه"{% endif %}{% if attrs %} {{ attrs|safe }}{% endif %}>
+{%- else -%}
+<button class="{{ cls }}" type="{{ type }}" data-liquid-button data-liquid-mode="{{ mode }}"{% if block %} data-liquid-block{% endif %}{% if name %} name="{{ name }}"{% endif %}{% if value is not none %} value="{{ value }}"{% endif %}{% if attrs %} {{ attrs|safe }}{% endif %}>
+{%- endif -%}
+<span class="lmb__ring" aria-hidden="true"></span>
+<span class="lmb__metal" aria-hidden="true"></span>
+<span class="lmb__core" aria-hidden="true"></span>
+<span class="lmb__label">{% if icon %}<i class="{{ icon }}" aria-hidden="true"></i>{% endif %}{% if mode == 'text' %}{{ label }}{% endif %}</span>
+{%- if href %}</a>{% else %}</button>{% endif %}
+{%- endmacro %}

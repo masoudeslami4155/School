@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}مرکز امکانات سامانه{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='features_hub.css') }}">
+{% endblock %}
+{% block page_title %}✨ مرکز امکانات سامانه{% endblock %}
+{% block content %}
+<section class="feature-intro card">
+    <div>
+        <span class="eyebrow">نسخه حرفهای مدرسه</span>
+        <h2>همه ابزارهای مدیریتی در یک مرکز</h2>
+        <p>این مرکز دسترسی سریع به امکانات اصلی سامانه، گزارشها و ابزارهای عملیاتی مدرسه را فراهم میکند.</p>
+    </div>
+    <div class="feature-intro-icon">🚀</div>
+</section>
+
+{% for cat in categories %}
+<div class="feature-category feature-category--{{ cat.key }}">
+    <h3 class="feature-category__title">
+        <span class="cat-icon">{{ cat.icon }}</span>
+        {{ cat.label }}
+    </h3>
+        <div class="feature-grid">
+        {% for feature in cat['items'] %}
+        <a class="feature-card" href="{{ url_for(feature.endpoint) }}">
+            <span class="feature-card__icon">{{ feature.icon }}</span>
+            <span>
+                <strong>{{ feature.title }}</strong>
+                <small>{{ feature.text }}</small>
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

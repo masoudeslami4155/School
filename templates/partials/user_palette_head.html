@@ -1,0 +1,73 @@
+{# Shared theme bootstrap for standalone pages (base.html already loads these). #}
+<meta name="theme-color" content="{{ ui_preferences.colors.button }}">
+<style>
+:root {
+    --ink: {{ ui_preferences.colors.text }};
+    --primary: {{ ui_preferences.colors.button }};
+    --primary2: {{ ui_preferences.colors.button }};
+    --surface: {{ ui_preferences.colors.surface }};
+    --surface-soft: {{ ui_preferences.colors.table_row_alt }};
+    --line: {{ ui_preferences.colors.border }};
+    --line-strong: {{ ui_preferences.colors.border }};
+    --user-button-color: {{ ui_preferences.colors.button }};
+    --user-button-text: {{ ui_preferences.colors.button_text }};
+    --user-secondary-button-color: {{ ui_preferences.colors.secondary_button }};
+    --user-secondary-button-text: {{ ui_preferences.colors.secondary_button_text }};
+    --user-page-background: {{ ui_preferences.colors.background }};
+    --user-box-background: {{ ui_preferences.colors.surface }};
+    --user-text-color: {{ ui_preferences.colors.text }};
+    --user-border-color: {{ ui_preferences.colors.border }};
+    --user-table-header: {{ ui_preferences.colors.table_header }};
+    --user-table-header-text: {{ ui_preferences.colors.table_header_text }};
+    --user-table-row: {{ ui_preferences.colors.table_row }};
+    --user-table-row-alt: {{ ui_preferences.colors.table_row_alt }};
+    --user-light-button-color: {{ ui_preferences.colors.button }};
+    --user-light-button-text: {{ ui_preferences.colors.button_text }};
+    --user-light-secondary-button-color: {{ ui_preferences.colors.secondary_button }};
+    --user-light-secondary-button-text: {{ ui_preferences.colors.secondary_button_text }};
+    --user-light-page-background: {{ ui_preferences.colors.background }};
+    --user-light-box-background: {{ ui_preferences.colors.surface }};
+    --user-light-text-color: {{ ui_preferences.colors.text }};
+    --user-light-border-color: {{ ui_preferences.colors.border }};
+    --user-light-table-header: {{ ui_preferences.colors.table_header }};
+    --user-light-table-header-text: {{ ui_preferences.colors.table_header_text }};
+    --user-light-table-row: {{ ui_preferences.colors.table_row }};
+    --user-light-table-row-alt: {{ ui_preferences.colors.table_row_alt }};
+    --user-dark-button-color: {{ ui_preferences.dark_colors.button }};
+    --user-dark-button-text: {{ ui_preferences.dark_colors.button_text }};
+    --user-dark-secondary-button-color: {{ ui_preferences.dark_colors.secondary_button }};
+    --user-dark-secondary-button-text: {{ ui_preferences.dark_colors.secondary_button_text }};
+    --user-dark-page-background: {{ ui_preferences.dark_colors.background }};
+    --user-dark-box-background: {{ ui_preferences.dark_colors.surface }};
+    --user-dark-text-color: {{ ui_preferences.dark_colors.text }};
+    --user-dark-border-color: {{ ui_preferences.dark_colors.border }};
+    --user-dark-table-header: {{ ui_preferences.dark_colors.table_header }};
+    --user-dark-table-header-text: {{ ui_preferences.dark_colors.table_header_text }};
+    --user-dark-table-row: {{ ui_preferences.dark_colors.table_row }};
+    --user-dark-table-row-alt: {{ ui_preferences.dark_colors.table_row_alt }};
+}
+</style>
+<script>
+(function () {
+    var root = document.documentElement;
+    root.dataset.uiDensity = {{ ui_preferences.ui_density|tojson }};
+    root.dataset.uiCardSize = {{ ui_preferences.card_size|tojson }};
+    root.dataset.uiStyle = {{ ui_preferences.visual_style|tojson }};
+    root.dataset.uiFont = {{ ui_preferences.font_family|tojson }};
+    root.dataset.uiTextScale = {{ ui_preferences.text_scale|tojson }};
+    root.dataset.uiLineSpacing = {{ ui_preferences.line_spacing|tojson }};
+    root.dataset.uiMotion = {{ ui_preferences.motion|tojson }};
+    root.dataset.uiPalette = {{ ui_preferences.color_palette|tojson }};
+    try {
+        var theme = localStorage.getItem('school-theme');
+        if (!theme) theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        root.dataset.theme = theme;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.content = theme === 'dark' ? {{ ui_preferences.dark_colors.button|tojson }} : {{ ui_preferences.colors.button|tojson }};
+    } catch (error) {
+        root.dataset.theme = 'light';
+    }
+})();
+</script>
+<link rel="stylesheet" media="screen" href="{{ url_for('static', filename='user_preferences.css') }}">
+{% if current_user %}<script src="{{ url_for('static', filename='user_accessibility.js') }}" defer></script>{% endif %}

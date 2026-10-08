@@ -1,0 +1,4251 @@
+{
+ "_meta": {
+  "source": "persian-holidays",
+  "source_url": "https://github.com/karfekr/persian-holidays",
+  "package": "persian-holidays@1.6.1",
+  "calendars": [
+   "jalali"
+  ],
+  "note": "Offline copy generated from the jalali data of the persian-holidays package. Fixed events are year-independent (Jalali month/day). Relative events carry a rule that is resolved at runtime. 'isHolidayInIran' marks official public holidays.",
+  "count": 281
+ },
+ "events": [
+  {
+   "id": "jalali-01-01-3imwl2",
+   "type": "fixed",
+   "month": 1,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "آغاز نوروز",
+    "en": "Nowruz (Persian New Year)"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-02-1yskh25",
+   "type": "fixed",
+   "month": 1,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "آغاز عملیات فتح‌المبین",
+    "en": "Start of Fath ol-Mobin Operation"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-02-19ogomy",
+   "type": "fixed",
+   "month": 1,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "نوروز",
+    "en": "Nowruz"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-02-1ml0mw4",
+   "type": "fixed",
+   "month": 1,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "هجوم به مدرسه‌ی فیضیه‌ی قم",
+    "en": "Attack on Feyziyeh School(Qom)"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-03-16fgpuk",
+   "type": "fixed",
+   "month": 1,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "نوروز",
+    "en": "Nowruz"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-04-136gr24",
+   "type": "fixed",
+   "month": 1,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "نوروز",
+    "en": "Nowruz"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-06-pqbb0q",
+   "type": "fixed",
+   "month": 1,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "روز امید و شادباش‌نویسی",
+    "en": "Hope & Congratulations Writing Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-06-1yg99ua",
+   "type": "fixed",
+   "month": 1,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "زادروز زرتشت پیامبر",
+    "en": "Birth of Zarathustra the prophet"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-07-vt3630",
+   "type": "fixed",
+   "month": 1,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز هنرهای نمایشی",
+    "en": "Performing Arts Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-10-1rcfhqu",
+   "type": "fixed",
+   "month": 1,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "همه‌پرسی برای نظام جمهوری اسلامی ایران",
+    "en": "Referendum for Islamic Republic"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-12-1w5rrnu",
+   "type": "fixed",
+   "month": 1,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "روز جمهوری اسلامی ایران",
+    "en": "Iranian Islamic Republic Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-13-tgoeqw",
+   "type": "fixed",
+   "month": 1,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز سیزده‌بدر",
+    "en": "Sizdah Bedar Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-13-p9ycih",
+   "type": "fixed",
+   "month": 1,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز طبیعت",
+    "en": "Nature Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-01-15-w7msil",
+   "type": "fixed",
+   "month": 1,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "روز ذخایر ژنتیکی و زیستی",
+    "en": "Genetic & Biological Resources Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-17-1xxxw94",
+   "type": "fixed",
+   "month": 1,
+   "day": 17,
+   "rule": null,
+   "title": {
+    "fa": "سروش‌روز، سروشگان",
+    "en": "Soroush, Soroushegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-18-qtyyml",
+   "type": "fixed",
+   "month": 1,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "روز سلامتی",
+    "en": "Health Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-19-1gas1d5",
+   "type": "fixed",
+   "month": 1,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله صدر و خواهرشان",
+    "en": "Martyrdom of Ayatollah Sadr & his Sister"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-19-1ggfadr",
+   "type": "fixed",
+   "month": 1,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "فروردینگان",
+    "en": "Farvardinegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-20-1u4ik0j",
+   "type": "fixed",
+   "month": 1,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی فناوری هسته‌ای",
+    "en": "National Nuclear Technology Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-20-1bixr6h",
+   "type": "fixed",
+   "month": 1,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "روز هنر انقلاب اسلامی",
+    "en": "Islamic Revolution Arts Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-20-du8ng6",
+   "type": "fixed",
+   "month": 1,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "شهادت سید مرتضی آوینی",
+    "en": "Martyrdom of Seyed Morteza Avini"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-20-39prs9",
+   "type": "fixed",
+   "month": 1,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "قطع مناسبات دیپلماتیک ایران و آمریکا",
+    "en": "Severance of Iran–US Diplomatic Relations"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-21-5n0sul",
+   "type": "fixed",
+   "month": 1,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس بنیاد مسکن انقلاب اسلامی",
+    "en": "Housing Foundation Establishment"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-21-12m36dl",
+   "type": "fixed",
+   "month": 1,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "شهادت امیر سپهبد علی صیاد شیرازی",
+    "en": "Martyrdom of Lt. Gen. Ali Sayad Shirazi"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-25-acu65r",
+   "type": "fixed",
+   "month": 1,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت عطار نیشابوری",
+    "en": "Commemoration of Attar of Nishapur"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-01-29-1pxwlqg",
+   "type": "fixed",
+   "month": 1,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "روز ارتش جمهوری اسلامی و نیروی زمینی",
+    "en": "Day of the Islamic Republic Army & Ground Forces"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-01-1cgreei",
+   "type": "fixed",
+   "month": 2,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت سعدی",
+    "en": "Saadi Commemoration"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-02-ntsirl",
+   "type": "fixed",
+   "month": 2,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "اعلام انقلاب فرهنگی",
+    "en": "Iranian Cultural Revolution Declaration"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-02-1fgf53w",
+   "type": "fixed",
+   "month": 2,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس سپاه پاسداران انقلاب اسلامی",
+    "en": "Establishment of IRGC"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-02-iyz2nd",
+   "type": "fixed",
+   "month": 2,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "روز زمین پاک",
+    "en": "Clean Earth Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-02-rjceo7",
+   "type": "fixed",
+   "month": 2,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "گیاه‌آوری",
+    "en": "Planting"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-03-19v0egi",
+   "type": "fixed",
+   "month": 2,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "اردیبهشتگان",
+    "en": "Ordibeheshtegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-03-g0s91l",
+   "type": "fixed",
+   "month": 2,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شیخ بهایی",
+    "en": "Sheikh Baha’i Commemoration"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-05-o6kjb5",
+   "type": "fixed",
+   "month": 2,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "شکست حمله‌ی نظامی آمریکا به ایران در طبس",
+    "en": "Defeat of US Military Attack in Tabas"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-07-1rx3nkq",
+   "type": "fixed",
+   "month": 2,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز ایمنی حمل‌ونقل",
+    "en": "Transport Safety Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-09-koethw",
+   "type": "fixed",
+   "month": 2,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "روز شوراها",
+    "en": "Councils Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-10-1153s89",
+   "type": "fixed",
+   "month": 2,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "آغاز عملیات بیت المقدس",
+    "en": "Start of Operation Beit al-Moqaddas"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-10-e1vnvy",
+   "type": "fixed",
+   "month": 2,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی خلیج فارس",
+    "en": "National Persian Gulf Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-10-yuqdsx",
+   "type": "fixed",
+   "month": 2,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "چهلم نوروز",
+    "en": "40th of Nowruz"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-12-fjf3y6",
+   "type": "fixed",
+   "month": 2,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "روز معلم",
+    "en": "Teacher’s Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-12-3yem4r",
+   "type": "fixed",
+   "month": 2,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "شهادت استاد مرتضی مطهری",
+    "en": "Martyrdom of Morteza Motahhari"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-15-1376i9h",
+   "type": "fixed",
+   "month": 2,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شیخ صدوق",
+    "en": "Sheikh Saduq Commemoration"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-15-1e0443a",
+   "type": "fixed",
+   "month": 2,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "میدیوزَرِم، بهاربُد، روز پیام‌آوری زرتشت",
+    "en": "Maidyozarem, Baharbud, the Day of Zarathustra’s Prophetic Calling"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-18-1tynxdo",
+   "type": "fixed",
+   "month": 2,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "بیماری‌های خاص و صعب‌العلاج",
+    "en": "Special & Incurable Diseases"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-19-aj9o7s",
+   "type": "fixed",
+   "month": 2,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شیخ کلینی",
+    "en": "Sheikh Kulayni Commemoration"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-19-5y9tg1",
+   "type": "fixed",
+   "month": 2,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "روز اسناد ملی و میراث مکتوب",
+    "en": "National Documents and Written Heritage Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-24-qhcge1",
+   "type": "fixed",
+   "month": 2,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "لغو امتیاز تنباکو به فتوای آیت‌الله میرزا حسن شیرازی",
+    "en": "Revocation of Tobacco Concession by Ayatollah Mirza Hasan Shirazi"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-25-1mljeyt",
+   "type": "fixed",
+   "month": 2,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت فردوسی",
+    "en": "Commemoration of Ferdowsi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-25-11nhhos",
+   "type": "fixed",
+   "month": 2,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "روز پاسداشت زبان فارسی",
+    "en": "Persian Language Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-28-1radkpg",
+   "type": "fixed",
+   "month": 2,
+   "day": 28,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت عمر خیام",
+    "en": "Commemoration of Omar Khayyam"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-30-zipf2a",
+   "type": "fixed",
+   "month": 2,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی جمعیت",
+    "en": "National Population Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-02-31-ai3gsc",
+   "type": "fixed",
+   "month": 2,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "روز اهدای عضو، اهدای زندگی",
+    "en": "Organ Donation, Life Donation Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-01-1fa1avs",
+   "type": "fixed",
+   "month": 3,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "ارغاسوان",
+    "en": "Arghaswan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-01-2gd14x",
+   "type": "fixed",
+   "month": 3,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت ملاصدرا",
+    "en": "Commemoration of Mulla Sadra"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-01-1k0nwh1",
+   "type": "fixed",
+   "month": 3,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "بهره‌وری و بهینه‌سازی مصرف",
+    "en": "Consumption Optimization"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-03-bwcool",
+   "type": "fixed",
+   "month": 3,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "فتح خرمشهر و مقاومت، ایثار و پیروزی",
+    "en": "Liberation of Khorramshahr, Resistance, Sacrifice & Victory"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-04-1eldtbu",
+   "type": "fixed",
+   "month": 3,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "روز مقاومت و پایداری",
+    "en": "Resistance & Perseverance Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-04-qwvjyc",
+   "type": "fixed",
+   "month": 3,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "مقاومت دزفول",
+    "en": "Dezful Resistance"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-06-hwd4jn",
+   "type": "fixed",
+   "month": 3,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "خردادگان",
+    "en": "Khordadegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-07-1vdla3j",
+   "type": "fixed",
+   "month": 3,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "افتتاح اولین دوره‌ی مجلس شورای اسلامی",
+    "en": "Opening of First Islamic Consultative Assembly"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-14-1yfmb99",
+   "type": "fixed",
+   "month": 3,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "انتخاب آیت‌الله خامنه‌ای به رهبری",
+    "en": "Selection of Ayatollah Khamenei as Leader"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-14-3pjeqt",
+   "type": "fixed",
+   "month": 3,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "رحلت امام خمینی(ره)",
+    "en": "Passing of Imam Khomeini"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-03-15-1043599",
+   "type": "fixed",
+   "month": 3,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "قیام ۱۵ خرداد",
+    "en": "15th of Khordad Uprising"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-03-25-s7b3hf",
+   "type": "fixed",
+   "month": 3,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "روز گل و گیاه",
+    "en": "Flowers and Plants Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-27-iy79pw",
+   "type": "fixed",
+   "month": 3,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "روز جهاد کشاورزی",
+    "en": "Agricultural Jihad Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-29-y1qs6d",
+   "type": "fixed",
+   "month": 3,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "درگذشت علی شریعتی",
+    "en": "Passing of Ali Shariati"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-31-kcrr88",
+   "type": "fixed",
+   "month": 3,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "روز بسیج استادان",
+    "en": "University Professors Basij Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-03-31-1cd0jaj",
+   "type": "fixed",
+   "month": 3,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "شهادت مصطفی چمران",
+    "en": "Martyrdom of Mostafa Chamran"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-01-p23p4o",
+   "type": "fixed",
+   "month": 4,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "آب‌پاشونک",
+    "en": "Ab-pashonak"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-01-egy2l",
+   "type": "fixed",
+   "month": 4,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس سازمان تبلیغات اسلامی",
+    "en": "Establishment of Islamic Propagation Organization"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-01-1tba60x",
+   "type": "fixed",
+   "month": 4,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "روز اصناف",
+    "en": "Guilds Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-06-vbw87x",
+   "type": "fixed",
+   "month": 4,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "جشن نیلوفر",
+    "en": "Niloofar/Lotus festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-07-mhh96q",
+   "type": "fixed",
+   "month": 4,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز قوه‌ی قضاییه",
+    "en": "Judiciary Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-07-1smeodw",
+   "type": "fixed",
+   "month": 4,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله بهشتی",
+    "en": "Martyrdom of Ayatollah Beheshti"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-10-1jzj4cs",
+   "type": "fixed",
+   "month": 4,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "آزادسازی شهر مهران",
+    "en": "Liberation of Mehran City"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-10-p76xoz",
+   "type": "fixed",
+   "month": 4,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "روز صنعت و معدن",
+    "en": "Industry & Mining Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-11-16kd1yx",
+   "type": "fixed",
+   "month": 4,
+   "day": 11,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله صدوقی",
+    "en": "Martyrdom of Ayatollah Sadooghi"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-12-nxuo0o",
+   "type": "fixed",
+   "month": 4,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت علامه امینی",
+    "en": "Commemoration of Allameh Amini"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-12-dvumkf",
+   "type": "fixed",
+   "month": 4,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "حمله‌ی ناوگان آمریکا به هواپیمای مسافربری ایران",
+    "en": "US Fleet Attack on Iranian Passenger Plane"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-13-rrwgup",
+   "type": "fixed",
+   "month": 4,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "تیرگان",
+    "en": "Tiregan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-14-w9rzl2",
+   "type": "fixed",
+   "month": 4,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز شهرداری و دهیاری",
+    "en": "Municipality & Village Administration Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-14-cain4u",
+   "type": "fixed",
+   "month": 4,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز قلم",
+    "en": "Pen Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-15-14bwrsn",
+   "type": "fixed",
+   "month": 4,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "روز خام‌خواری",
+    "en": "Raw Eating Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-15-5i2o2d",
+   "type": "fixed",
+   "month": 4,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار میدیوشـِیم",
+    "en": "Maidh-yo-shema"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-18-4cgde",
+   "type": "fixed",
+   "month": 4,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "روز ادبیات کودکان و نوجوانان",
+    "en": "Children & Teen Literature Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-18-sdqp33",
+   "type": "fixed",
+   "month": 4,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "کشف کودتای نوژه",
+    "en": "Discovery of Nojeh Coup"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-21-hby5k5",
+   "type": "fixed",
+   "month": 4,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "حمله به مسجد گوهرشاد",
+    "en": "Attack on Goharshad Mosque"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-21-u2splj",
+   "type": "fixed",
+   "month": 4,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "روز عفاف و حجاب",
+    "en": "Chastity & Hijab Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-22-171ea9s",
+   "type": "fixed",
+   "month": 4,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت خوارزمی",
+    "en": "Commemoration of Al-Khwarizmi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-22-1vx388k",
+   "type": "fixed",
+   "month": 4,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی فناوری اطلاعات",
+    "en": "National Information Technology Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-23-15kc58f",
+   "type": "fixed",
+   "month": 4,
+   "day": 23,
+   "rule": null,
+   "title": {
+    "fa": "روز گفت‌وگو و تعامل سازنده با جهان",
+    "en": "Dialogue & Constructive Interaction with the World Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-23-147qap3",
+   "type": "fixed",
+   "month": 4,
+   "day": 23,
+   "rule": null,
+   "title": {
+    "fa": "گشایش نخستین مجلس خبرگان رهبری",
+    "en": "Opening of First Assembly of Experts"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-25-1umlysh",
+   "type": "fixed",
+   "month": 4,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "روز بهزیستی و تامین اجتماعی",
+    "en": "Welfare and Social Security Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-26-18e22m4",
+   "type": "fixed",
+   "month": 4,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس شورای نگهبان",
+    "en": "Anniversary of Establishment of Guardian Council"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-27-uevuo0",
+   "type": "fixed",
+   "month": 4,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "اعلام پذیرش قطعنامه‌ی ۵۹۸ شورای امنیت از سوی ایران",
+    "en": "Acceptance of UN Security Council Resolution 598 by Iran"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-04-30-1vtddcr",
+   "type": "fixed",
+   "month": 4,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت آیت‌الله کاشانی",
+    "en": "Commemoration of Ayatollah Kashani"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-05-1yumumf",
+   "type": "fixed",
+   "month": 5,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "عملیات مرصاد",
+    "en": "Operation Mersad"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-06-1mczs1e",
+   "type": "fixed",
+   "month": 5,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "روز کارآفرینی و آموزش‌های فنی و حرفه‌ای",
+    "en": "Entrepreneurship and Vocational Training Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-07-1d1d823",
+   "type": "fixed",
+   "month": 5,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "امردادگان",
+    "en": "AMordadegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-08-1r26m5v",
+   "type": "fixed",
+   "month": 5,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت سهروردی",
+    "en": "Commemoration of Suhrawardi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-09-1rrhigy",
+   "type": "fixed",
+   "month": 5,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "روز اهدای خون",
+    "en": "Blood Donation Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-10-hbo3wf",
+   "type": "fixed",
+   "month": 5,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "چله‌ی تابستان",
+    "en": "Mid-Summer Forty"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-14-ocj55a",
+   "type": "fixed",
+   "month": 5,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز حقوق بشر اسلامی و کرامت انسانی",
+    "en": "Islamic Human Rights & Human Dignity Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-14-1vapo27",
+   "type": "fixed",
+   "month": 5,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "صدور فرمان مشروطیت",
+    "en": "Issuance of the Constitutional Decree"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-15-6d4q0u",
+   "type": "fixed",
+   "month": 5,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار میدیوشِم، میانه‌ی تابستان",
+    "en": "Gahambar Midyoushem, Mid-Summer"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-16-bl4840",
+   "type": "fixed",
+   "month": 5,
+   "day": 16,
+   "rule": null,
+   "title": {
+    "fa": "تشکیل جهاد دانشگاهی",
+    "en": "Establishment of Academic Jihad"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-17-fvhk4q",
+   "type": "fixed",
+   "month": 5,
+   "day": 17,
+   "rule": null,
+   "title": {
+    "fa": "روز خبرنگار",
+    "en": "Journalist Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-18-yrlwp",
+   "type": "fixed",
+   "month": 5,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شهدای مدافع حرم",
+    "en": "Commemoration of the Shrine Defender Martyrs"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-18-q1ttx4",
+   "type": "fixed",
+   "month": 5,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "مَی‌خواره",
+    "en": "Maykhareh"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-21-1068cwu",
+   "type": "fixed",
+   "month": 5,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "روز حمایت از صنایع کوچک",
+    "en": "Support for Small Industries Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-22-1jxkhoq",
+   "type": "fixed",
+   "month": 5,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "روز تشکل‌ها و مشارکت‌های اجتماعی",
+    "en": "Social Organizations & Participation Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-23-1boo2dj",
+   "type": "fixed",
+   "month": 5,
+   "day": 23,
+   "rule": null,
+   "title": {
+    "fa": "روز مقاومت اسلامی",
+    "en": "Islamic Resistance Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-26-1v7txd3",
+   "type": "fixed",
+   "month": 5,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "آغاز بازگشت آزادگان به ایران",
+    "en": "Beginning of Return of Freed Prisoners to Iran"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-28-rhqe37",
+   "type": "fixed",
+   "month": 5,
+   "day": 28,
+   "rule": null,
+   "title": {
+    "fa": "آتش‌سوزی سینما رکس آبادان",
+    "en": "Cinema Rex Abadan Fire"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-28-17xhyb1",
+   "type": "fixed",
+   "month": 5,
+   "day": 28,
+   "rule": null,
+   "title": {
+    "fa": "کودتای ۲۸ مرداد",
+    "en": "28 Mordad Coup"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-30-mcrjk",
+   "type": "fixed",
+   "month": 5,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت علامه مجلسی",
+    "en": "Commemoration of Allameh Majlesi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-05-31-15vnq0s",
+   "type": "fixed",
+   "month": 5,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "روز صنعت دفاعی",
+    "en": "Defense Industry Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-01-1nxqycy",
+   "type": "fixed",
+   "month": 6,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت ابوعلی سینا",
+    "en": "Commemoration of Avicenna"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-01-dkdw87",
+   "type": "fixed",
+   "month": 6,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "روز پزشک",
+    "en": "Physician Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-01-15yk8xm",
+   "type": "fixed",
+   "month": 6,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "فغدیه",
+    "en": "Faghdiyeh"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-02-1r2ae0f",
+   "type": "fixed",
+   "month": 6,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "آغاز هفته‌ی دولت",
+    "en": "Beginning of Government Week"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-02-30klm2",
+   "type": "fixed",
+   "month": 6,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "شهادت علی اندرزگو",
+    "en": "Martyrdom of Ali Andarzgoo"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-03-dismpp",
+   "type": "fixed",
+   "month": 6,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "اشغال ایران به دست متفقین",
+    "en": "Occupation of Iran by Allies"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-03-1p8qh4y",
+   "type": "fixed",
+   "month": 6,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "کشمین",
+    "en": "Kashmin"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-04-6bpnfn",
+   "type": "fixed",
+   "month": 6,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "زادروز داراب",
+    "en": "Shahrivaregan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-04-6bpnfl",
+   "type": "fixed",
+   "month": 6,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "شهریورگان",
+    "en": "Shahrivaregan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-04-o0v5ja",
+   "type": "fixed",
+   "month": 6,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "عروج مانی",
+    "en": "Ascension of Mani"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-04-1u3c7np",
+   "type": "fixed",
+   "month": 6,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "کارمند",
+    "en": "Employee"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-05-dj11n7",
+   "type": "fixed",
+   "month": 6,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت محمد بن زکریای رازی",
+    "en": "Commemoration of Muhammad ibn Zakariya al-Razi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-05-1opj9aw",
+   "type": "fixed",
+   "month": 6,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "روز داروسازی",
+    "en": "Pharmacist Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-05-qx5dr2",
+   "type": "fixed",
+   "month": 6,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی کشتی",
+    "en": "National Wrestling Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-05-r9qye0",
+   "type": "fixed",
+   "month": 6,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "زادروز جهان پهلوان تختی",
+    "en": "Birthday of Takhti, the Jahān-Pahlevan"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-08-11bjqox",
+   "type": "fixed",
+   "month": 6,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "انفجار دفتر نخست‌وزیری و شهادت رجایی و باهنر",
+    "en": "Prime Minister Office Bombing & Martyrdom of Rajaei & Bahonar"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-08-15qmboe",
+   "type": "fixed",
+   "month": 6,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "تصویب قانون بانکداری بدون ربا",
+    "en": "Approval of the Interest-Free Banking Law"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-08-jr6rqo",
+   "type": "fixed",
+   "month": 6,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "خزان",
+    "en": "Khazan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-08-mdvit9",
+   "type": "fixed",
+   "month": 6,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "روز مبارزه با تروریسم",
+    "en": "Fight Against Terrorism Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-10-10stjy",
+   "type": "fixed",
+   "month": 6,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "روز بانکداری اسلامی",
+    "en": "Islamic Banking Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-11-1ibmref",
+   "type": "fixed",
+   "month": 6,
+   "day": 11,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی صنعت چاپ",
+    "en": "National Printing Industry Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-12-71d5zv",
+   "type": "fixed",
+   "month": 6,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "مبارزه با استعمار انگلیس",
+    "en": "Fight Against British Colonialism"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-12-2jms4r",
+   "type": "fixed",
+   "month": 6,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "کشته شدن رئیسعلی دلواری",
+    "en": "Martyrdom of Rais-Ali Delvari"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-13-1j43wrb",
+   "type": "fixed",
+   "month": 6,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت ابوریحان بیرونی",
+    "en": "Commemoration of Al-Biruni"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-13-ecqrk7",
+   "type": "fixed",
+   "month": 6,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز تعاون",
+    "en": "Cooperation Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-13-b5zwli",
+   "type": "fixed",
+   "month": 6,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز مردم‌شناسی",
+    "en": "Anthropology Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-14-1ctom1m",
+   "type": "fixed",
+   "month": 6,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله قدوسی و سرتیپ وحید دستجردی",
+    "en": "Martyrdom of Ayatollah Qoddoosi & Brigadier Vahid Dastjerdi"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-15-5juz9n",
+   "type": "fixed",
+   "month": 6,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "روز بازار",
+    "en": "Bazaar Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-17-y2edqf",
+   "type": "fixed",
+   "month": 6,
+   "day": 17,
+   "rule": null,
+   "title": {
+    "fa": "قیام ۱۷ شهریور",
+    "en": "17th of Shahrivar Uprising"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-19-1tym1ic",
+   "type": "fixed",
+   "month": 6,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "وفات آیت‌الله سید محمود طالقانی",
+    "en": "Death of Ayatollah Seyed Mahmoud Taleghani"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-20-cexb4g",
+   "type": "fixed",
+   "month": 6,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله مدنی",
+    "en": "Martyrdom of Ayatollah Madani"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-21-1j2qsry",
+   "type": "fixed",
+   "month": 6,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "روز سینما",
+    "en": "Cinema Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-27-95jp6l",
+   "type": "fixed",
+   "month": 6,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شهریار",
+    "en": "Commemoration of Shahriar"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-27-dgqi8e",
+   "type": "fixed",
+   "month": 6,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "روز شعر و ادب فارسی",
+    "en": "Persian Poetry & Literature Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-31-7q9nql",
+   "type": "fixed",
+   "month": 6,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "آغاز جنگ تحمیلی",
+    "en": "Beginning of Iran-Iraq War"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-31-12qjn9q",
+   "type": "fixed",
+   "month": 6,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "آغاز هفته‌ی دفاع مقدس",
+    "en": "Beginning of Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-06-31-18yqm72",
+   "type": "fixed",
+   "month": 6,
+   "day": 31,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار پَتیَه‌شَهیم",
+    "en": "Paiti-shahem"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-01-1v3sp9l",
+   "type": "fixed",
+   "month": 7,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "میتراکانا",
+    "en": "Mitrakana"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-01-jojobiz",
+   "type": "fixed",
+   "month": 7,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-02-bouubij",
+   "type": "fixed",
+   "month": 7,
+   "day": 2,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-03-bouubij",
+   "type": "fixed",
+   "month": 7,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-04-bouubij",
+   "type": "fixed",
+   "month": 7,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-05-10i53f4",
+   "type": "fixed",
+   "month": 7,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "شکست حصر آبادان در عملیات ثامن‌الأئمه",
+    "en": "Breaking of Abadan Siege in Operation Samen al-Aemeh"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-05-bouubij",
+   "type": "fixed",
+   "month": 7,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-06-bouubij",
+   "type": "fixed",
+   "month": 7,
+   "day": 6,
+   "rule": null,
+   "title": {
+    "fa": "هفته‌ی دفاع مقدس",
+    "en": "Sacred Defense Week"
+   },
+   "categories": [
+    "government",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-07-v30u9o",
+   "type": "fixed",
+   "month": 7,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شمس",
+    "en": "Commemoration of Shams"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-07-4wf7uq",
+   "type": "fixed",
+   "month": 7,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز آتش‌نشانی و ایمنی",
+    "en": "Firefighting & Safety Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-07-1485k7c",
+   "type": "fixed",
+   "month": 7,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "شهادت فلاحی، فکوری، نامجو، کلاهدوز و جهان‌آرا",
+    "en": "Martyrdom of Fallahi, Fakoori, Namjoo, Kolahdooz & Jahanara"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-08-1mgnwkr",
+   "type": "fixed",
+   "month": 7,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت مولوی",
+    "en": "Commemoration of Rumi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-10-1qf2bl5",
+   "type": "fixed",
+   "month": 7,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "مهرگان",
+    "en": "Mehregan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-13-1aq8eig",
+   "type": "fixed",
+   "month": 7,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز نیروی انتظامی",
+    "en": "Law Enforcement Force Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-13-fpm50y",
+   "type": "fixed",
+   "month": 7,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "هجرت امام خمینی از عراق به پاریس",
+    "en": "Migration of Imam Khomeini from Iraq to Paris"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-14-2scfqc",
+   "type": "fixed",
+   "month": 7,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز دامپزشکی",
+    "en": "Veterinary Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-15-cxtn8l",
+   "type": "fixed",
+   "month": 7,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "روز روستا و عشایر",
+    "en": "Village & Nomads Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-20-u83ks9",
+   "type": "fixed",
+   "month": 7,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت حافظ",
+    "en": "Commemoration of Hafez"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-21-1sp8n6g",
+   "type": "fixed",
+   "month": 7,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "پیروزی کاوه و فریدون",
+    "en": "Victory of Kaveh & Fereydun"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-23-bb4rh5",
+   "type": "fixed",
+   "month": 7,
+   "day": 23,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله اشرفی اصفهانی",
+    "en": "Martyrdom of Ayatollah Ashrafi Esfahani"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-24-iibbpl",
+   "type": "fixed",
+   "month": 7,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی پارالمپیک",
+    "en": "National Paralympic Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-24-11mxm7a",
+   "type": "fixed",
+   "month": 7,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "پیوند اولیا و مربیان",
+    "en": "Parents and Teachers Meeting Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-26-yzqup3",
+   "type": "fixed",
+   "month": 7,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "روز تربیت بدنی و ورزش",
+    "en": "Physical Education & Sport Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-07-29-1tqtir1",
+   "type": "fixed",
+   "month": 7,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "روز صادرات",
+    "en": "Exports Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-01-1mrs734",
+   "type": "fixed",
+   "month": 8,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی آمار و برنامه‌ریزی",
+    "en": "National Statistics and Planning Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-01-1gcw16q",
+   "type": "fixed",
+   "month": 8,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله سید مصطفی خمینی",
+    "en": "Martyrdom of Ayatollah Seyed Mostafa Khomeini"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-04-ffxs96",
+   "type": "fixed",
+   "month": 8,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "آبانِگان",
+    "en": "Abanegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-04-19i6mqb",
+   "type": "fixed",
+   "month": 8,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "اعتراض امام خمینی علیه پذیرش کاپیتولاسیون",
+    "en": "Protest of Imam Khomeini Against Capitulation Approval"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-07-1d1xjg5",
+   "type": "fixed",
+   "month": 8,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز کوروش بزرگ",
+    "en": "Cyrus the Great Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-07-17gn2yu",
+   "type": "fixed",
+   "month": 8,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "ورود کوروش به بابل بر پایه‌ی رویدادنامه نبونئید",
+    "en": "Entry of Cyrus into Babylon according to the Nabonidus Chronicle"
+   },
+   "categories": [
+    "ancient",
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-08-x89vpp",
+   "type": "fixed",
+   "month": 8,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "تشکیل کمیته‌ی دائمی پدافند غیرعامل",
+    "en": "Formation of the Permanent Passive Defense Committee"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-08-pmre15",
+   "type": "fixed",
+   "month": 8,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "روز نوجوان و بسیج دانش‌آموزی",
+    "en": "Student Basij & Youth Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-08-1v7b60u",
+   "type": "fixed",
+   "month": 8,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "روز پدافند غیرعامل",
+    "en": "Passive Defense Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-08-1aumolq",
+   "type": "fixed",
+   "month": 8,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "شهادت محمدحسین فهمیده",
+    "en": "Martyrdom of Mohammad Hossein Fahmideh"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-10-pth2qv",
+   "type": "fixed",
+   "month": 8,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله قاضی طباطبایی",
+    "en": "Martyrdom of Ayatollah Ghazi Tabatabaei"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-13-1t3jy73",
+   "type": "fixed",
+   "month": 8,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "تبعید امام خمینی به ترکیه",
+    "en": "Exile of Imam Khomeini to Turkey"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-13-ynl04r",
+   "type": "fixed",
+   "month": 8,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "تسخیر سفارت آمریکا",
+    "en": "Seizure of US Embassy"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-13-clpmyu",
+   "type": "fixed",
+   "month": 8,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز دانش‌آموز",
+    "en": "Student Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-13-11z8rhq",
+   "type": "fixed",
+   "month": 8,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز مبارزه با استکبار جهانی",
+    "en": "Fight Against Global Arrogance Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-14-13d1nsd",
+   "type": "fixed",
+   "month": 8,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز فرهنگ عمومی",
+    "en": "Public Culture Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-15-1mt4vg6",
+   "type": "fixed",
+   "month": 8,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار اَیاثرَم",
+    "en": "Aya-threm"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-18-2ps2x1",
+   "type": "fixed",
+   "month": 8,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "روز ملی کیفیت",
+    "en": "National Quality Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-24-1revkil",
+   "type": "fixed",
+   "month": 8,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت علامه طباطبایی",
+    "en": "Commemoration of Allameh Tabatabaei"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-24-zd3sya",
+   "type": "fixed",
+   "month": 8,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "روز کتاب، کتابخوانی و کتابدار",
+    "en": "Book, Reading & Librarian Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-26-1r1ccun",
+   "type": "fixed",
+   "month": 8,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "آزادسازی سوسنگرد",
+    "en": "Liberation of Susangerd"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-30-dd4m1z",
+   "type": "fixed",
+   "month": 8,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت ابونصر فارابی",
+    "en": "Commemoration of Abu Nasr Farabi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-08-30-g5cmot",
+   "type": "fixed",
+   "month": 8,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "روز حکمت و فلسفه",
+    "en": "Wisdom and Philosophy Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-03-yxa0o5",
+   "type": "fixed",
+   "month": 9,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "آذرِگان",
+    "en": "Azaregan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-05-1gvo7pd",
+   "type": "fixed",
+   "month": 9,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "روز بسیج مستضعفان",
+    "en": "Basij Mostazafan Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-05-1dxmmkb",
+   "type": "fixed",
+   "month": 9,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "قیام مردم گرگان",
+    "en": "Gorgan People's Uprising"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-07-1g9fbzx",
+   "type": "fixed",
+   "month": 9,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "روز نیروی دریایی",
+    "en": "Navy Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-09-1777y80",
+   "type": "fixed",
+   "month": 9,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شیخ مفید",
+    "en": "Commemoration of Sheikh Mofid"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-10-15wi9r",
+   "type": "fixed",
+   "month": 9,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "روز مجلس",
+    "en": "Parliament Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-10-11ia3bh",
+   "type": "fixed",
+   "month": 9,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله مدرس",
+    "en": "Martyrdom of Ayatollah Modarres"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-11-lga3jo",
+   "type": "fixed",
+   "month": 9,
+   "day": 11,
+   "rule": null,
+   "title": {
+    "fa": "کشته شدن میرزا کوچک خان جنگلی",
+    "en": "Martyrdom of Mirza Kuchak Khan"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-12-6akeas",
+   "type": "fixed",
+   "month": 9,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "تصویب قانون اساسی جمهوری اسلامی ایران",
+    "en": "Constitution of the Islamic Republic of Iran Day"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-12-6akeat",
+   "type": "fixed",
+   "month": 9,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "روز قانون اساسی جمهوری اسلامی ایران",
+    "en": "Constitution of the Islamic Republic of Iran Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-13-8q4mod",
+   "type": "fixed",
+   "month": 9,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "روز بیمه",
+    "en": "Insurance Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-16-1ydg36",
+   "type": "fixed",
+   "month": 9,
+   "day": 16,
+   "rule": null,
+   "title": {
+    "fa": "روز دانشجو",
+    "en": "Student Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-18-ts98z7",
+   "type": "fixed",
+   "month": 9,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "معرفی عراق به عنوان آغازگر جنگ از سوی سازمان ملل",
+    "en": "UN Declaration of Iraq as Initiator of War"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-19-1knv5hx",
+   "type": "fixed",
+   "month": 9,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "تشکیل شورای عالی انقلاب فرهنگی",
+    "en": "Formation of Supreme Council of official Revolution"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-20-1exdgt5",
+   "type": "fixed",
+   "month": 9,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله دستغیب",
+    "en": "Martyrdom of Ayatollah Dastgheib"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-25-1o5ksdv",
+   "type": "fixed",
+   "month": 9,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "روز پژوهش",
+    "en": "Research Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-26-1scw2l7",
+   "type": "fixed",
+   "month": 9,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "روز حمل و نقل و رانندگان",
+    "en": "Transport and Drivers Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-27-10sl4ij",
+   "type": "fixed",
+   "month": 9,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "روز وحدت حوزه و دانشگاه",
+    "en": "Unity of Seminary & University Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-27-19gknzg",
+   "type": "fixed",
+   "month": 9,
+   "day": 27,
+   "rule": null,
+   "title": {
+    "fa": "شهادت آیت‌الله دکتر محمد مفتح",
+    "en": "Martyrdom of Ayatollah Dr. Mohammad مفتح"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-30-1i92kfe",
+   "type": "fixed",
+   "month": 9,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "شب یلدا",
+    "en": "Yalda Night"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-09-30-4xpt2n",
+   "type": "fixed",
+   "month": 9,
+   "day": 30,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار میدیارِم",
+    "en": "Maidh-ya-rem"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-01-18jnubo",
+   "type": "fixed",
+   "month": 10,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "خرم‌روز",
+    "en": "Khorram Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-03-yl9hw1",
+   "type": "fixed",
+   "month": 10,
+   "day": 3,
+   "rule": null,
+   "title": {
+    "fa": "ثبت احوال",
+    "en": "Civil Registration Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-04-hjb5n8",
+   "type": "fixed",
+   "month": 10,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "روز بزرگداشت رودکی",
+    "en": "Commemoration of Rudaki"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-05-xsjqj6",
+   "type": "fixed",
+   "month": 10,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "بازارجشن",
+    "en": "Bazaar Festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-05-1j1p02v",
+   "type": "fixed",
+   "month": 10,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "درگذشت زرتشت",
+    "en": "Death of Zoroaster"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-05-17dzywg",
+   "type": "fixed",
+   "month": 10,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "روز ایمنی در برابر زلزله و کاهش اثرات بلایای طبیعی",
+    "en": "Earthquake Safety & Disaster Risk Reduction Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-05-te7i3a",
+   "type": "fixed",
+   "month": 10,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "زلزله‌ی بم",
+    "en": "The 2003 Bam Earthquake"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-07-1rccmo8",
+   "type": "fixed",
+   "month": 10,
+   "day": 7,
+   "rule": null,
+   "title": {
+    "fa": "تشکیل نهضت سوادآموزی",
+    "en": "Formation of Literacy Movement"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-08-34q4x9",
+   "type": "fixed",
+   "month": 10,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "دی به آذر",
+    "en": "Dey be Azar"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-08-hy5i4z",
+   "type": "fixed",
+   "month": 10,
+   "day": 8,
+   "rule": null,
+   "title": {
+    "fa": "صنعت پتروشیمی",
+    "en": "Petrochemical Industry Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-09-12srgga",
+   "type": "fixed",
+   "month": 10,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "راهپیمایی در پاسخ به وقایع عاشورای ۸۸",
+    "en": "March in Response to the Ashura Protests of 2009"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-10-09-pig9dd",
+   "type": "fixed",
+   "month": 10,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "روز بصیرت و میثاق امت با ولایت",
+    "en": "Dey be Azar"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-10-13-6nhp8a",
+   "type": "fixed",
+   "month": 10,
+   "day": 13,
+   "rule": null,
+   "title": {
+    "fa": "ابلاغ پیام تاریخی امام خمینی به گورباچف",
+    "en": "Imam Khomeini's Historic Message to Gorbachev"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-14-1xpspc4",
+   "type": "fixed",
+   "month": 10,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "سیرسور، جشن گیاه‌خواری",
+    "en": "Sirsur, Vegetarian Festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-15-1liwa2o",
+   "type": "fixed",
+   "month": 10,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "دی به مهر",
+    "en": "Dey be Mehr"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-16-nkd4u6",
+   "type": "fixed",
+   "month": 10,
+   "day": 16,
+   "rule": null,
+   "title": {
+    "fa": "درامزینان، روز درفش‌ها",
+    "en": "Dramzinan, Flags Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-19-17hp6ar",
+   "type": "fixed",
+   "month": 10,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "قیام خونین مردم قم",
+    "en": "Bloody Uprising of Qom"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-20-ut2ukt",
+   "type": "fixed",
+   "month": 10,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "قتل امیرکبیر",
+    "en": "Death of Amir Kabir"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-22-179ezm7",
+   "type": "fixed",
+   "month": 10,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "تشکیل شورای انقلاب",
+    "en": "Formation of Revolutionary Council"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-23-17vmrct",
+   "type": "fixed",
+   "month": 10,
+   "day": 23,
+   "rule": null,
+   "title": {
+    "fa": "دی به دین",
+    "en": "Dey be Din"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-26-y1lo93",
+   "type": "fixed",
+   "month": 10,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "بهمن‌گان",
+    "en": "Bahmanegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-10-26-1mrslw9",
+   "type": "fixed",
+   "month": 10,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "خروج محمدرضاشاه از ایران",
+    "en": "Departure of Mohammad Reza Shah from Iran"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-01-2u3j5w",
+   "type": "fixed",
+   "month": 11,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "زادروز فردوسی",
+    "en": "Birthday of Ferdowsi"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-04-1sw0wl0",
+   "type": "fixed",
+   "month": 11,
+   "day": 4,
+   "rule": null,
+   "title": {
+    "fa": "آغاز پادشاهی داراب",
+    "en": "Beginning of the Reign of Darab"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-05-ektw7h",
+   "type": "fixed",
+   "month": 11,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "جشن نوسَره",
+    "en": "Nowsareh Festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-10-tmbbwk",
+   "type": "fixed",
+   "month": 11,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "جشن سده",
+    "en": "Aban Day, Sadeh Festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-12-1vjaf00",
+   "type": "fixed",
+   "month": 11,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "آغاز دهه‌ی فجر",
+    "en": "Start of Fajr Days"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-12-9fnbjm",
+   "type": "fixed",
+   "month": 11,
+   "day": 12,
+   "rule": null,
+   "title": {
+    "fa": "بازگشت امام خمینی به ایران",
+    "en": "Return of Imam Khomeini to Iran"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-14-1mkfh8o",
+   "type": "fixed",
+   "month": 11,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز فناوری فضایی",
+    "en": "Space Technology Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-15-afzosx",
+   "type": "fixed",
+   "month": 11,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "جشن میانه‌ی زمستان",
+    "en": "Midwinter Festival"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-19-15pcnmq",
+   "type": "fixed",
+   "month": 11,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "روز نیروی هوایی",
+    "en": "Air Force Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-22-13pbeds",
+   "type": "fixed",
+   "month": 11,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "بادروز",
+    "en": "Wind Day"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-22-26ufc7",
+   "type": "fixed",
+   "month": 11,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "پیروزی انقلاب اسلامی ایران",
+    "en": "Victory of Islamic Revolution"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-11-29-zkfota",
+   "type": "fixed",
+   "month": 11,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "روز اقتصاد مقاومتی و کارآفرینی",
+    "en": "Resistance Economy & Entrepreneurship Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-29-7annkz",
+   "type": "fixed",
+   "month": 11,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "سپندارمذگان و روز عشق ایرانی",
+    "en": "Sepandārmazgān & Iranian Love Day"
+   },
+   "categories": [
+    "ancient",
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-11-29-uy0pcw",
+   "type": "fixed",
+   "month": 11,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "قیام مردم تبریز",
+    "en": "Uprising of Tabriz People"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-01-gneby",
+   "type": "fixed",
+   "month": 12,
+   "day": 1,
+   "rule": null,
+   "title": {
+    "fa": "آبسالان",
+    "en": "Absalan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-05-bwm702",
+   "type": "fixed",
+   "month": 12,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت خواجه نصیرالدین طوسی",
+    "en": "Commemoration of Khajeh Nasir al-Din Tusi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-05-kdts55",
+   "type": "fixed",
+   "month": 12,
+   "day": 5,
+   "rule": null,
+   "title": {
+    "fa": "روز مهندسی",
+    "en": "Engineering Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-09-v6kqaj",
+   "type": "fixed",
+   "month": 12,
+   "day": 9,
+   "rule": null,
+   "title": {
+    "fa": "روز حمایت از حقوق مصرف‌کنندگان",
+    "en": "Consumer Rights Support Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-10-1u7v2j7",
+   "type": "fixed",
+   "month": 12,
+   "day": 10,
+   "rule": null,
+   "title": {
+    "fa": "وخشنکام",
+    "en": "Vakhshankam"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-14-10jf5ih",
+   "type": "fixed",
+   "month": 12,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز احسان و نیکوکاری",
+    "en": "Charity & Benevolence Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-14-1azzreo",
+   "type": "fixed",
+   "month": 12,
+   "day": 14,
+   "rule": null,
+   "title": {
+    "fa": "روز ترویج فرهنگ قرض‌الحسنه",
+    "en": "Day of Promoting the Culture of Qarz al-Hasanah"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-15-1tqn0tf",
+   "type": "fixed",
+   "month": 12,
+   "day": 15,
+   "rule": null,
+   "title": {
+    "fa": "روز درختکاری",
+    "en": "Tree Planting Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-18-dhi43p",
+   "type": "fixed",
+   "month": 12,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت جمال‌الدین اسدآبادی",
+    "en": "Commemoration of Jamal al-Din Asadabadi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-18-1ovj66u",
+   "type": "fixed",
+   "month": 12,
+   "day": 18,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس کانون‌های فرهنگی و هنری مساجد کشور",
+    "en": "Establishment of Mosque official Centers"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-19-5aniko",
+   "type": "fixed",
+   "month": 12,
+   "day": 19,
+   "rule": null,
+   "title": {
+    "fa": "جشن نوروز رودها",
+    "en": "Nowruz celebration of the rivers"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-20-1fh3dhh",
+   "type": "fixed",
+   "month": 12,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "جشن گلدان",
+    "en": "Flowerpot Celebration"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-20-o49879",
+   "type": "fixed",
+   "month": 12,
+   "day": 20,
+   "rule": null,
+   "title": {
+    "fa": "روز راهیان نور",
+    "en": "Rahian Noor Day"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-21-mr75yb",
+   "type": "fixed",
+   "month": 12,
+   "day": 21,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت نظامی گنجوی",
+    "en": "Commemoration of Nezami Ganjavi"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-22-gqwkrt",
+   "type": "fixed",
+   "month": 12,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت شهدا",
+    "en": "Martyrs Commemoration"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-22-1f8cd3x",
+   "type": "fixed",
+   "month": 12,
+   "day": 22,
+   "rule": null,
+   "title": {
+    "fa": "تاسیس بنیاد شهید انقلاب اسلامی",
+    "en": "Establishment of the Martyrs Foundation of the Islamic Revolution"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-24-98jhuk",
+   "type": "fixed",
+   "month": 12,
+   "day": 24,
+   "rule": null,
+   "title": {
+    "fa": "برگزاری انتخابات اولین دوره‌ی مجلس شورای اسلامی",
+    "en": "First Parliamentary Election Anniversary"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-25-1dsopsd",
+   "type": "fixed",
+   "month": 12,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "بزرگداشت پروین اعتصامی",
+    "en": "Commemoration of Parvin Etesami"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-25-89o087",
+   "type": "fixed",
+   "month": 12,
+   "day": 25,
+   "rule": null,
+   "title": {
+    "fa": "بمباران شیمیایی حلبچه",
+    "en": "Halabja Chemical Bombing"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-26-hqi7s7",
+   "type": "fixed",
+   "month": 12,
+   "day": 26,
+   "rule": null,
+   "title": {
+    "fa": "فروردگان",
+    "en": "Farvardegan"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-12-29-np24ls",
+   "type": "fixed",
+   "month": 12,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "ملی شدن صنعت نفت ایران",
+    "en": "Nationalization of Iranian Oil Industry"
+   },
+   "categories": [
+    "historical"
+   ],
+   "isHolidayInIran": true
+  },
+  {
+   "id": "jalali-12-29-z8uegv",
+   "type": "fixed",
+   "month": 12,
+   "day": 29,
+   "rule": null,
+   "title": {
+    "fa": "گاهنبار همسپتمدم، اوشیدر",
+    "en": "Hamaspathmaedaya, Ushidar"
+   },
+   "categories": [
+    "ancient"
+   ],
+   "isHolidayInIran": false
+  },
+  {
+   "id": "jalali-last-wednesday",
+   "type": "relative",
+   "month": null,
+   "day": null,
+   "rule": {
+    "base": "nth-weekday-of-month",
+    "month": 12,
+    "weekday": 3,
+    "occurrence": "last"
+   },
+   "title": {
+    "fa": "چهارشنبه‌سوری",
+    "en": "Chaharshanbe Suri(Fire Wednesday)"
+   },
+   "categories": [
+    "government"
+   ],
+   "isHolidayInIran": false
+  }
+ ]
+}

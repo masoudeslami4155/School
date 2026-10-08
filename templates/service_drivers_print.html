@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>جدول سرویس دانش‌آموزان بر اساس مقصد</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='print_slips.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='print_layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='service_drivers_print.css') }}">
+    <style>@page service-drivers-page { size: A4 {{ driver_layout.orientation }}; margin: 0; }</style>
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+    <div class="print-toolbar no-print">
+        <span>جدول رانندگان سرویس · چیدمان قابل تنظیم روی A4</span>
+        <span>
+            <a href="{{ url_for('report_print_layouts', document='service_drivers') }}" target="_blank" rel="noopener">طراحی چیدمان</a>
+            <button type="button" onclick="window.print()">چاپ جدول</button>
+            <button type="button" onclick="window.close()">بستن صفحه</button>
+        </span>
+    </div>
+
+    <main class="driver-print-document" style="padding:{{ driver_layout.margin.top }}mm {{ driver_layout.margin.right }}mm {{ driver_layout.margin.bottom }}mm {{ driver_layout.margin.left }}mm; --driver-font-size:{{ driver_layout.table.font_size }}pt; page:service-drivers-page;">
+        {% if driver_layout.table.show_header %}
+        <header class="driver-print-header" style="font-size:{{ driver_layout.table.header_font_size }}pt">
+            <h1>جدول سرویس دانش‌آموزان بر اساس مقصد</h1>
+            <div class="meta">{{ config.SCHOOL_NAME }}<br>تاریخ چاپ: {{ jalali_datetime }}</div>
+        </header>
+        {% endif %}
+
+        <div class="driver-table-wrap" style="{{ driver_layout.table_style|safe }}">
+            {% for group in destination_groups %}
+            <section class="destination-group">
+                <h2 class="destination-heading"><span>مقصد: {{ group.destination }}</span><small>{{ group.student_count|fa_digits }} دانش‌آموز</small></h2>
+                <table>
+                    <thead><tr><th class="col-driver">راننده</th><th class="col-contact">شماره تماس</th><th class="col-vehicle">خودرو و پلاک</th><th class="col-students">دانش‌آموزان و معلم</th></tr></thead>
+                    <tbody>
+                    {% for driver in group.drivers %}
+                    <tr>
+                        <td><strong>{{ driver.driver_name }}</strong></td>
+                        <td>{{ driver.phone or 'ثبت نشده' }}</td>
+                        <td>{{ driver.vehicle or 'ثبت نشده' }}{% if driver.plate %}<br>پلاک: {{ driver.plate }}{% endif %}</td>
+                        <td>
+                            {% if driver.students %}
+                            <div class="student-list">
+                                {% for student in driver.students %}
+                                <div class="student">
+                                    {% if driver_layout.table.show_photos and student.photo %}<img class="student-photo" src="/static/uploads/{{ student.photo }}" alt="عکس {{ student.first_name }} {{ student.last_name }}">
+                                    {% elif driver_layout.table.show_photos %}<span class="student-placeholder">{{ (student.first_name or '؟')[:1] }}</span>{% endif %}
+                                    <span class="student-info"><span class="student-name">{{ student.first_name }} {{ student.last_name }}</span>{% if student.grade or student.class_name %}<span class="student-meta">{{ student.grade or '' }}{% if student.grade and student.class_name %} · {% endif %}{{ student.class_name or '' }}</span>{% endif %}{% if driver_layout.table.show_teacher_names %}<span class="student-teacher">معلم: {{ student.teacher_name or 'ثبت نشده' }}</span>{% endif %}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}<span class="empty">دانش‌آموزی انتساب نشده</span>{% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% else %}
+            <p class="empty" style="text-align:center">مقصدی برای چاپ ثبت نشده است.</p>
+            {% endfor %}
+        </div>
+        {% if driver_layout.table.show_footer %}<footer class="driver-print-footer">تعداد مقصدها: {{ destination_groups|length|fa_digits }}</footer>{% endif %}
+    </main>
+
+    <script>
+        var fontReady = document.fonts ? document.fonts.ready : Promise.resolve();
+        var imageReady = Array.from(document.images).map(function (image) {
+            return image.complete ? Promise.resolve() : new Promise(function (resolve) {
+                image.addEventListener('load', resolve, { once: true });
+                image.addEventListener('error', resolve, { once: true });
+            });
+        });
+        Promise.all([fontReady].concat(imageReady)).then(function () { window.print(); });
+    </script>
+</body>
+</html>

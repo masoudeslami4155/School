@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}ویرایش کارمند{% endblock %}
+{% block page_title %}✏️ ویرایش اطلاعات کارکنان{% endblock %}
+{% block content %}
+<div class="form-card">
+{% if errors %}<div class="alert-danger"><ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul></div>{% endif %}
+<form method="post">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+  <div class="form-section"><h3>مشخصات کارمند</h3><div class="form-row"><div class="field-group"><label>نام *</label><input name="first_name" value="{{ form_data.first_name or '' }}" required></div><div class="field-group"><label>نام‌خانوادگی *</label><input name="last_name" value="{{ form_data.last_name or '' }}" required></div></div>
+  <div class="form-row"><div class="field-group"><label>کد پرسنلی *</label><input name="code" value="{{ form_data.code or '' }}" required></div><div class="field-group"><label>کد ملی</label><input name="national_id" maxlength="10" value="{{ form_data.national_id or '' }}"></div><div class="field-group"><label>شماره تماس</label><input name="phone" maxlength="15" value="{{ form_data.phone or '' }}"></div></div></div>
+  <div class="form-section"><h3>کلاس و مسئولیت</h3><div class="form-row"><div class="field-group"><label>درس</label><input name="subject" value="{{ form_data.subject or '' }}"></div><div class="field-group"><label>کلاس مدرسه</label><input name="class_name" value="{{ form_data.class_name or '' }}"></div><div class="field-group"><label>کلاس سیدا</label><input name="sida_class" value="{{ form_data.sida_class or '' }}"></div></div></div>
+  <div class="form-actions"><button class="btn btn--primary" type="submit">💾 ذخیره تغییرات</button><a class="btn btn--muted" href="{{ url_for('teachers') }}">انصراف</a></div>
+</form></div>
+{% endblock %}

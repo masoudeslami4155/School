@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" dir="rtl">
+  <h2>ویرایش گزارش عملکرد معلم</h2>
+  <form method="post">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <label>معلم</label>
+    <select name="teacher_code" required>{% for t in teachers %}<option value="{{ t.code }}" {% if t.code == performance.teacher_code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }}</option>{% endfor %}</select>
+    <label>دانش‌آموز</label>
+    <select name="student_code" required>{% for s in students %}<option value="{{ s.code }}" {% if s.code == performance.student_code %}selected{% endif %}>{{ s.first_name }} {{ s.last_name }}</option>{% endfor %}</select>
+    <label>تاریخ</label><input name="date" value="{{ performance.date or '' }}" required data-jdate>
+    <label>گزارش</label><textarea name="report" required>{{ performance.report or '' }}</textarea>
+    <button type="submit">ذخیره</button>
+  </form>
+</div>
+{% endblock %}

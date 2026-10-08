@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}مدیریت کارکنان{% endblock %}
+{% block page_title %}👨‍🏫 مدیریت کارکنان و معلمان{% endblock %}
+{% block header_buttons %}<span class="badge badge-blue">{{ teachers|length }} نفر</span>{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block content %}
+<section class="section-card">
+  <div class="section-heading">
+    <div><h2>فهرست کارکنان</h2><p class="muted-text">کد ملی، شماره تماس، کلاس مدرسه و کلاس سیدا از همین بخش قابل مدیریت است.</p></div>
+    <div class="action-stack no-print"><a class="btn btn--primary" href="{{ url_for('add_teacher') }}">➕ ثبت کارمند</a><button class="btn btn--muted" type="button" onclick="window.print()">🖨️ چاپ A4</button></div>
+  </div>
+  <div class="table-wrapper">
+    <table>
+      <thead><tr><th>ردیف</th><th>نام</th><th>کد پرسنلی</th><th>کد ملی</th><th>تماس</th><th>درس</th><th>کلاس مدرسه</th><th>کلاس سیدا</th><th class="no-print">عملیات</th></tr></thead>
+      <tbody>
+      {% for t in teachers %}
+      <tr>
+        <td>{{ loop.index }}</td><td><strong>{{ t.first_name }} {{ t.last_name }}</strong></td><td>{{ t.code }}</td>
+        <td>{{ t.national_id or 'ثبت نشده' }}</td><td>{{ t.phone or 'ثبت نشده' }}</td><td>{{ t.subject or 'ثبت نشده' }}</td>
+        <td>{{ t.class_name or 'ثبت نشده' }}</td><td>{{ t.sida_class or 'ثبت نشده' }}</td>
+        <td class="action-stack no-print">
+          <a class="btn btn--muted" href="{{ url_for('edit_teacher', id=t.id) }}">✏️ ویرایش</a>
+          <form method="post" action="{{ url_for('delete_teacher', id=t.id) }}" onsubmit="return confirm('کارمند حذف و انتساب‌های او ثبت‌نشده شود؟')">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger" type="submit">🗑️ حذف</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}<tr><td colspan="9" class="empty-state">کارمندی ثبت نشده است.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}گواهی اشتغال به تحصیل{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='student_certificate.css') }}">{% endblock %}
+{% block page_title %}گواهی اشتغال به تحصیل{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('report_print_layouts', document='student_certificate') }}"><i class="cil-settings" aria-hidden="true"></i> تنظیم چیدمان چاپ</a><a class="btn btn--outline" href="{{ url_for('features_hub') }}"><i class="cil-grid" aria-hidden="true"></i> مرکز امکانات</a>{% endblock %}
+{% block content %}
+<section class="certificate-intro card">
+  <div><span class="certificate-eyebrow">تولید دستی یا از روی پروندهٔ دانش‌آموز</span><h2>صدور گواهی اشتغال به تحصیل</h2><p>دانش‌آموز را انتخاب کنید تا اطلاعاتش پر شود، یا فرم را دستی تکمیل کنید. پیش از چاپ می‌توانید همهٔ مقادیر را ویرایش کنید.</p></div>
+  <div class="certificate-intro__icon" aria-hidden="true"><i class="cil-description"></i></div>
+</section>
+
+{% if error %}<div class="certificate-error" role="alert">{{ error }}</div>{% endif %}
+
+<section class="certificate-picker card">
+  <form method="get" action="{{ url_for('student_certificate') }}" class="certificate-picker__form">
+    <label for="certificateStudent">تکمیل خودکار از پرونده</label>
+    <select id="certificateStudent" name="student_id">
+      <option value="">انتخاب دانش‌آموز فعال</option>
+      {% for item in students %}
+      <option value="{{ item.id }}" {% if selected_student_id|string == item.id|string %}selected{% endif %}>{{ item.first_name or '' }} {{ item.last_name or '' }}{% if item.code %} · {{ item.code }}{% endif %}</option>
+      {% endfor %}
+    </select>
+    <button class="btn btn--primary" type="submit"><i class="cil-cloud-download" aria-hidden="true"></i> بارگیری اطلاعات</button>
+    <a class="btn btn--muted" href="{{ url_for('student_certificate') }}">ورود دستی</a>
+  </form>
+</section>
+
+<form method="post" action="{{ url_for('student_certificate') }}" class="certificate-form card" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="source" value="{{ source }}">
+  <input type="hidden" name="student_id" value="{{ selected_student_id }}">
+  <header class="certificate-form__heading"><div><h3>اطلاعات گواهی</h3><p>شماره شناسنامه و کد ملی با یک مقدار مشترک درج می‌شوند.</p></div><span class="certificate-mode">{{ 'پرشده از پرونده' if source == 'student' else 'ورود دستی' }}</span></header>
+  <div class="certificate-fields">
+    <label>نام و نام خانوادگی <input name="full_name" value="{{ values.full_name }}" maxlength="120" required autocomplete="name"></label>
+    <label>نام پدر <input name="father_name" value="{{ values.father_name }}" maxlength="100"></label>
+    <label>شماره گواهی <input name="certificate_number" value="{{ values.certificate_number }}" maxlength="30"></label>
+    <label>تاریخ تقاضا <input name="issue_date" value="{{ values.issue_date }}" maxlength="20" placeholder="۱۴۰۵/۰۷/۱۱"></label>
+    <label>کد ملی / شماره شناسنامه <input name="national_id" value="{{ values.national_id }}" maxlength="30" inputmode="numeric"><small>از شمارهٔ شناسنامهٔ پرونده پر می‌شود؛ در صورت نیاز اصلاح کنید.</small></label>
+    <label>تاریخ تولد <input name="birth_date" value="{{ values.birth_date }}" maxlength="20" placeholder="۱۳۹۵/۰۲/۱۱"></label>
+    <label>کد دانش‌آموزی (در QR) <input name="student_code" value="{{ values.student_code }}" maxlength="50"></label>
+    <label>پایه <input name="grade" value="{{ values.grade }}" maxlength="80" required></label>
+    <label>کلاس مدرسه <input name="class_name" value="{{ values.class_name }}" maxlength="80"></label>
+    <label>سال تحصیلی <input name="academic_year" value="{{ values.academic_year }}" maxlength="20"></label>
+    <label>نام مدرسه روی گواهی <input name="school_short_name" value="{{ values.school_short_name }}" maxlength="100"></label>
+    <label>کد مدرسه <input name="school_code" value="{{ values.school_code }}" maxlength="30"></label>
+    <label>دوره تحصیلی <input name="education_period" value="{{ values.education_period }}" maxlength="100"></label>
+    <label>ارائه به <input name="purpose" value="{{ values.purpose }}" maxlength="160"></label>
+    <label class="certificate-fields__wide">رشته <input name="study_program" value="{{ values.study_program }}" maxlength="160"></label>
+    <label class="certificate-fields__wide">نام مدیر مدرسه <input name="director_name" value="{{ values.director_name }}" maxlength="100"></label>
+    <label class="certificate-fields__wide">عکس دانش‌آموز (اختیاری، فقط برای همین چاپ)<input type="file" name="photo" accept="image/jpeg,image/png"><small>اگر دانش‌آموز عکس پرونده دارد همان عکس خودکار استفاده می‌شود؛ فایل دستی فقط در همین برگه به‌کار می‌رود و ذخیره نمی‌شود.</small></label>
+  </div>
+  <p class="certificate-form__note"><i class="cil-info" aria-hidden="true"></i> چیدمان خروجی مطابق نمونهٔ رسمی است. QR فقط نام، کد دانش‌آموزی، پایه، کلاس و سال تحصیلی را دارد و اعتبارسنجی آنلاین انجام نمی‌دهد.</p>
+  <div class="certificate-form__actions"><button class="btn btn--primary" type="submit"><i class="cil-print" aria-hidden="true"></i> پیش‌نمایش و چاپ گواهی</button></div>
+</form>
+{% endblock %}

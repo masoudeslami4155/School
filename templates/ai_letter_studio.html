@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}استودیو طراحی نامهٔ اداری{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='ai_letter_studio.css') }}">{% endblock %}
+{% block page_title %}<i class="cil-settings" aria-hidden="true"></i> طراحی چاپ نامهٔ اداری هوشمند{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('ai_documents') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به طراح هوشمند</a>{% endblock %}
+{% block content %}
+<div class="letter-studio" id="letterStudio" data-document="ai_letter" data-studio-document="ai_letter">
+  <section class="letter-studio__intro">
+    <div><span>تنظیم چیدمان شخصی</span><h2>اجزای نامه را با ماوس جابه‌جا و اندازه‌گذاری کنید</h2><p>تاریخ، نام مدرسه، موضوع، متن، امضا و هر جزء دیگر را بکشید؛ جهت، حاشیه و قلم را تغییر دهید. تغییرات فقط برای حساب شما ذخیره می‌شود و روی نامه‌های تولیدشده اعمال می‌شود.</p></div>
+    <strong>A4</strong>
+  </section>
+  <script type="application/json" id="letterLayoutData">{{ layout_json|safe }}</script>
+  <script type="application/json" id="letterDefaultLayoutData">{{ default_layout_json|safe }}</script>
+  <script type="application/json" id="letterTemplatesData">{{ templates_json|safe }}</script>
+  <form id="letterLayoutForm" method="post" action="{{ url_for('report_print_layouts', document='ai_letter') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="document" value="ai_letter">
+    <input type="hidden" name="action" id="letterLayoutAction" value="save">
+    <input type="hidden" name="layout_json" id="letterLayoutJson">
+    <input type="hidden" name="template_key" id="letterTemplateKey">
+    <div class="letter-studio__shell">
+      <section class="letter-studio__workspace">
+        <div class="letter-studio__bar"><div><strong>پیش‌نمایش قابل ویرایش</strong><span>برای جابه‌جایی، جزء را بکشید؛ برای تغییر اندازه، دستگیرهٔ گوشه را بکشید.</span></div><button class="btn btn--primary btn-sm" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره چیدمان</button></div>
+        <div class="letter-studio__stage"><div class="letter-studio-preview">
+          <div class="letter-copy" id="letterPaper" data-orientation="{{ layout.orientation }}" style="padding:{{ layout.margin.top }}mm {{ layout.margin.right }}mm {{ layout.margin.bottom }}mm {{ layout.margin.left }}mm;font-size:{{ layout.font_size }}pt;">
+            {% set values = {
+              'today': '۱۴۰۵/۰۷/۱۱',
+              'school_name': 'مدرسهٔ نمونه',
+              'subject': 'تذکر حضور و انضباط دانش‌آموز',
+              'body': 'با سلام و احترام؛ بدینوسیله به استحضار می‌رساند که دانش‌آموز یادشده در جلسات اخیر از حضور و انضباط کلاس کمتری نشان داده است. خواهشمند است با فرزند خود در این باره صحبت کنید و راهنمایی لازم را انجام دهید.',
+              'student_name': 'زهرا آزمونی',
+              'grade': 'پایه سوم',
+              'class_name': 'کلاس ۲',
+            } %}
+            {% include 'partials/ai_letter_artwork.html' %}
+          </div>
+        </div></div>
+        <p class="letter-studio__hint"><i class="cil-info" aria-hidden="true"></i> نمونه برای طراحی است و اطلاعات دانش‌آموزی ندارد. نامهٔ واقعی از «ساخت نامهٔ آماده» با متن شما ساخته می‌شود.</p>
+      </section>
+      <aside class="letter-studio__controls">
+        <fieldset><legend>تنظیمات صفحه</legend>
+          <label>جهت A4<select id="letterOrientation"><option value="portrait">عمودی</option><option value="landscape">افقی</option></select></label>
+          <div class="letter-studio__numbers">
+            <label>حاشیهٔ بالا (mm)<input type="number" min="0" max="30" step="0.01" data-letter-margin="top"></label>
+            <label>حاشیهٔ راست (mm)<input type="number" min="0" max="30" step="0.01" data-letter-margin="right"></label>
+            <label>حاشیهٔ پایین (mm)<input type="number" min="0" max="30" step="0.01" data-letter-margin="bottom"></label>
+            <label>حاشیهٔ چپ (mm)<input type="number" min="0" max="30" step="0.01" data-letter-margin="left"></label>
+            <label>قلم پایه (pt)<input type="number" min="8" max="18" step="0.01" id="letterFontSize"></label>
+          </div>
+        </fieldset>
+        <fieldset><legend>جزء انتخاب‌شده</legend>
+          <label>جزء نامه<select id="letterElementSelect">{% for key, label in element_labels.items() %}<option value="{{ key }}">{{ label }}</option>{% endfor %}</select></label>
+          <div class="letter-studio__numbers">
+            <label>X (%)<input type="number" min="0" max="100" step="0.01" data-letter-field="x"></label>
+            <label>Y (%)<input type="number" min="0" max="100" step="0.01" data-letter-field="y"></label>
+            <label>عرض (%)<input type="number" min="1" max="100" step="0.01" data-letter-field="w"></label>
+            <label>ارتفاع (%)<input type="number" min="1" max="100" step="0.01" data-letter-field="h"></label>
+            <label>اندازه قلم<input type="number" min="0.5" max="2.5" step="0.01" data-letter-field="font"></label>
+          </div>
+          <small>مختصات درصدی نسبت به کاغذ بدون حاشیه است؛ اندازهٔ قلم مضربی بر قلم پایه است.</small>
+        </fieldset>
+        <fieldset><legend>الگوهای نامه</legend>
+          <label>الگو<select id="letterTemplateSelect">{% for item in templates %}<option value="{{ item.key }}"{% if item.builtin %} data-builtin="1"{% endif %}>{{ item.label }}{% if not item.builtin %} (شخصی){% endif %}</option>{% endfor %}</select></label>
+          <div class="letter-studio__actions letter-studio__actions--templates">
+            <button class="btn btn--outline btn-sm" id="loadLetterTemplate" type="button"><i class="cil-arrow-top" aria-hidden="true"></i> بارگذاری الگو</button>
+            <button class="btn btn--outline btn-sm" id="deleteLetterTemplate" type="button"><i class="cil-trash" aria-hidden="true"></i> حذف الگو</button>
+          </div>
+          <label>نام الگوی جدید<input type="text" id="letterTemplateName" maxlength="60" placeholder="مثلاً: تذکر ورزشی"></label>
+          <button class="btn btn--outline btn-sm" id="saveLetterTemplate" type="button"><i class="cil-bookmark" aria-hidden="true"></i> ذخیرهٔ چیدمان فعلی به عنوان الگو</button>
+          <small>الگوها همراه با چیدمان، جهت، حاشیه و قلم ذخیره می‌شوند؛ در «ساخت نامهٔ آماده» قابل انتخاب‌اند.</small>
+        </fieldset>
+        <div class="letter-studio__actions">
+          <button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره چیدمان</button>
+          <a class="btn btn--outline" href="{{ active_preview_url }}"><i class="cil-print" aria-hidden="true"></i> پیش‌نمایش چاپ واقعی</a>
+          <button class="btn btn--outline" id="resetLetterLayout" type="button"><i class="cil-reload" aria-hidden="true"></i> بازگشت به پیش‌فرض</button>
+        </div>
+      </aside>
+    </div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='ai_letter_studio.js') }}" defer></script>{% endblock %}

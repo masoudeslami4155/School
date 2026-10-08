@@ -1,0 +1,101 @@
+/* کلید حالت شب و روز — اندازهٔ ثابت و جایگاه درست در سربرگ */
+.theme-control {
+  position: relative;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 82px;
+  height: 40px;
+  margin: 0 !important;
+  padding: 0 !important;
+  cursor: pointer;
+  direction: ltr;
+  flex: 0 0 82px;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-control__input {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 3;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  opacity: 0 !important;
+  cursor: pointer;
+  appearance: none;
+}
+.theme-control__track {
+  position: relative;
+  display: block;
+  width: 82px;
+  height: 40px;
+  overflow: hidden;
+  border: 1px solid #f1d47a;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff7cc, #ffd66b);
+  box-shadow: inset 0 2px 5px rgba(119, 80, 0, .12), 0 3px 10px rgba(20, 33, 61, .08);
+  transition: background .28s ease, border-color .28s ease, box-shadow .28s ease;
+}
+.theme-control__orbit {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  color: #9a6a00;
+  font-size: 15px;
+  transform: translateY(-50%);
+  transition: opacity .25s ease, color .25s ease;
+}
+.theme-control__orbit--sun { left: 8px; }
+.theme-control__orbit--moon { right: 8px; opacity: .26; }
+.theme-control__thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  color: #e49a00;
+  box-shadow: 0 3px 8px rgba(90, 60, 0, .22);
+  transition: left .28s ease, background .28s ease, color .28s ease, transform .28s ease;
+}
+.theme-control__thumb i { font-size: 18px; line-height: 1; }
+.theme-control__thumb .cil-moon { display: none; }
+.theme-control__input:hover + .theme-control__track .theme-control__thumb { transform: scale(1.06); }
+.theme-control__input:focus-visible + .theme-control__track {
+  outline: 3px solid rgba(11, 99, 116, .35);
+  outline-offset: 3px;
+}
+.theme-control__input:checked + .theme-control__track {
+  border-color: #324a70;
+  background: linear-gradient(135deg, #15243d, #304d78);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .3), 0 3px 10px rgba(20, 33, 61, .18);
+}
+.theme-control__input:checked + .theme-control__track .theme-control__thumb {
+  left: 48px;
+  background: #dce9ff;
+  color: #294d84;
+}
+.theme-control__input:checked + .theme-control__track .theme-control__thumb .cil-sun { display: none; }
+.theme-control__input:checked + .theme-control__track .theme-control__thumb .cil-moon { display: inline-block; }
+.theme-control__input:checked + .theme-control__track .theme-control__orbit--sun { opacity: .2; }
+.theme-control__input:checked + .theme-control__track .theme-control__orbit--moon { opacity: .9; color: #dce9ff; }
+@media (max-width: 430px) {
+  .theme-control { width: 76px; flex-basis: 76px; }
+  .theme-control__track { width: 76px; }
+  .theme-control__input:checked + .theme-control__track .theme-control__thumb { left: 42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-control__track,
+  .theme-control__thumb,
+  .theme-control__orbit { transition: none; }
+}

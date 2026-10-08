@@ -1,0 +1,12 @@
+{# ماکروهای مشترک سلول‌ها — هم صفحهٔ نمایش و هم صفحهٔ چاپ از این‌ها استفاده می‌کنند. #}
+
+{% macro empty_cell(empty_style) -%}
+    {%- if empty_style == 'dash' -%}<span class="cell-empty">—</span>
+    {%- elif empty_style == 'dot' -%}<span class="cell-empty">···</span>
+    {%- elif empty_style == 'blank' -%}
+    {%- else -%}<span class="blank-line" aria-label="ثبت نشده"></span>{%- endif -%}
+{%- endmacro %}
+
+{% macro cell(data, empty_style) -%}
+    <td class="{{ data.cls }}" style="width:{{ data.width }}%">{% if data.value %}{% if data.badge %}<span class="contact-type">{{ data.badge }} · </span>{% endif %}{{ data.value|fa_digits }}{% else %}{{ empty_cell(empty_style) }}{% endif %}</td>
+{%- endmacro %}

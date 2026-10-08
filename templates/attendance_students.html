@@ -1,0 +1,215 @@
+{% extends 'base.html' %}
+{% block title %}حضور و غیاب دانش‌آموزان{% endblock %}
+{% block page_title %}<i class="cil-user-follow" aria-hidden="true"></i> حضور و غیاب دانش‌آموزان{% endblock %}
+{% block page_actions %}
+    {% if current_role == 'admin' %}<a class="btn btn--outline" href="{{ url_for('attendance_quick') }}"><i class="cil-check-circle" aria-hidden="true"></i> ثبت سریع کل مدرسه</a>{% endif %}
+    {% if current_role != 'teacher' %}<a class="btn btn--outline" href="{{ url_for('attendance_report') }}"><i class="cil-chart-line" aria-hidden="true"></i> گزارش حضور</a>{% endif %}
+{% endblock %}
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='attendance_workspace.css') }}">
+    {% if quick_mode %}<link rel="stylesheet" href="{{ url_for('static', filename='attendance_quick.css') }}">{% endif %}
+{% endblock %}
+{% block content %}
+{% if quick_mode %}
+<div class="attendance-workspace aw-quickview" data-marked='{{ marked_dates|tojson }}' data-today='{{ today_jalali|tojson }}' data-today-index="{{ today_weekday_index }}">
+    <header class="aw-hero">
+        <div class="aw-hero__copy">
+            <div class="aw-kicker">ثبت روزانه · کل مدرسه</div>
+            <h2>ثبت سریع حضور و غیاب</h2>
+            <p>فقط اسامی <strong>غایبین</strong> را انتخاب کنید؛ بقیهٔ دانش‌آموزان فعال به‌صورت خودکار <strong>حاضر</strong> ثبت می‌شوند. رکوردهای قبلی این روز تغییر نمی‌کنند.</p>
+        </div>
+        <div class="aw-hero__meta">
+            <span class="aw-date-chip"><i class="cil-calendar" aria-hidden="true"></i> <span>{{ date_value|fa_digits }}</span></span>
+            {% if already_marked %}<small>{{ already_marked|fa_digits }} رکورد در این روز ثبت شده است</small>{% endif %}
+        </div>
+    </header>
+
+    <section class="aw-panel aw-quick-filter no-print" aria-label="فیلتر کلاس">
+        <form method="GET" action="{{ url_for('attendance_quick') }}" class="aw-quick-filter__form">
+            <div class="aw-field">
+                <label for="awQuickClass">کلاس</label>
+                <select id="awQuickClass" name="class_name">
+                    <option value="">همهٔ مدرسه</option>
+                    {% for c in classes %}<option value="{{ c.class_name }}" {% if class_filter == c.class_name %}selected{% endif %}>{{ c.class_name }}</option>{% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="date" value="{{ date_value }}">
+            <button class="aw-btn aw-btn--primary" type="submit">فیلتر</button>
+            {% if class_filter %}<a class="aw-btn aw-btn--soft" href="{{ url_for('attendance_quick', date=date_value) }}"><i class="cil-x" aria-hidden="true"></i> حذف فیلتر</a>{% endif %}
+        </form>
+    </section>
+
+    <section class="aw-panel aw-date-panel no-print" aria-label="انتخاب تاریخ">
+        <div class="aw-date-top">
+            <div><div class="aw-panel__heading" style="margin-bottom:3px"><h3>تاریخ ثبت</h3></div><p class="aw-date-note">روزهای دارای نقطه، سابقه ثبت دارند.</p></div>
+            <div class="aw-date-actions">
+                <a class="aw-quick{% if date_value == today_value %} is-active{% endif %}" href="{{ url_for('attendance_quick', date=today_value, class_name=class_filter) }}">امروز</a>
+                <a class="aw-quick{% if date_value == yesterday_value %} is-active{% endif %}" href="{{ url_for('attendance_quick', date=yesterday_value, class_name=class_filter) }}">دیروز</a>
+            </div>
+        </div>
+        <div class="aw-date-controls">
+            <label class="aw-visually-hidden" for="awQuickMonth">ماه</label>
+            <select id="awQuickMonth">
+                {% for name in ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'] %}<option value="{{ loop.index }}" {% if date_value[5:7]|int == loop.index %}selected{% endif %}>{{ name }}</option>{% endfor %}
+            </select>
+            <label class="aw-visually-hidden" for="awQuickYear">سال</label>
+            <select id="awQuickYear">
+                {% for y in years %}<option value="{{ y }}" {% if date_value[:4]|int == y %}selected{% endif %}>{{ y|fa_digits }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="aw-calendar" id="awQuickCalendar" role="group" aria-label="روزهای ماه"></div>
+        <div class="aw-selected-date"><span>تاریخ انتخابی:</span><strong data-selected-date>{{ date_value|fa_digits }}</strong><span class="aw-weekday">{{ date_weekday }}</span>{% if already_marked %}<span class="aw-record-pill">{{ already_marked|fa_digits }} رکورد ثبتهشده</span>{% else %}<span class="aw-empty-pill">هنوز ثبت نشده</span>{% endif %}</div>
+    </section>
+
+    {% if students %}
+    <form method="POST" action="{{ url_for('attendance_quick') }}" data-quick-form>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="date" value="{{ date_value }}">
+        <input type="hidden" name="class_name" value="{{ class_filter }}">
+        <section class="aw-panel aw-quick-toolbar no-print" aria-label="ابزارهای ثبتهسریع">
+            <div class="aw-quick-toolbar__left">
+                <span class="aw-toolbar__label">انتخاب غایبین</span>
+                <button type="button" class="aw-btn aw-btn--soft" data-quick-all><i class="cil-users" aria-hidden="true"></i> همه غایب</button>
+                <button type="button" class="aw-btn aw-btn--soft" data-quick-none><i class="cil-check" aria-hidden="true"></i> هیچکس غایب نیست</button>
+                <span class="aw-quick-count" data-quick-count>۰ نفر غایب</span>
+            </div>
+            <div class="aw-search"><i class="cil-search" aria-hidden="true"></i><label class="aw-visually-hidden" for="awQuickSearch">جستوجوی دانش‌آموز</label><input id="awQuickSearch" type="search" placeholder="جستوجوی نام یا کد..." autocomplete="off"></div>
+        </section>
+        <div class="aw-quick-list" id="awQuickList">
+            {% for s in students %}
+            <label class="aw-quick-row" data-code="{{ s.code }}" data-name="{{ s.first_name }} {{ s.last_name }}">
+                <input type="checkbox" name="absent_{{ s.code }}" value="1" class="aw-quick-check">
+                {% if s.photo %}<img src="{{ url_for('static', filename='uploads/' ~ s.photo) }}" alt="عکس دانش‌آموز" class="aw-quick-avatar" aria-hidden="true">{% else %}<span class="aw-quick-avatar" aria-hidden="true">{{ (s.first_name or 'د')[:1] }}</span>{% endif %}
+                <span class="aw-quick-body">
+                    <strong class="aw-quick-name">{{ s.first_name }} {{ s.last_name }}</strong>
+                    <small class="aw-quick-meta">{{ s.class_name or '—' }} · کد {{ s.code|fa_digits }}{% if s.grade %} · {{ s.grade }}{% endif %}{% if s.total_absences %} · {{ s.total_absences|fa_digits }} غیبت در سال{% endif %}</small>
+                </span>
+                {% if s.current_status %}<span class="aw-quick-saved">ثبت‌شده: {{ s.current_status }}</span>{% else %}<span class="aw-quick-auto">حاضر خودکار</span>{% endif %}
+            </label>
+            {% endfor %}
+        </div>
+        <div class="aw-empty-filter" hidden>دانش‌آموزی با این جستوجو یا فیلتر پیدا نشد.</div>
+        <div class="aw-savebar no-print">
+            <div class="aw-savebar__summary"><span data-save-summary>—</span><small class="aw-savebar__hint">فقط غایبین را انتخاب کنید؛ بقیه خودکار حاضر می‌شوند.</small></div>
+            <button type="submit" class="aw-btn aw-submit"><i class="cil-save" aria-hidden="true"></i> ثبت‌سریع حضور و غیاب</button>
+        </div>
+    </form>
+    {% else %}
+    <div class="aw-empty"><span class="aw-empty__icon"><i class="cil-inbox" aria-hidden="true"></i></span><strong>دانش‌آموزی در این بازه یافت نشد</strong><p>فیلتر کلاس را تغییر دهید یا دانشآموزان فعال ثبت کنید.</p></div>
+    {% endif %}
+</div>
+{% else %}
+{% set status_meta = {'حاضر': ('present', 'cil-check-circle'), 'غایب': ('absent', 'cil-x'), 'مرخصی': ('excused', 'cil-sync'), 'تاخیر': ('late', 'cil-clock')} %}
+<div class="attendance-workspace" data-marked='{{ marked_dates|tojson }}' data-today='{{ today_jalali|tojson }}' data-today-index="{{ today_weekday_index }}">
+    <header class="aw-hero">
+        <div class="aw-hero__copy">
+            <div class="aw-kicker">ثبت روزانه · کلاس</div>
+            <h2>حضور و غیاب دانش‌آموزان</h2>
+            <p>{% if selected_teacher %}وضعیت کلاس را در چند ثانیه ثبت کنید؛ تغییرات هر دانش‌آموز را قبل از ذخیره واضح ببینید.{% else %}برای شروع یک معلم و کلاس را انتخاب کنید.{% endif %}</p>
+        </div>
+        <div class="aw-hero__meta">
+            <span class="aw-date-chip"><i class="cil-calendar" aria-hidden="true"></i> <span>{{ date_value|fa_digits }}</span></span>
+            {% if selected_teacher %}<small>{{ selected_teacher.first_name }} {{ selected_teacher.last_name }}{% if selected_teacher.class_name %} · {{ selected_teacher.class_name }}{% endif %}</small>{% endif %}
+        </div>
+    </header>
+
+    {% if current_role != 'teacher' %}
+    <section class="aw-panel aw-selector no-print" aria-label="انتخاب معلم">
+        <div class="aw-panel__heading">
+            <div><h3>انتخاب کلاس</h3><p>ابتدا معلمی را انتخاب کنید تا فهرست کلاس نمایش داده شود.</p></div>
+        </div>
+        <form method="GET" action="{{ url_for('attendance_students') }}">
+            <div class="aw-field">
+                <label for="awTeacherSelect">معلم و کلاس</label>
+                <select id="awTeacherSelect" name="teacher_code" required>
+                    <option value="">انتخاب معلم...</option>
+                    {% for t in teachers %}
+                        <option value="{{ t.code }}" {% if teacher_code == t.code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }}{% if t.class_name %} · {{ t.class_name }}{% endif %}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="date" value="{{ date_value }}">
+            <button class="aw-btn aw-btn--primary" type="submit"><i class="cil-arrow-left" aria-hidden="true"></i> نمایش کلاس</button>
+            {% if teacher_code %}<a class="aw-btn aw-btn--soft" href="{{ url_for('attendance_students') }}"><i class="cil-x" aria-hidden="true"></i> پاک کردن</a>{% endif %}
+        </form>
+    </section>
+    {% endif %}
+
+    {% if selected_teacher %}
+    <div class="aw-print-header">
+        <h2>حضور و غیاب روزانه دانش‌آموزان</h2>
+        <p>{{ config.SCHOOL_NAME }} · {{ selected_teacher.first_name }} {{ selected_teacher.last_name }} · {% if selected_teacher.class_name %}کلاس: {{ selected_teacher.class_name }} · {% endif %}تاریخ: {{ date_value|fa_digits }} · تاریخ چاپ: {{ jalali_datetime }}</p>
+    </div>
+
+    <section class="aw-panel aw-date-panel no-print" aria-label="انتخاب تاریخ">
+        <div class="aw-date-top">
+            <div><div class="aw-panel__heading" style="margin-bottom:3px"><h3>تاریخ ثبت</h3></div><p class="aw-date-note">روزهای دارای نقطه، سابقه ثبت دارند.</p></div>
+            <div class="aw-date-actions">
+                <a class="aw-quick{% if date_value == today_value %} is-active{% endif %}" href="{{ url_for('attendance_students', teacher_code=teacher_code, date=today_value) }}">امروز</a>
+                <a class="aw-quick{% if date_value == yesterday_value %} is-active{% endif %}" href="{{ url_for('attendance_students', teacher_code=teacher_code, date=yesterday_value) }}">دیروز</a>
+            </div>
+        </div>
+        <div class="aw-date-controls">
+            <label class="aw-visually-hidden" for="awMonthSelect">ماه</label>
+            <select id="awMonthSelect">
+                {% for name in ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور', 'مهر', 'آبان', 'آذر', 'دی', 'بهمن', 'اسفند'] %}<option value="{{ loop.index }}" {% if date_value[5:7]|int == loop.index %}selected{% endif %}>{{ name }}</option>{% endfor %}
+            </select>
+            <label class="aw-visually-hidden" for="awYearSelect">سال</label>
+            <select id="awYearSelect">
+                {% for y in years %}<option value="{{ y }}" {% if date_value[:4]|int == y %}selected{% endif %}>{{ y|fa_digits }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="aw-calendar" id="awCalendar" role="group" aria-label="روزهای ماه"></div>
+        <div class="aw-selected-date"><span>تاریخ انتخابی:</span><strong data-selected-date>{{ date_value|fa_digits }}</strong><span class="aw-weekday">{{ date_weekday }}</span>{% if date_stats.values()|sum %}<span class="aw-record-pill">{{ date_stats.values()|sum|fa_digits }} رکورد ثبت‌شده</span>{% else %}<span class="aw-empty-pill">هنوز ثبت نشده</span>{% endif %}</div>
+    </section>
+
+    <section class="aw-stat-grid" aria-label="خلاصه وضعیت" aria-live="polite">
+        {% for status in statuses %}<div class="aw-stat aw-stat--{{ status_meta[status][0] }}"><span class="aw-stat__label"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i>{{ status }}</span><strong class="aw-stat__value" data-stat="{{ status }}">{{ date_stats.get(status, 0)|fa_digits }}</strong></div>{% endfor %}
+        <div class="aw-stat aw-stat--total"><span class="aw-stat__label"><i class="cil-users" aria-hidden="true"></i>کل کلاس</span><strong class="aw-stat__value" data-stat-total>{{ students|length|fa_digits }}</strong></div>
+        <div class="aw-stat aw-stat--unchanged"><span class="aw-stat__label"><i class="cil-check" aria-hidden="true"></i>بدون تغییر</span><strong class="aw-stat__value" data-stat-unchanged>۰</strong></div>
+    </section>
+
+    {% if students %}
+    <form method="POST" action="{{ url_for('attendance_students') }}" data-attendance-form>
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="teacher_code" value="{{ teacher_code }}">
+        <input type="hidden" name="date" id="awDateInput" value="{{ date_value }}">
+        <section class="aw-panel aw-toolbar no-print" aria-label="ابزارهای سریع">
+            <div class="aw-toolbar__left">
+                <span class="aw-toolbar__label">ثبت گروهی</span>
+                <div class="aw-bulk-actions">
+                    {% for status in statuses %}<button type="button" class="aw-bulk aw-bulk--{{ status_meta[status][0] }}" data-set-all="{{ status }}"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i> همه {{ status }}</button>{% endfor %}
+                </div>
+                <div class="aw-tabs" role="group" aria-label="فیلتر فهرست"><button type="button" class="aw-tab is-active" data-filter="all">همه</button><button type="button" class="aw-tab" data-filter="changed">تغییرکرده</button><button type="button" class="aw-tab" data-filter="unmarked">ثبت‌نشده</button><button type="button" class="aw-tab" data-filter="attention">غایب و تاخیر</button></div>
+            </div>
+            <div class="aw-search"><i class="cil-search" aria-hidden="true"></i><label class="aw-visually-hidden" for="awSearch">جست‌وجوی دانش‌آموز</label><input id="awSearch" type="search" placeholder="جست‌وجوی نام یا کد..." autocomplete="off"></div>
+        </section>
+        <div class="aw-people" id="awPeople">
+            {% for s in students %}
+                {% set initial = s.current_status or '' %}{% set resolved = initial or 'حاضر' %}
+                <article class="aw-person-card" data-code="{{ s.code }}" data-name="{{ s.first_name }} {{ s.last_name }}" data-initial="{{ initial }}" data-status="{{ resolved }}">
+                    <div class="aw-person-card__top">{% if s.photo %}<img src="{{ url_for('static', filename='uploads/' ~ s.photo) }}" alt="عکس دانش‌آموز" class="aw-avatar" aria-hidden="true">{% else %}<span class="aw-avatar" aria-hidden="true">{{ (s.first_name or 'د')[:1] }}</span>{% endif %}<div class="aw-person-title"><strong class="aw-person-name">{{ s.first_name }} {{ s.last_name }}</strong><span class="aw-person-code">{{ s.code|fa_digits }}</span></div><span class="aw-person-state {{ 'is-saved' if initial else 'is-new' }}">{{ 'ثبت‌شده' if initial else 'بدون سابقه' }}</span></div>
+                    <div class="aw-person-detail">پایه: {{ s.grade or '—' }} · کلاس: {{ s.class_name or '—' }}{% if s.sida_class %} · سیدا: {{ s.sida_class }}{% endif %}{% if s.recent_absences %} · {{ s.recent_absences|fa_digits }} غیبت در ۳۰ روز اخیر{% endif %}</div>
+                    <div class="aw-status-grid" role="group" aria-label="وضعیت {{ s.first_name }} {{ s.last_name }}">
+                        {% for status in statuses %}<button type="button" class="aw-status-btn{% if resolved == status %} is-active{% endif %}" data-status="{{ status }}" aria-pressed="{{ 'true' if resolved == status else 'false' }}"><i class="{{ status_meta[status][1] }}" aria-hidden="true"></i> {{ status }}</button>{% endfor %}
+                    </div>
+                    <input type="hidden" name="status_{{ s.code }}" class="aw-status-input" value="{{ resolved }}">
+                    <span class="aw-print-status">وضعیت: <strong class="aw-print-status-value">{{ resolved }}</strong></span>
+                </article>
+            {% endfor %}
+        </div>
+        <div class="aw-empty-filter" hidden>دانش‌آموزی با این جست‌وجو یا فیلتر پیدا نشد.</div>
+        <div class="aw-savebar no-print"><div class="aw-savebar__summary"><span data-save-summary>—</span><small class="aw-savebar__hint" data-dirty-hint hidden>تغییرات ذخیره‌نشده دارید.</small></div><button type="submit" class="aw-btn aw-submit"><i class="cil-save" aria-hidden="true"></i> ذخیره حضور و غیاب</button></div>
+    </form>
+    {% else %}
+    <div class="aw-empty"><span class="aw-empty__icon"><i class="cil-inbox" aria-hidden="true"></i></span><strong>دانش‌آموزی برای این کلاس ثبت نشده است</strong><p>کلاس معلم را در بخش «کلاس‌بندی هوشمند» تعیین کنید.</p></div>
+    {% endif %}
+    {% else %}
+    <div class="aw-empty no-print"><span class="aw-empty__icon"><i class="cil-hand-point-left" aria-hidden="true"></i></span><strong>برای شروع، یک کلاس انتخاب کنید</strong><p>پس از انتخاب معلم، فهرست دانش‌آموزان و ابزار ثبت حضور نمایش داده می‌شود.</p></div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if quick_mode %}<script src="{{ url_for('static', filename='attendance_quick.js') }}" defer></script>{% else %}<script src="{{ url_for('static', filename='attendance_workspace.js') }}" defer></script>{% endif %}
+{% endblock %}

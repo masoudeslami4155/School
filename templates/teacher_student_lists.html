@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}فهرست معلم و دانش‌آموزان{% endblock %}
+{% block page_title %}فهرست معلم و دانش‌آموزان{% endblock %}
+{% block page_actions %}
+<a class="btn btn--outline no-print" href="{{ url_for('features_hub') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به مرکز امکانات</a>
+{% endblock %}
+{% block head %}
+<style>
+.teacher-list-toolbar{display:flex;align-items:end;justify-content:space-between;gap:14px;flex-wrap:wrap;padding:16px;margin-bottom:16px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.12)}
+.teacher-list-toolbar__field{min-width:250px;flex:1;max-width:560px}.teacher-list-toolbar__field label{display:block;margin-bottom:6px;font-weight:800}.teacher-list-toolbar__actions{display:flex;gap:8px;flex-wrap:wrap}
+.teacher-list-help{margin:0 0 14px;color:var(--muted);font-size:12px}.teacher-list-pages{display:grid;gap:18px}.teacher-list-page{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch}
+.teacher-list-card{min-width:0;min-height:230px;padding:11px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.12);overflow:hidden}.teacher-list-card__head{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;border-bottom:2px solid currentColor;padding-bottom:7px;margin-bottom:7px}.teacher-list-card__title{font-size:13px;font-weight:900;line-height:1.5}.teacher-list-card__meta{font-size:10px;color:var(--muted);line-height:1.6;text-align:left;white-space:nowrap}.teacher-list-card__count{display:inline-flex;align-items:center;justify-content:center;min-width:28px;padding:2px 6px;border:1px solid currentColor;border-radius:999px;font-size:10px;font-weight:800;white-space:nowrap}.teacher-list-table{width:100%;min-width:0;border-collapse:collapse;table-layout:fixed}.teacher-list-table th,.teacher-list-table td{padding:4px 3px;border:1px solid var(--line);font-size:10px;text-align:center;vertical-align:middle;line-height:1.45}.teacher-list-table th{background:rgba(20,39,74,.16);font-weight:900}.teacher-list-table th:nth-child(1),.teacher-list-table td:nth-child(1){width:11%}.teacher-list-table th:nth-child(2),.teacher-list-table td:nth-child(2){width:43%;text-align:right}.teacher-list-table th:nth-child(3),.teacher-list-table td:nth-child(3){width:20%}.teacher-list-table th:nth-child(4),.teacher-list-table td:nth-child(4){width:26%}.teacher-list-table tbody tr:nth-child(even) td{background:rgba(255,255,255,.07)}.teacher-list-sign{height:20px}.teacher-list-empty{display:grid;place-items:center;min-height:170px;color:var(--muted);font-size:12px;text-align:center}.teacher-list-card--empty{visibility:hidden}
+@media(max-width:900px){.teacher-list-page{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:none}.teacher-list-card--empty{display:none}}
+@media(max-width:600px){.teacher-list-toolbar{align-items:stretch}.teacher-list-toolbar__field{min-width:100%;max-width:none}.teacher-list-toolbar__actions{width:100%}.teacher-list-toolbar__actions .btn{flex:1}.teacher-list-page{grid-template-columns:1fr}.teacher-list-card{min-height:0}.teacher-list-card--empty{display:none}}
+@media print{
+  @page{size:A4 portrait;margin:7mm}
+  .page-heading{display:none!important}
+  .teacher-list-toolbar,.teacher-list-help{display:none!important}
+  .teacher-list-pages{display:block!important}
+  .teacher-list-page{height:270mm!important;display:grid!important;grid-template-columns:repeat(3,1fr)!important;grid-template-rows:repeat(2,1fr)!important;gap:3mm!important;break-after:page;page-break-after:always}
+  .teacher-list-page:last-child{break-after:auto;page-break-after:auto}
+  .teacher-list-card,.teacher-list-card--empty{min-height:0!important;height:auto!important;padding:2.5mm!important;border:1px solid #222!important;border-radius:0!important;background:#fff!important;color:#111!important;box-shadow:none!important;overflow:hidden!important;visibility:visible}
+  .teacher-list-card__head{border-bottom:1.3px solid #111!important;padding-bottom:1.2mm!important;margin-bottom:1.2mm!important}.teacher-list-card__title{font-size:9pt!important}.teacher-list-card__meta{color:#222!important;font-size:6.5pt!important}.teacher-list-card__count{font-size:6.5pt!important;padding:1mm!important;border-color:#111!important}.teacher-list-table th,.teacher-list-table td{border:1px solid #333!important;background:#fff!important;color:#111!important;padding:1.1mm .7mm!important;font-size:7pt!important;line-height:1.22!important}.teacher-list-table th{font-weight:900!important}.teacher-list-sign{height:5mm!important}
+}
+</style>
+{% endblock %}
+{% block content %}
+<section class="teacher-list-toolbar no-print" aria-label="تنظیمات فهرست">
+    <form method="get" action="{{ url_for('teacher_student_lists') }}" class="teacher-list-toolbar__field">
+        <label for="teacher_code">انتخاب معلم</label>
+        {% if restricted %}
+        <input type="text" value="{{ selected_label or 'معلم اختصاص‌یافته' }}" readonly aria-readonly="true">
+        <input type="hidden" name="teacher_code" value="{{ selected_code or '' }}">
+        {% else %}
+        <select id="teacher_code" name="teacher_code">
+            <option value="">همهٔ معلمان</option>
+            {% for teacher in teacher_options %}
+            <option value="{{ teacher['code'] }}"{% if selected_code == teacher['code'] %} selected{% endif %}>{{ (teacher['first_name'] or '') ~ ' ' ~ (teacher['last_name'] or '')|trim }}{% if teacher['code'] %} · {{ teacher['code'] }}{% endif %}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+        <div class="teacher-list-toolbar__actions" style="margin-top:8px">
+            <button class="btn btn--primary" type="submit"><i class="cil-filter" aria-hidden="true"></i> نمایش فهرست</button>
+            {% if not restricted and selected_code %}<a class="btn btn--outline" href="{{ url_for('teacher_student_lists') }}"><i class="cil-reload" aria-hidden="true"></i> همهٔ معلمان</a>{% endif %}
+            <button class="btn btn--dark" type="button" onclick="window.print()"><i class="cil-print" aria-hidden="true"></i> چاپ A4</button>
+        </div>
+    </form>
+    <div class="teacher-list-toolbar__field" style="flex:0 1 360px">
+        <strong>چیدمان چاپ</strong>
+        <p class="teacher-list-help" style="margin-top:7px">هر برگهٔ A4 شامل شش فهرست فشرده است؛ جدول‌ها برای چاپ سیاه‌وسفید طراحی شده‌اند و فضای امضا دارند.</p>
+    </div>
+</section>
+<p class="teacher-list-help">فقط دانش‌آموزان فعال و دانش‌آموزانی که به همان معلم منتسب هستند نمایش داده می‌شوند. اطلاعات حساس پرونده در این فهرست قرار نمی‌گیرد.</p>
+{% if lists %}
+<div class="teacher-list-pages">
+{% for page_lists in lists|batch(6, none) %}
+<section class="teacher-list-page" aria-label="شش فهرست چاپی">
+    {% for item in page_lists %}
+    {% if item %}
+    <article class="teacher-list-card">
+        <header class="teacher-list-card__head">
+            <div>
+                <div class="teacher-list-card__title">{{ (item.teacher['first_name'] or '') ~ ' ' ~ (item.teacher['last_name'] or '')|trim or 'معلم ثبت نشده' }}</div>
+                <div class="teacher-list-card__meta">{% if item.teacher['subject'] %}{{ item.teacher['subject'] }}{% endif %}{% if item.teacher['class_name'] %}{% if item.teacher['subject'] %} · {% endif %}{{ item.teacher['class_name'] }}{% endif %}</div>
+            </div>
+            <span class="teacher-list-card__count">{{ item.students|length }} نفر</span>
+        </header>
+        {% if item.students %}
+        <table class="teacher-list-table">
+            <thead><tr><th>ردیف</th><th>نام دانش‌آموز</th><th>کد</th><th>امضا</th></tr></thead>
+            <tbody>
+            {% for student in item.students %}
+            <tr><td>{{ loop.index }}</td><td>{{ (student['first_name'] or '') ~ ' ' ~ (student['last_name'] or '')|trim or 'ثبت نشده' }}</td><td>{{ student['code'] or 'ثبت نشده' }}</td><td class="teacher-list-sign"></td></tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}<div class="teacher-list-empty">برای این معلم دانش‌آموز فعال ثبت نشده است.</div>{% endif %}
+    </article>
+    {% else %}<article class="teacher-list-card teacher-list-card--empty" aria-hidden="true"></article>{% endif %}
+    {% endfor %}
+</section>
+{% endfor %}
+</div>
+{% else %}
+<section class="card teacher-list-empty"><i class="cil-info" aria-hidden="true"></i><p>معلم یا دانش‌آموز فعال مطابق انتخاب فعلی پیدا نشد.</p></section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+{% block title %}گزارش حضور و غیاب معلمان{% endblock %}
+{% block page_title %}👨‍🏫 گزارش حضور و غیاب معلمان{% endblock %}
+{% block content %}
+
+<style>
+    .filter-section {
+        background: var(--glass-surface);
+        backdrop-filter: blur(var(--glass-blur-soft));
+        -webkit-backdrop-filter: blur(var(--glass-blur-soft));
+        padding: 15px 20px;
+        border-radius: var(--glass-radius);
+        margin-bottom: 20px;
+        border: 1px solid var(--glass-border-soft);
+        border-right: 4px solid #8e44ad;
+    }
+    .filter-section .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+    .filter-section .form-row .field-group {
+        flex: 1;
+        min-width: 160px;
+    }
+    .filter-section label {
+        display: block;
+        font-size: 13px;
+        font-weight: bold;
+        margin-bottom: 4px;
+        color: #34495e;
+    }
+    .filter-section input, .filter-section select {
+        width: 100%;
+        padding: 8px 12px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        background: white;
+    }
+    .filter-section .btn-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        padding-top: 6px;
+    }
+    .filter-section .btn-group button {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .btn-primary { background: #8e44ad; color: white; }
+    .btn-primary:hover { background: #732d91; }
+    .btn-secondary { background: #95a5a6; color: white; }
+    .btn-secondary:hover { background: #7f8c8d; }
+    .btn-success { background: #27ae60; color: white; }
+    .btn-success:hover { background: #219150; }
+    .btn-print { background: #2c3e50; color: white; }
+    .btn-print:hover { background: #1a252f; }
+
+    .stats-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 15px;
+        padding: 12px 16px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border-right: 4px solid #8e44ad;
+    }
+    .stats-bar .stat-item {
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        background: #ecf0f1;
+        color: #2c3e50;
+    }
+    .stats-bar .stat-present { background: #27ae60; color: white; }
+    .stats-bar .stat-absent { background: #e74c3c; color: white; }
+    .stats-bar .stat-excused { background: #f39c12; color: white; }
+    .stats-bar .stat-late { background: #8e44ad; color: white; }
+    .stats-bar .stat-total { background: #2c3e50; color: white; }
+
+    .summary-box {
+        background: #fef9e7;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border-right: 4px solid #f39c12;
+        margin-bottom: 15px;
+        font-size: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .summary-box strong { color: #2c3e50; }
+    .summary-box .badge {
+        background: #2c3e50;
+        color: white;
+        padding: 2px 12px;
+        border-radius: 12px;
+        font-size: 13px;
+    }
+
+    .table-wrapper { overflow-x: auto; margin-top: 10px; }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 800px;
+        font-size: 13px;
+    }
+    th {
+        background: #8e44ad;
+        color: white;
+        padding: 10px 8px;
+        text-align: center;
+        white-space: nowrap;
+    }
+    td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #ecf0f1;
+        text-align: center;
+        vertical-align: middle;
+    }
+    .status-present { color: #27ae60; font-weight: bold; }
+    .status-absent { color: #e74c3c; font-weight: bold; }
+    .status-excused { color: #f39c12; font-weight: bold; }
+    .status-late { color: #8e44ad; font-weight: bold; }
+    .no-data {
+        text-align: center;
+        padding: 30px;
+        color: #7f8c8d;
+        font-size: 16px;
+    }
+    .late-duration {
+        color: #8e44ad;
+        font-weight: bold;
+    }
+
+    /* استایل چاپ */
+    @media print {
+        .no-print, .filter-section, .btn-group {
+            display: none !important;
+        }
+          {{ teacher_layout|report_element_css|safe }}
+          @page { size: A4 {{ teacher_layout.orientation }}; margin: {{ teacher_layout.margin.top }}mm {{ teacher_layout.margin.right }}mm {{ teacher_layout.margin.bottom }}mm {{ teacher_layout.margin.left }}mm; }
+        body { font-size: {{ teacher_layout.font_size }}pt; line-height: {{ teacher_layout.line_height }}; }
+        table { font-size: {{ teacher_layout.font_size }}pt; }
+        th, td { padding: 2px 3px; }
+        .stats-bar { display: flex !important; }
+        .summary-box { display: flex !important; }
+        .print-header { display: block !important; text-align: center; border-bottom: 2px solid #2c3e50; padding-bottom: 4px; margin-bottom: 6px; }
+        .print-header h1 { font-size: {{ teacher_layout.header_font_size }}pt; margin: 0; }
+        .print-header .sub { font-size: 8px; color: #7f8c8d; }
+        .print-footer { display: block !important; text-align: center; font-size: 9px; color: #95a5a6; border-top: 1px solid #ddd; padding-top: 3px; margin-top: 5px; }
+         .print-footer .page-number:after { content: " - صفحه " counter(page); }
+         .print-layout-hidden { display: none !important; }
+         table thead { display: {% if teacher_layout.repeat_header %}table-header-group{% else %}table-row-group{% endif %}; }
+         th { height: {{ teacher_layout.header_height }}mm; }
+         tr { min-height: {{ teacher_layout.row_height }}mm; }
+         h4[data-report-section].print-layout-hidden,.table-wrapper.print-layout-hidden { display:none!important; }
+    }
+    .print-header, .print-footer { display: none; }
+</style>
+
+<!-- ===== هدر چاپ ===== -->
+<div class="print-header{% if not teacher_layout.show_header %} print-layout-hidden{% endif %}" data-report-element="hero">
+    <h1>📋 گزارش حضور و غیاب معلمان</h1>
+    <div class="sub">
+        {% if date_from and date_to %} از {{ date_from }} تا {{ date_to }}
+        {% elif date_from %} از {{ date_from }} به بعد
+        {% elif date_to %} تا {{ date_to }}
+        {% else %} تمام بازه {% endif %}
+        | تاریخ چاپ: {{ jalali_datetime }}
+    </div>
+</div>
+
+<!-- ===== فیلترها ===== -->
+<div class="filter-section no-print">
+    <form method="GET" action="/reports/teacher_attendance">
+        <div class="form-row">
+            <div class="field-group">
+                <label>از تاریخ</label>
+                <input type="text" name="date_from" value="{{ date_from or '' }}" placeholder="مثلاً 1404/06/01" data-jdate>
+            </div>
+            <div class="field-group">
+                <label>تا تاریخ</label>
+                <input type="text" name="date_to" value="{{ date_to or '' }}" placeholder="مثلاً 1404/06/30" data-jdate>
+            </div>
+            <div class="field-group">
+                <label>معلم</label>
+                <select name="teacher_code">
+                    <option value="">همه معلمان</option>
+                    {% for t in teachers_list %}
+                        <option value="{{ t.code }}" {% if teacher_code == t.code %}selected{% endif %}>{{ t.first_name }} {{ t.last_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="field-group">
+                <label>وضعیت</label>
+                <select name="status">
+                    <option value="">همه</option>
+                    <option value="حاضر" {% if status_filter == 'حاضر' %}selected{% endif %}>✅ حاضر</option>
+                    <option value="غایب" {% if status_filter == 'غایب' %}selected{% endif %}>❌ غایب</option>
+                    <option value="مرخصی" {% if status_filter == 'مرخصی' %}selected{% endif %}>⏳ مرخصی</option>
+                    <option value="تاخیر" {% if status_filter == 'تاخیر' %}selected{% endif %}>🕐 تاخیر</option>
+                </select>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="submit" class="btn-primary">🔍 نمایش گزارش</button>
+            <a href="/reports/teacher_attendance" class="btn-secondary" style="text-decoration:none;">🔄 لغو فیلتر</a>
+            <button type="button" class="btn-success" onclick="exportExcel()">📥 خروجی اکسل</button>
+             <a href="{{ print_landscape_url }}" class="btn-print" style="text-decoration:none;padding:8px 20px;border-radius:6px;font-weight:bold">🖨️ چاپ با چیدمان ذخیره‌شده</a>
+             <a href="{{ print_layout_url }}" class="btn-secondary" style="text-decoration:none;padding:8px 20px;border-radius:6px;font-weight:bold">⚙️ طراحی ستون‌ها</a>
+        </div>
+    </form>
+    {% if current_role in ['admin', 'manager'] %}
+    <form method="post" action="/reports/teacher_attendance/delete-absences" class="no-print" onsubmit="return confirm('تمام غیبت‌های منطبق با فیلترها حذف شوند؟')">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="next" value="{{ request.full_path }}">
+        <input type="hidden" name="date_from" value="{{ date_from or '' }}">
+        <input type="hidden" name="date_to" value="{{ date_to or '' }}">
+        <input type="hidden" name="teacher_code" value="{{ teacher_code or '' }}">
+        <button type="submit" class="btn-danger">🧹 حذف غیبت‌های فیلترشده</button>
+    </form>
+    {% endif %}
+</div>
+
+<!-- ===== آمار ===== -->
+{% if records %}
+<div class="stats-bar">
+    <span class="stat-item stat-total">👥 مجموع: {{ records|length }}</span>
+    <span class="stat-item stat-present">✅ حاضر: <span id="statPresent">0</span></span>
+    <span class="stat-item stat-absent">❌ غایب: <span id="statAbsent">0</span></span>
+    <span class="stat-item stat-excused">⏳ مرخصی: <span id="statExcused">0</span></span>
+                         <span class="stat-item stat-late"><i class="cil-clock" aria-hidden="true"></i> تاخیر: <span id="statLate">0</span></span>
+</div>
+
+<div class="summary-box">
+    <span><strong>📊 خلاصه در بازه انتخاب‌شده</strong></span>
+    <span>
+        <span class="badge">🔴 غایب: <span id="totalAbsentTeachers">0</span> نفر</span>
+                         <span class="badge" style="background:#8e44ad;"><i class="cil-user" aria-hidden="true"></i> با تاخیر: <span id="totalLateTeachers">0</span> نفر</span>
+        <span class="badge" style="background:#f39c12;">⏱️ مجموع تاخیر: <span id="totalLateMinutes">0</span> دقیقه</span>
+    </span>
+</div>
+{% endif %}
+
+<!-- ===== خلاصه عملکرد معلمان ===== -->
+<h4 data-report-section="summary" class="{% if not teacher_layout.sections.summary %}print-layout-hidden{% endif %}">📊 خلاصه عملکرد معلمان</h4>
+<div class="table-wrapper{% if not teacher_layout.sections.summary %} print-layout-hidden{% endif %}" data-report-element="summary">
+    <table>
+        <tr>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.index else '' }}">ردیف</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.first_name else '' }}">نام</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.last_name else '' }}">نام‌خانوادگی</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.absent else '' }}">تعداد غیبت</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.late else '' }}">تعداد تاخیر</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.late_minutes else '' }}">مجموع تاخیر (دقیقه)</th>
+        </tr>
+        {% for s in summary %}
+        <tr>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.index else '' }}">{{ loop.index }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.first_name else '' }}">{{ s.first_name }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.last_name else '' }}">{{ s.last_name }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.absent else '' }}" style="color:red; font-weight:bold;">{{ s.total_absent or 0 }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.late else '' }}" style="color:#8e44ad; font-weight:bold;">{{ s.total_late or 0 }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.late_minutes else '' }}" style="color:#f39c12; font-weight:bold;">{{ s.total_late_minutes or 0 }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="no-data">هیچ داده‌ای موجود نیست.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- ===== جزئیات روزانه ===== -->
+<h4 data-report-section="detail" class="{% if not teacher_layout.sections.detail %}print-layout-hidden{% endif %}" style="margin-top:20px;">📋 جزئیات روزانه</h4>
+<div class="table-wrapper{% if not teacher_layout.sections.detail %} print-layout-hidden{% endif %}" data-report-element="detail">
+    <table>
+        <tr>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.index else '' }}">ردیف</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.first_name else '' }}">نام</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.last_name else '' }}">نام‌خانوادگی</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.code else '' }}">کد</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.subject else '' }}">درس</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.class_name else '' }}">کلاس</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.date else '' }}">تاریخ</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.status else '' }}">وضعیت</th>
+            <th class="{{ 'print-layout-hidden' if not teacher_layout.columns.late_duration else '' }}">میزان تاخیر (دقیقه)</th>
+            <th class="no-print">عملیات</th>
+        </tr>
+        {% for r in records %}
+        <tr data-status="{{ r.status }}">
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.index else '' }}">{{ loop.index }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.first_name else '' }}">{{ r.first_name }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.last_name else '' }}">{{ r.last_name }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.code else '' }}">{{ r.code }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.subject else '' }}">{{ r.subject or '-' }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.class_name else '' }}">{{ r.class_name or '-' }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.date else '' }}">{{ r.date }}</td>
+            <td class="{{ 'print-layout-hidden' if not teacher_layout.columns.status else '' }}">
+                {% if r.status == 'حاضر' %}
+                    <span class="status-present">✅ حاضر</span>
+                {% elif r.status == 'غایب' %}
+                    <span class="status-absent">❌ غایب</span>
+                {% elif r.status == 'مرخصی' %}
+                    <span class="status-excused">⏳ مرخصی</span>
+                {% elif r.status == 'تاخیر' %}
+                     <span class="status-late"><i class="cil-clock" aria-hidden="true"></i> تاخیر</span>
+                {% else %}
+                    {{ r.status }}
+                {% endif %}
+            </td>
+            <td class="late-duration {{ 'print-layout-hidden' if not teacher_layout.columns.late_duration else '' }}">{{ r.late_duration or 0 }}</td>
+            <td class="no-print">
+                {% if current_role in ['admin', 'manager'] %}
+                <form method="post" action="/attendance_teachers/{{ r.id }}/delete" onsubmit="return confirm('این رکورد حذف شود؟')">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="next" value="{{ request.full_path }}">
+                    <button type="submit" class="btn-danger">🗑️</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="10" class="no-data">📭 هیچ رکوردی با این فیلترها یافت نشد.</td></tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- ===== فوتر چاپ ===== -->
+<div class="print-footer{% if not teacher_layout.show_footer %} print-layout-hidden{% endif %}" data-report-element="footer">
+    <span>گزارش حضور و غیاب معلمان</span>
+    <span class="page-number"></span>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var rows = document.querySelectorAll('table tbody tr[data-status]');
+        var stats = { 'حاضر': 0, 'غایب': 0, 'مرخصی': 0, 'تاخیر': 0 };
+        var absentTeachers = new Set();
+        var lateTeachers = new Set();
+        var totalLateMinutes = 0;
+
+        rows.forEach(function(row) {
+            var status = row.dataset.status;
+            if (stats.hasOwnProperty(status)) {
+                stats[status]++;
+            }
+            var code = row.querySelector('td:nth-child(4)')?.textContent || '';
+            if (status === 'غایب') absentTeachers.add(code);
+            if (status === 'تاخیر') {
+                lateTeachers.add(code);
+                var lateMin = parseInt(row.querySelector('.late-duration')?.textContent) || 0;
+                totalLateMinutes += lateMin;
+            }
+        });
+
+        document.getElementById('statPresent').textContent = stats['حاضر'] || 0;
+        document.getElementById('statAbsent').textContent = stats['غایب'] || 0;
+        document.getElementById('statExcused').textContent = stats['مرخصی'] || 0;
+        document.getElementById('statLate').textContent = stats['تاخیر'] || 0;
+        document.getElementById('totalAbsentTeachers').textContent = absentTeachers.size;
+        document.getElementById('totalLateTeachers').textContent = lateTeachers.size;
+        document.getElementById('totalLateMinutes').textContent = totalLateMinutes;
+        if ({{ 1 if auto_print else 0 }}) window.setTimeout(function() { window.print(); }, 150);
+    });
+
+    function exportExcel() {
+        var rows = document.querySelectorAll('table tbody tr[data-status]');
+        if (rows.length === 0) { alert('هیچ داده‌ای برای خروجی وجود ندارد.'); return; }
+        var csv = '\uFEFF';
+        var headers = ['ردیف', 'نام', 'نام‌خانوادگی', 'کد', 'درس', 'کلاس', 'تاریخ', 'وضعیت', 'میزان تاخیر'];
+        csv += headers.join(',') + '\n';
+        rows.forEach(function(row) {
+            var cols = row.querySelectorAll('td');
+            var rowData = [];
+            for (var i = 0; i < 9 && i < cols.length; i++) {
+                var text = cols[i].textContent.trim().replace(/,/g, '،');
+                rowData.push('"' + text + '"');
+            }
+            csv += rowData.join(',') + '\n';
+        });
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'گزارش_حضور_غیاب_معلمان.csv';
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+</script>
+
+{% endblock %}

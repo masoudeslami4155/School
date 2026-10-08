@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}داشبورد V{% endblock %}
+{% block page_title %}داشبورد V{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='v_dashboard.css') }}">
+{% endblock %}
+{% block content %}
+<div class="vdash vdash--global-nav" dir="rtl">
+  <aside class="vdash__sidebar no-print" aria-label="منوی داشبورد V">
+    <div class="vdash__brand">
+      <span class="vdash__brand-mark"><i class="cil-school" aria-hidden="true"></i></span>
+      <span>V-Dashboard</span>
+    </div>
+    <nav class="vdash__nav">
+      <a href="{{ url_for('vdashboard') }}" class="is-active"><i class="cil-speedometer" aria-hidden="true"></i>داشبورد</a>
+      <a href="{{ url_for('index') }}"><i class="cil-people" aria-hidden="true"></i>دانش‌آموزان</a>
+      <a href="{{ url_for('attendance_students') }}"><i class="cil-list" aria-hidden="true"></i>حضور و غیاب</a>
+      <a href="{{ url_for('statistics') if 'statistics' in permission_labels else url_for('index') }}"><i class="cil-chart" aria-hidden="true"></i>آمار</a>
+      <a href="{{ url_for('calendar') if 'calendar' in permission_labels else url_for('index') }}"><i class="cil-calendar" aria-hidden="true"></i>تقویم</a>
+      <a href="{{ url_for('features_hub') if 'features_hub' in permission_labels else url_for('index') }}"><i class="cil-grid" aria-hidden="true"></i>امکانات</a>
+    </nav>
+    <div class="vdash__side-foot">{{ config.SCHOOL_NAME }} · نسخه {{ config.APP_VERSION }}</div>
+  </aside>
+  <div class="vdash__main">
+    <div class="vdash__header no-print">
+      <form class="vdash__search" method="get" action="{{ url_for('index') }}" role="search">
+        <i class="cil-search" aria-hidden="true"></i>
+        <input type="text" name="q" value="{{ selected_filters.q }}" placeholder="جست‌وجوی دانش‌آموز…" aria-label="جست‌وجوی دانش‌آموز">
+      </form>
+      <div class="vdash__user">
+        <span class="vdash__avatar"><i class="cil-user" aria-hidden="true"></i></span>
+        <span>{{ current_user }} · {{ jalali_date|fa_digits }}</span>
+      </div>
+    </div>
+    <div class="vdash__body">
+      <h2 class="vdash__title">داشبورد</h2>
+      <p class="vdash__subtitle">{{ scope_label }} · الهام‌گرفته از v-dashboard (wobsoriano) — نسخه آفلاین Jinja</p>
+      <div class="vdash__stats">
+        <a class="vdash__card" href="{{ url_for('index') }}">
+          <span class="vdash__badge vdash__badge--indigo"><i class="cil-people" aria-hidden="true"></i></span>
+          <span><span class="vdash__num">{{ summary.total_active|format_number|fa_digits }}</span><div class="vdash__label">دانش‌آموزان فعال</div></span>
+        </a>
+        <a class="vdash__card" href="{{ url_for('attendance_students') }}">
+          <span class="vdash__badge vdash__badge--blue"><i class="cil-check-circle" aria-hidden="true"></i></span>
+          <span><span class="vdash__num">{% if summary.attendance_marked %}{{ summary.attendance_rate|fa_digits }}٪{% else %}—{% endif %}</span><div class="vdash__label">نرخ حضور امروز ({{ summary.attendance_marked|format_number|fa_digits }} ثبت)</div></span>
+        </a>
+        <div class="vdash__card">
+          <span class="vdash__badge vdash__badge--orange"><i class="cil-briefcase" aria-hidden="true"></i></span>
+          <span><span class="vdash__num">{{ summary.class_count|format_number|fa_digits }}</span><div class="vdash__label">کلاس فعال · {{ summary.teacher_count|format_number|fa_digits }} معلم</div></span>
+        </div>
+      </div>
+      <section class="vdash__panel" aria-label="جدول دانش‌آموزان">
+        <div class="vdash__panel-head"><span>دانش‌آموزان ({{ summary.filtered_count|format_number|fa_digits }})</span><a href="{{ url_for('index') }}">مشاهده کامل</a></div>
+        <div class="vdash__table-wrap">
+          {% if students %}
+          <table class="vdash__table">
+            <thead><tr><th>نام</th><th>پایه / کلاس</th><th>وضعیت</th><th>پرونده</th></tr></thead>
+            <tbody>
+              {% for s in students[:10] %}
+              <tr>
+                <td><span class="vdash__who"><span class="ph">{{ (s.first_name or '؟')[:1] }}</span><span><strong>{{ s.first_name }} {{ s.last_name }}</strong><small>{{ s.code|fa_digits }}</small></span></span></td>
+                <td>{{ s.grade or '—' }} · {{ s.class_name or '—' }}</td>
+                <td><span class="vdash__pill">فعال</span></td>
+                <td><a href="{{ url_for('student_profile', id=s.id) }}">نمایش</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% else %}
+          <div class="vdash__empty">دانش‌آموزی یافت نشد.</div>
+          {% endif %}
+        </div>
+      </section>
+      <div class="vdash__back no-print">
+        <a class="btn btn--outline" href="{{ url_for('index') }}"><i class="cil-arrow-right" aria-hidden="true"></i> بازگشت به داشبورد اصلی</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}دانش‌آموزان پشت آمار{% endblock %}
+{% block page_title %}دانش‌آموزان پشت آمار{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='statistics.css') }}">{% endblock %}
+{% block content %}
+<div class="stats-page">
+ <section class="stats-hero"><div><div class="hero-kicker">بررسی منشأ عدد</div><h1>{{ detail_count }} دانش‌آموز</h1><p>{{ detail_label }}</p></div><a href="{{ back_url }}" class="stats-btn">بازگشت به همان آمار</a></section>
+ <p class="stats-muted">{{ scope_label }} · {{ selection_label }}<br>استخراج: {{ extracted_at }}؛ فهرست از دادهٔ فعلی خوانده شده و ممکن است با آمار قبل از تغییر اطلاعات متفاوت باشد.</p>
+ <section class="frequency-card"><div class="stats-table-wrap">
+ <table class="stats-table" id="statisticsStudentTable"><thead><tr><th>ردیف</th><th>نام</th><th>کد</th><th>پایه</th><th>کلاس</th><th>معلم</th><th>جنسیت</th><th>پرونده</th></tr></thead><tbody>
+ {% for student in student_rows %}<tr><td>{{ (page-1)*50+loop.index }}</td><td>{{ student.name }}</td><td>{{ student.code }}</td><td>{{ student.grade }}</td><td>{{ student.class_name }}</td><td>{{ student.teacher_name }}</td><td>{{ student.gender }}</td><td><a class="stats-btn" href="{{ url_for('student_profile',id=student.id) }}">باز کردن</a></td></tr>
+ {% else %}<tr><td colspan="8" class="stats-empty">هیچ دانش‌آموزی با این شرایط وجود ندارد.</td></tr>{% endfor %}
+ </tbody></table></div>
+ <nav class="stats-pagination" aria-label="صفحه‌بندی فهرست">{% if prev_url %}<a class="stats-btn" href="{{ prev_url }}">قبلی</a>{% endif %}<span>صفحهٔ {{ page }} از {{ pages }} · هر صفحه ۵۰ نفر</span>{% if next_url %}<a class="stats-btn" href="{{ next_url }}">بعدی</a>{% endif %}</nav>
+ </section>
+ {% if can_export_students %}<div class="stats-actions"><a class="stats-btn stats-btn-primary" data-student-export="xlsx" href="{{ detail_export_urls.xlsx }}">Excel کل همین فهرست</a><a class="stats-btn" data-student-export="pdf" href="{{ detail_export_urls.pdf }}">PDF کل همین فهرست</a></div><p class="stats-muted">خروجی شامل همهٔ افراد همین شرایط است، نه فقط صفحهٔ فعلی؛ حداکثر ۱۰٬۰۰۰ نفر. PDF نیازمند Chromium است.</p>{% else %}<p class="stats-muted">دریافت فایل حاوی اطلاعات افراد به مجوز خروجی Excel نیاز دارد.</p>{% endif %}
+<p id="statisticsExportStatus" class="stats-message" role="status"></p>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='statistics.js') }}" defer></script>{% endblock %}

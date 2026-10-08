@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}گزارش بازدید کلاسی{% endblock %}
+{% block page_title %}📋 گزارش بازدید کلاسی{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block header_buttons %}<span class="header-badge">{{ visits|length|format_number }} بازدید</span>{% endblock %}
+{% block content %}
+<section class="form-card no-print glass-strong">
+  <div class="section-heading"><div><h2>ثبت بازدید کلاسی جدید</h2><p class="muted-text">معلم، کلاس، تاریخ شمسی و نتیجه بازدید را ثبت کنید.</p></div><span class="badge">ثبت محلی و آفلاین</span></div>
+  <form method="post" action="{{ url_for('class_visit_report') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label for="teacher_code">معلم <span class="required-star">*</span></label><select id="teacher_code" name="teacher_code" required><option value="">انتخاب معلم</option>{% for t in teachers %}<option value="{{ t.code }}">{{ t.first_name }} {{ t.last_name }} · {{ t.code }}</option>{% endfor %}</select></div>
+      <div class="field-group"><label for="class_name">کلاس <span class="required-star">*</span></label><input id="class_name" name="class_name" placeholder="مثلاً هفتم ـ الف" required></div>
+      <div class="field-group"><label for="date">تاریخ شمسی <span class="required-star">*</span></label><input id="date" name="date" value="{{ today }}" placeholder="۱۴۰۵/۰۶/۲۳" required data-jdate></div>
+    </div>
+    <div class="form-row"><div class="field-group" style="flex-basis:100%"><label for="report">گزارش بازدید <span class="required-star">*</span></label><textarea id="report" name="report" placeholder="نتیجه و نکات مهم بازدید را بنویسید…" required></textarea></div></div>
+    <div class="form-actions"><button class="btn-submit glass-btn" type="submit"><i class="cil-save" aria-hidden="true"></i> ثبت بازدید</button></div>
+  </form>
+</section>
+<section class="card glass">
+  <div class="section-heading"><div><h2>تاریخچه بازدیدها</h2><p class="muted-text">رکوردهای ثبت‌شده را مشاهده یا حذف کنید.</p></div><span class="badge">{{ visits|length|format_number }} رکورد</span></div>
+  <div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>تاریخ</th><th>معلم</th><th>کلاس</th><th>گزارش</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for v in visits %}<tr><td>{{ loop.index }}</td><td>{{ v.date or 'ثبت نشده' }}</td><td>{{ v.teacher_code or 'ثبت نشده' }}</td><td>{{ v.class_name or 'ثبت نشده' }}</td><td style="text-align:right;max-width:420px;white-space:normal">{{ v.report or 'ثبت نشده' }}</td><td class="no-print"><form method="post" action="{{ url_for('delete_class_visit', id=v.id) }}" onsubmit="return confirm('این گزارش بازدید حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger glass-btn" type="submit"><i class="cil-trash" aria-hidden="true"></i> حذف</button></form></td></tr>{% else %}<tr><td colspan="6" class="empty-state"><i class="cil-inbox" aria-hidden="true"></i> هنوز گزارشی ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

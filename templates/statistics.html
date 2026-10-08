@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}آمار فراوانی دانش‌آموزان{% endblock %}
+{% block page_title %}آمار فراوانی دانش‌آموزان{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static',filename='statistics.css') }}">{% endblock %}
+{% block content %}
+<style>@media print{@page{size:A4 {{ school_statistics_layout.orientation }};margin:{{ school_statistics_layout.margin.top }}mm {{ school_statistics_layout.margin.right }}mm {{ school_statistics_layout.margin.bottom }}mm {{ school_statistics_layout.margin.left }}mm;@bottom-center{content:{{ print_footer_css|safe }} counter(page);font-size:8pt;font-family:Vazirmatn}}.stats-page{font-size:{{ school_statistics_layout.font_size }}pt;line-height:{{ school_statistics_layout.line_height }}} {{ school_statistics_layout|report_element_css|safe }} }</style>
+<div class="stats-page" id="statisticsPage" data-view="{{ view }}" data-grade-totals="{{ 1 if show_grade_totals else 0 }}" data-teacher-totals="{{ 1 if show_teacher_totals else 0 }}" data-auto-print="{{ 1 if auto_print else 0 }}"
+ data-hide-header="{{ 0 if school_statistics_layout.show_header else 1 }}" data-hide-hero="{{ 0 if school_statistics_layout.sections.hero else 1 }}" data-hide-breakdowns="{{ 0 if school_statistics_layout.sections.breakdowns else 1 }}" data-hide-risk="{{ 0 if school_statistics_layout.sections.risk else 1 }}">
+ <section class="stats-hero" data-report-element="hero">
+  <div><div class="hero-kicker">{{ config.SCHOOL_NAME }} · گزارش آماری</div><h1>فراوانی دانش‌آموزان</h1><p>یک گزارش متمرکز؛ از تصویر کلی تا فهرست افراد پشت هر عدد.</p></div>
+  <div class="stats-actions no-print"><button class="stats-btn stats-btn-primary" type="button" id="printCurrentStatistics">چاپ همین صفحه</button>{% if can_print_layout %}<a class="stats-btn" href="{{ url_for('report_print_layouts',document='school_statistics') }}">طراحی چاپ</a>{% endif %}</div>
+ </section>
+ {% if not print_mode %}
+ <section class="stats-panel no-print" aria-label="فیلترهای آمار">
+  <form action="{{ url_for('statistics') }}" method="get" id="statisticsFilterForm">
+   <div class="stats-filter-grid">
+    <label class="stats-field">وضعیت<select name="status" id="status">{% for key,label in status_options.items() %}<option value="{{ key }}" {% if status_filter==key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <label class="stats-field">جنسیت<select name="gender" id="gender"><option value="">همه</option>{% for value in gender_list %}<option {% if gender==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+    <label class="stats-field">پایه<select name="grade" id="grade"><option value="">همهٔ پایه‌ها</option>{% for value in grade_list %}<option {% if grade==value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+    <label class="stats-field">معلم<select name="teacher_code" id="teacher_code"><option value="">همهٔ معلم‌ها</option>{% for teacher in teachers_list %}<option value="{{ teacher.code }}" {% if teacher_code==teacher.code %}selected{% endif %}>{{ teacher.first_name }} {{ teacher.last_name }}{% if teacher.code!=unassigned_teacher_value %} — {{ teacher.code }}{% endif %}</option>{% endfor %}</select></label>
+   </div>
+   <details class="stats-more" {% if class_name or sida_class %}open{% endif %}><summary>فیلتر بیشتر · کلاس و کلاس سیدا</summary><div class="stats-filter-grid">
+    <label class="stats-field">کلاس مدرسه<select name="class_name" id="class_name"><option value="">همه</option>{% for value in class_list %}<option {% if value==class_name %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+    <label class="stats-field">کلاس سیدا<select name="sida_class" id="sida_class"><option value="">همه</option>{% for value in sida_list %}<option {% if value==sida_class %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></label>
+   </div></details>
+   <div class="stats-filter-footer"><div class="stats-actions"><button class="stats-btn stats-btn-primary" type="submit">اعمال فیلتر</button><a class="stats-btn" href="{{ url_for('statistics') }}">پاک‌کردن فیلترها</a></div><span class="stats-muted">فیلترها بر خودِ داده اعمال می‌شوند، نه فقط ظاهر جدول.</span></div>
+   <hr style="border:0;border-top:1px solid var(--st-line);margin:16px 0">
+   <div class="stats-view-bar"><label class="stats-field">نمایش جدول<select name="view" id="statisticsView">{% for key,label in view_options.items() %}<option value="{{ key }}" {% if view==key %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
+    <div class="stats-toggles" id="statisticsSubtotals"><input type="hidden" name="grade_totals" value="0"><label><input type="checkbox" name="grade_totals" value="1" {% if show_grade_totals %}checked{% endif %}> جمع پایه‌ها</label><input type="hidden" name="teacher_totals" value="0"><label><input type="checkbox" name="teacher_totals" value="1" {% if show_teacher_totals %}checked{% endif %}> جمع معلم‌ها</label></div>
+    <button class="stats-btn" type="submit">اعمال نمایش</button>
+   </div><span class="stats-muted">گزینه‌های جمع جزئی فقط در حالت «پایه و معلم» کاربرد دارند؛ در دو حالت دیگر، هر ردیف خودش جمع یک گروه است.</span>
+  </form>
+  {% if active_chips %}<div class="stats-chips">{% for chip in active_chips %}<a class="stats-chip" href="{{ chip.url }}" aria-label="حذف فیلتر {{ chip.label }}">{{ chip.label }} ×</a>{% endfor %}</div>{% endif %}
+ </section>
+ {% if quality_items %}<aside class="stats-quality no-print" aria-label="هشدار کیفیت داده"><strong>نیازمند بررسی:</strong>{% for item in quality_items %}{% if item.url %}<a href="{{ item.url }}">{{ item.count }} نفر {{ item.label }}</a>{% else %}<span>{{ item.count }} نفر {{ item.label }}</span>{% endif %}{% endfor %}<small>موارد ممکن است هم‌پوشانی داشته باشند.</small></aside>{% endif %}
+ {% endif %}
+ <div class="stats-overview"><div class="stats-summary"><span>محدودهٔ فعلی: <strong id="selectedPopulation">{{ selected_population }}</strong> دانش‌آموز</span><span>· {{ grade_count }} گروه پایه</span><span>· {{ teacher_count }} معلم معتبر</span><span>· {{ frequency_row_count }} ردیف اصلی</span></div>
+ <p class="stats-muted">مبنای سهم: <strong>{{ population }} نفر</strong> در کل محدودهٔ فیلترشده، قبل از انتخاب ردیف‌های خروجی. جمع انتخاب فعلی: {{ selected_population }} نفر ({{ frequency_totals.share }}٪). درصدها به یک رقم اعشار گرد می‌شوند.</p>{% if output_selection %}<p class="stats-muted">{{ selection_label }}</p>{% endif %}</div>
+ <section class="stats-print-context">{{ scope_label }}<br>{{ selection_label }}<br>حالت: {{ view_options[view] }} · استخراج: {{ extracted_at }}</section>
+ <section class="frequency-card" data-report-element="breakdowns" aria-label="جدول فراوانی">
+  <p class="stats-scroll-hint no-print">برای دیدن همهٔ ستون‌ها، جدول را افقی جابه‌جا کنید.</p>
+  <div class="stats-table-wrap">{% set interactive=true %}{% include 'partials/statistics_table.html' %}</div>
+  <p class="stats-muted">جمع کل از ردیف‌های اصلی محاسبه شده است؛ جمع‌های جزئی دوباره شمرده نشده‌اند.{% if can_drill %} برای مشاهدهٔ افراد، روی عدد کلیک کنید.{% else %} مشاهدهٔ فهرست افراد به مجوز پروندهٔ دانش‌آموز نیاز دارد.{% endif %}</p>
+ </section>
+ {% if not print_mode %}
+ <details class="stats-panel stats-print-options no-print" id="statisticsPrintOptions"><summary>چاپ و خروجی · انتخاب ستون‌ها، معلم‌ها و پایه‌ها</summary>
+  <form method="get" action="{{ url_for('statistics') }}" target="_blank" rel="noopener" id="printOptionsForm">
+   <input type="hidden" name="selection" value="1"><input type="hidden" name="print" value="1"><input type="hidden" name="autoprint" value="1">
+   {% for key,value in print_form_hidden %}<input type="hidden" name="{{ key }}" value="{{ value }}">{% endfor %}
+   {% for group,title,options,param in [('col','ستون‌ها',frequency_column_options,'print_col'),('teacher','معلم‌ها',frequency_teacher_options,'print_teacher'),('grade','پایه‌ها',frequency_grade_options,'print_grade')] %}
+   <div class="stats-choices"><div class="stats-choice-head"><strong>{{ title }}</strong><button type="button" class="stats-btn" data-select-group="{{ group }}" data-select-state="all">انتخاب همه</button><button type="button" class="stats-btn" data-select-group="{{ group }}" data-select-state="none">لغو همه</button></div><div class="stats-choice-list">
+   {% for option in options %}<label><input type="checkbox" name="{{ param }}" value="{{ option.key if group=='col' else option.value }}" data-group="{{ group }}" {% if option.selected %}checked{% endif %}>{{ option.label }}{% if group=='teacher' and option.value!=unassigned_teacher_value %} <small>({{ option.value }})</small>{% endif %}</label>{% endfor %}
+   </div></div>{% endfor %}
+   <label class="stats-field" style="max-width:260px">جهت کاغذ<select name="orientation" id="statisticsOrientation"><option value="portrait" {% if orientation=='portrait' %}selected{% endif %}>عمودی</option><option value="landscape" {% if orientation=='landscape' %}selected{% endif %}>افقی</option></select></label>
+   <p class="stats-muted" id="statisticsOrientationHint">برای جدول عریض، حالت افقی خواناتر است.</p>
+   <div class="stats-print-preview" id="statisticsSelectionPreview" aria-live="polite"></div>
+   <p class="stats-message" id="statisticsExportStatus" role="status"></p>
+   <div class="stats-actions"><button type="submit" class="stats-btn stats-btn-primary">چاپ انتخاب‌ها</button><button type="button" class="stats-btn" data-stats-export="xlsx">Excel انتخاب‌ها</button><button type="button" class="stats-btn" data-stats-export="pdf">PDF انتخاب‌ها</button></div>
+   <p class="stats-muted">PDF گرافیکی نیازمند Chromium است؛ جایگزین: چاپ ← ذخیره به PDF. خروجی دقیقاً بر مبنای انتخاب‌ها در زمان استخراج دوباره خوانده می‌شود.</p>
+  </form>
+ </details>
+ <script id="statisticsRows" type="application/json">{{ client_rows|tojson }}</script>
+ {% endif %}
+ <div class="stats-print-footer{% if not school_statistics_layout.show_footer %} print-layout-hidden{% endif %}">{{ config.SCHOOL_NAME }} · {{ scope_label }} · {{ extracted_at }}</div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static',filename='statistics.js') }}" defer></script>{% endblock %}

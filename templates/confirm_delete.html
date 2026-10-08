@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأیید حذف دانش‌آموز</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='design_system.css') }}">
+    <style>
+        body {
+            font-family: Tahoma, 'B Nazanin', sans-serif;
+            direction: rtl;
+            background: #f0f4f8;
+            padding: 30px;
+        }
+        .container {
+            max-width: 550px;
+            margin: 40px auto;
+            background: white;
+            padding: 35px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            text-align: center;
+        }
+        .icon { font-size: 60px; margin-bottom: 10px; }
+        h2 { color: #e74c3c; margin-bottom: 10px; font-size: 26px; }
+        .subtitle { color: var(--muted, #7f8c8d); font-size: 15px; margin-bottom: 20px; }
+        .student-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-right: 4px solid #e74c3c;
+        }
+        .student-info .name { font-size: 20px; font-weight: bold; color: var(--user-text-color, #2c3e50); }
+        .student-info .code { font-size: 16px; color: var(--muted, #7f8c8d); margin-top: 4px; }
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            background: #fafafa;
+            margin: 15px 0 20px;
+            transition: 0.3s;
+            font-family: inherit;
+        }
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            flex: 1;
+            min-width: 120px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .btn-danger { background: #e74c3c; color: white; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-secondary { background: #95a5a6; color: white; }
+        .btn-secondary:hover { background: #7f8c8d; }
+        .note {
+            font-size: 13px;
+            color: #95a5a6;
+            margin-top: 15px;
+            background: #fef9e7;
+            padding: 10px;
+            border-radius: 8px;
+            border-right: 3px solid #f39c12;
+        }
+        @media (max-width: 500px) {
+            .container { padding: 20px; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+<style>@page{size:A4 portrait;margin:10mm}@media print{.no-print{display:none!important}body{background:#fff!important}}</style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='liquid_glass_magma.css') }}">
+{% include 'partials/user_palette_head.html' %}
+</head>
+<body>
+    <div class="container">
+        <div class="icon">⚠️</div>
+        <div style="font-size:13px;color:var(--user-button-color,#0b4f6c);font-weight:bold;">مدرسه استثنایی حمید باخرز</div>
+        <div style="font-size:11px;color:var(--muted,#667085);margin-top:3px;">برنامه‌نویس: مسعود اسلامی</div>
+        <h2>حذف دانش‌آموز</h2>
+        <p class="subtitle">لطفاً دلیل خروج دانش‌آموز زیر را مشخص کنید:</p>
+
+        <div class="student-info">
+            <div class="name">{{ student.first_name }} {{ student.last_name }}</div>
+            <div class="code">🆔 کد ملی: {{ student.code }}</div>
+            <div style="font-size:14px; color:var(--muted,#7f8c8d); margin-top:4px;">
+                📚 پایه: {{ student.grade or 'نامشخص' }} 
+                {% if student.class_name %} | کلاس: {{ student.class_name }}{% endif %}
+            </div>
+        </div>
+
+        <form class="no-print" method="POST" action="{{ url_for('delete_student', id=student.id) }}">
+<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+            <select name="reason" required>
+                <option value="فارغ‌التحصیل">✅ فارغ‌التحصیل شده</option>
+                <option value="ترک تحصیل">❌ ترک تحصیل کرده</option>
+                <option value="سایر">🔸 سایر (انتقال، اخراج، ...)</option>
+            </select>
+            <div class="btn-group">
+                <button type="submit" class="btn btn-danger">🗑️ تأیید و حذف</button>
+                <a href="/" class="btn btn-secondary">🔙 بازگشت</a>
+            </div>
+        </form>
+        <p class="note">⚠️ پس از حذف، دانش‌آموز به بخش غیرفعال‌ها منتقل می‌شود و قابل بازگرداندن است.</p>
+    </div>
+</body>
+</html>

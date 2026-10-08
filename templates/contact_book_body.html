@@ -1,0 +1,25 @@
+{# بدنهٔ مشترک دفترچه تلفن: بخش‌ها، جدول‌ها و ردیف‌های خالی — هم در صفحهٔ نمایش هم در چاپ. #}
+{% import 'contact_book_cells.html' as cells %}
+{% for book in books %}
+  <section class="book{% if book.new_page %} new-page{% endif %}" data-book="{{ book.key }}">
+    {% if titles == 'yes' %}<h1 class="book-title">{{ book.title }}</h1>{% endif %}
+    <div class="columns-{{ cols }}">
+      {% for section in book.sections %}
+        <div class="section">
+          {% if section_title == 'yes' %}<div class="section-title">{{ section.title|fa_digits }}</div>{% endif %}
+          <table>
+            {% if table_header == 'yes' %}
+            <thead><tr>{% for col in book.columns %}<th class="{{ col.cls }}" style="width:{{ col.width }}%">{{ col.label }}</th>{% endfor %}</tr></thead>
+            {% endif %}
+            <tbody>
+              {% for row in section.rows %}<tr>{% for data in row %}{{ cells.cell(data, empty_style) }}{% endfor %}</tr>{% endfor %}
+              {% for _ in range(book.blank_rows) %}<tr class="extra-row">{% for col in book.columns %}{{ cells.cell({'cls': col.cls, 'width': col.width, 'value': '', 'badge': ''}, empty_style) }}{% endfor %}</tr>{% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="section empty-note"><table><tbody><tr><td class="col-text">موردی ثبت نشده است</td></tr></tbody></table></div>
+      {% endfor %}
+    </div>
+  </section>
+{% endfor %}

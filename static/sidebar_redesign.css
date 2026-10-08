@@ -1,0 +1,356 @@
+/* سایدبار سراسری سامانه — نوار آیکنی، بدون پوشاندن محتوای صفحه */
+:root {
+  --sidebar-rail-width: 64px;
+  --sidebar-rail-edge: 24px;
+  --sidebar-expanded-width: 250px;
+}
+@media (min-width: 701px) and (max-width: 1100px) {
+  :root {
+    --sidebar-rail-width: 58px;
+    --sidebar-rail-edge: 12px;
+    --sidebar-expanded-width: 230px;
+  }
+}
+
+.dashboard-nav {
+  position: fixed;
+  top: 24px;
+  right: var(--sidebar-rail-edge);
+  left: auto;
+  bottom: 24px;
+  z-index: 65;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: var(--sidebar-rail-width);
+  min-height: calc(100dvh - 48px);
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 16px 9px;
+  border: 1px solid var(--line, #e4eaf2);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  color: var(--ink, #14213d);
+  box-shadow: 0 8px 28px rgba(30, 40, 80, .12);
+  /* index.css قدیمی برای منوی کشویی، transform و visibility تعیین می‌کند؛
+     سایدبار سراسری باید در حالت پایه همیشه ریل آیکنیِ قابل‌دیدن باشد. */
+  transform: translateX(0);
+  visibility: visible;
+  transition: width .25s ease, box-shadow .25s ease, background .25s ease;
+}
+.dashboard-nav.is-expanded { width: var(--sidebar-expanded-width); }
+
+.dashboard-nav__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 0 0 14px;
+  border-bottom: 1px solid var(--line, #e4eaf2);
+}
+.dashboard-nav__logo {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  border-radius: 8px;
+  background: var(--primary, #0b6374);
+  color: #fff;
+  font-size: 17px;
+  cursor: pointer;
+}
+.dashboard-nav__brand-text {
+  min-width: 0;
+  flex: 1;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+}
+.dashboard-nav__brand-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ink, #252525);
+  font-size: 12px;
+}
+.dashboard-nav__brand-text small { color: var(--muted, #888); font-size: 10px; }
+.dashboard-nav.is-expanded .dashboard-nav__brand {
+  justify-content: flex-start;
+  padding-inline: 5px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__brand-text { display: flex; }
+
+.dashboard-nav__search {
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 12px 0 9px;
+  padding: 0;
+  border-radius: 8px;
+  background: var(--surface-soft, #f5f3fc);
+  color: var(--muted, #777);
+  cursor: text;
+}
+.dashboard-nav__search input {
+  display: none;
+  width: 100%;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__search {
+  justify-content: flex-start;
+  padding: 0 10px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__search input { display: block; }
+
+.dashboard-nav__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 22px;
+  padding: 0 0 6px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+}
+.dashboard-nav__head span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 0;
+}
+.dashboard-nav__head span i { font-size: 14px; }
+.dashboard-nav.is-expanded .dashboard-nav__head {
+  justify-content: flex-start;
+  padding-inline: 7px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__head span { font-size: 10px; }
+
+.dashboard-nav a,
+.dashboard-nav summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  width: 100%;
+  padding: 0;
+  border-radius: 8px;
+  color: #344054;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+  list-style: none;
+  transition: background .2s ease, color .2s ease, transform .2s ease;
+}
+.dashboard-nav.is-expanded a,
+.dashboard-nav.is-expanded summary {
+  justify-content: flex-start;
+  padding: 0 10px;
+  font-size: 11px;
+}
+.dashboard-nav a:hover,
+.dashboard-nav summary:hover {
+  background: #e8f3f5;
+  color: var(--primary2, #0b4f6c) !important;
+  transform: none;
+}
+.dashboard-nav__home {
+  background: var(--primary, #0b6374) !important;
+  color: #fff !important;
+  box-shadow: 0 5px 12px rgba(11, 99, 116, .2);
+}
+.dashboard-nav__home:hover { background: var(--primary2, #0b4f6c) !important; color: #fff !important; }
+.dashboard-nav__settings.is-active { background: var(--surface-soft, #eef3f7); color: var(--primary, #0b6374) !important; }
+.dashboard-nav__group { width: 100%; }
+.dashboard-nav__group summary::-webkit-details-marker { display: none; }
+.dashboard-nav__group summary::after {
+  display: none;
+  content: '⌄';
+  margin-inline-start: auto;
+  color: var(--muted);
+  font-size: 14px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__group summary::after { display: block; }
+.dashboard-nav__group[open] summary { background: #e8f3f5; color: var(--primary2, #0b4f6c); }
+.dashboard-nav__menu {
+  display: none;
+  margin: 3px 0 5px;
+  padding: 4px;
+  background: var(--surface-soft);
+  border: 0;
+  border-radius: 8px;
+}
+.dashboard-nav.is-expanded .dashboard-nav__group[open] .dashboard-nav__menu { display: block; }
+.dashboard-nav__menu a { min-height: 34px; font-size: 10px; }
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  flex: 0 0 18px;
+  font-size: 14px;
+}
+.nav-label {
+  display: none;
+  margin-inline-start: 3px;
+  white-space: normal;
+}
+.dashboard-nav.is-expanded .nav-label { display: inline; }
+
+.dashboard-nav__bottom { margin-top: auto; padding-top: 8px; }
+.dashboard-nav__separator { height: 1px; margin: 7px -9px 10px; background: var(--line); }
+.dashboard-nav__bottom form { margin: 0; }
+.dashboard-nav__logout,
+.dashboard-nav__theme {
+  width: 100%;
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 11px;
+  text-align: right;
+  cursor: pointer;
+}
+.dashboard-nav.is-expanded .dashboard-nav__logout {
+  justify-content: flex-start;
+  padding: 0 10px;
+}
+.dashboard-nav__logout:hover { background: #fff0f0; color: #c0392b; }
+.dashboard-nav__theme {
+  justify-content: center;
+  margin-top: 5px;
+  background: var(--surface-soft);
+  color: var(--muted);
+}
+.dashboard-nav.is-expanded .dashboard-nav__theme {
+  justify-content: space-between;
+  padding: 0 10px;
+}
+.dashboard-nav__theme > span:first-child { display: flex; align-items: center; gap: 10px; }
+.dashboard-nav__switch {
+  display: none;
+  width: 28px;
+  height: 16px;
+  position: relative;
+  border-radius: 20px;
+  background: #d3d6df;
+}
+.dashboard-nav.is-expanded .dashboard-nav__switch { display: block; margin-inline-start: auto; }
+.dashboard-nav__switch::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  transition: .25s;
+}
+html[data-theme="dark"] .dashboard-nav { background: #242528; box-shadow: 0 8px 28px rgba(0, 0, 0, .3); }
+html[data-theme="dark"] .dashboard-nav__brand-text strong { color: #fff; }
+html[data-theme="dark"] .dashboard-nav__search,
+html[data-theme="dark"] .dashboard-nav__theme { background: #35363a; }
+html[data-theme="dark"] .dashboard-nav a,
+html[data-theme="dark"] .dashboard-nav summary { color: #dbe7f5; }
+html[data-theme="dark"] .dashboard-nav a:hover,
+html[data-theme="dark"] .dashboard-nav summary:hover,
+html[data-theme="dark"] .dashboard-nav__group[open] summary { background: #36373b; color: #fff !important; }
+html[data-theme="dark"] .dashboard-nav__switch { background: var(--primary, #0b6374); }
+html[data-theme="dark"] .dashboard-nav__switch::after { right: 14px; }
+
+/* در RTL، سمت شروع خط در سمت راست است؛ همین طرف باید برای rail رزرو شود.
+   منوی بازشده روی محتوا شناور می‌ماند و جای عناصر صفحه را تغییر نمی‌دهد. */
+@media (min-width: 701px) {
+  .topbar,
+  .page-container,
+  .app-footer { padding-inline-start: calc(var(--sidebar-rail-edge) + var(--sidebar-rail-width) + 16px); }
+  .topbar,
+  .page-container,
+  .app-footer { min-width: 0; }
+  body.nav-expanded .topbar,
+  body.nav-expanded .page-container,
+  body.nav-expanded .app-footer {
+    padding-inline-start: calc(var(--sidebar-expanded-width) + var(--sidebar-rail-edge) + 16px);
+  }
+  .page-container > *,
+  .page-container .card,
+  .page-container .panel,
+  .page-container section,
+  .page-container form,
+  .page-container .form-container { max-width: 100%; min-width: 0; }
+  .page-container table { max-width: 100%; }
+  .page-container [class*="table-scroll"],
+  .page-container [class*="table-wrapper"] { max-width: 100%; overflow-x: auto; }
+  .page-container img,
+  .page-container iframe { max-width: 100%; }
+}
+
+@media (max-width: 700px) {
+  :root {
+    --sidebar-rail-width: 58px;
+    --sidebar-rail-edge: 8px;
+    --sidebar-expanded-width: 236px;
+  }
+  .dashboard-nav {
+    top: 8px;
+    right: var(--sidebar-rail-edge);
+    bottom: 8px;
+    width: var(--sidebar-rail-width);
+    min-height: calc(100dvh - 16px);
+    padding: 12px 7px;
+    border-radius: 11px;
+  }
+  .dashboard-nav.is-expanded { width: min(var(--sidebar-expanded-width), calc(100vw - 16px)); }
+  .dashboard-nav__brand { padding-bottom: 11px; }
+  .dashboard-nav__logo { width: 30px; height: 30px; flex-basis: 30px; font-size: 15px; }
+  .dashboard-nav__search { height: 32px; margin-top: 10px; }
+  .dashboard-nav a,
+  .dashboard-nav summary,
+  .dashboard-nav__logout,
+  .dashboard-nav__theme { min-height: 40px; }
+  .dashboard-nav__menu a { min-height: 38px; }
+  .nav-icon { width: 16px; flex-basis: 16px; font-size: 13px; }
+  .dashboard-nav__separator { margin-inline: -7px; }
+  .topbar,
+  .page-container,
+  .app-footer { padding-inline-start: 76px; }
+}
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(15, 23, 42, .38);
+}
+.sidebar-overlay[hidden] { display: none !important; }
+body.nav-open { overflow: hidden; }
+html[data-theme="dark"] .sidebar-overlay { background: rgba(0, 0, 0, .55); }
+
+@media print {
+  .dashboard-nav,
+  .sidebar-overlay { display: none !important; }
+}

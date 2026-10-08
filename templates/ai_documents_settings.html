@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block title %}تنظیم هوش مصنوعی{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='ai_documents.css') }}">{% endblock %}
+{% block page_title %}<i class="cil-settings" aria-hidden="true"></i> مرکز تنظیمات هوش مصنوعی — اسناد و دستیار{% endblock %}
+{% block page_actions %}<a class="btn btn--outline" href="{{ url_for('ai_agent') }}">دستیار مدرسه</a><a class="btn btn--outline" href="{{ url_for('ai_documents') }}">بازگشت به طراح اسناد</a>{% endblock %}
+{% block content %}
+<section class="ai-settings card">
+  <div class="ai-docs__section-head"><span><i class="cil-settings" aria-hidden="true"></i></span><div><h2>اتصال مدل</h2><p>این تنظیم فقط برای مدیر سامانه است. کلید API رمزگذاریشده در پایگاهداده ذخیره میشود و در صفحه دوباره نمایش داده نمیشود.</p></div></div>
+  <div class="ai-settings__examples"><strong>اتصال‌های مستقل</strong><select id="profileSelect"><option value="">اتصال تازه</option></select><button type="button" id="importLegacy" class="btn btn--outline">کپی امن اتصال قبلی</button><button type="button" id="deleteProfile" class="btn btn--outline">حذف اتصال منتخب</button></div>
+  <div id="controlMessage" role="status" style="white-space:pre-wrap;padding:1rem"></div>
+  <form id="profileForm" data-models-url="{{ url_for('ai_documents_list_models') }}" method="post" action="{{ url_for('ai_documents_settings') }}" class="ai-settings__form">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <label>نام اتصال<input id="profileName" maxlength="80" placeholder="مثلاً مدل محلی نگارش"></label>
+    <label>روش استفاده<select name="provider" id="aiProvider"><option value="ollama" {% if provider.provider == 'ollama' %}selected{% endif %}>Ollama محلی و آفلاین</option><option value="openai-compatible" {% if provider.provider == 'openai-compatible' %}selected{% endif %}>API اینترنتی سازگار با OpenAI</option><option value="gemini" {% if provider.provider == 'gemini' %}selected{% endif %}>Google Gemini (اینترنتی)</option></select></label>
+    <label>نشانی پایهٔ API<input name="base_url" id="aiBaseUrl" maxlength="300" value="{{ provider.base_url }}" placeholder="{{ default_ollama_url }}" data-gemini-url="{{ default_gemini_url }}" required><small id="aiUrlHelp">برای Ollama، برنامه و Ollama باید روی همین رایانه باشند.</small></label>
+    <label>نام مدل<input name="model" id="aiModel" maxlength="100" value="{{ provider.model }}" placeholder="مثلاً qwen2.5:7b یا gemini-2.0-flash" list="aiModelList" data-gemini-model="{{ default_gemini_model }}" required></label>
+    <button type="button" id="aiRefreshModels" class="btn btn--small" title="بارگذاری فهرست مدلها"><i class="cil-reload" aria-hidden="true"></i></button>
+    <datalist id="aiModelList"></datalist>
+    <div id="ollamaModelsStatus" role="status"></div><div id="ollamaModels" style="display:flex;flex-wrap:wrap;gap:.5rem"></div>
+    <label id="aiKeyRow">کلید API <span>کلید اختصاصی همین اتصال؛ فقط در ویرایش پروفایل با مقصد ثابت، خالی‌گذاشتن آن کلید قبلی را حفظ می‌کند.</span><input type="password" name="api_key" autocomplete="new-password" maxlength="500" placeholder="کلید سرویس اینترنتی"></label>
+    <label class="ai-settings__check"><input type="checkbox" name="clear_api_key"> حذف کلید این اتصال؛ اتصال اینترنتی بدون کلید غیرفعال می‌شود (کلید رمزگذاری‌شده در نسخه‌های قبلی تا پایان دورهٔ نگهداری باقی می‌ماند).</label>
+    <div class="ai-settings__examples"><strong>نمونهٔ تنظیم Ollama</strong><span>نشانی: <code>{{ default_ollama_url }}</code></span><span>مدل: نام دقیق مدلی که در Ollama نصب کردهاید.</span><span>Ollama باید اجرا باشد؛ در این حالت درخواستها از رایانهٔ مدرسه خارج نمیشوند.</span></div>
+    <div class="ai-settings__examples ai-settings__examples--remote"><strong>API اینترنتی</strong><span>نشانی پایه باید با HTTPS آغاز شود، مانند <code>https://api.openai.com/v1</code>.</span><span>ارسال اسناد و دستیار تابع سیاست جداگانهٔ پایین صفحه و رضایت کاربر است.</span></div>
+    <div class="ai-settings__examples ai-settings__examples--remote ai-settings__examples--gemini"><strong>Google Gemini</strong><span>نشانی پایه: <code>{{ default_gemini_url }}</code></span><span>مدل پیشنهادی: <code>{{ default_gemini_model }}</code></span><span>کلید API را از Google AI Studio بسازید؛ رمزگذاری‌شده ذخیره می‌شود.</span><span>ارسال اسناد و دستیار تابع سیاست جداگانهٔ پایین صفحه و رضایت کاربر است.</span></div>
+    <details><summary>تنظیمات پیشرفتهٔ تولید، زمان پاسخ و تعرفه</summary>
+    <label>دما (۰ تا ۱)<input id="profileTemperature" type="number" min="0" max="1" step="0.05" value="0.4"></label>
+    <label>سقف توکن خروجی<input id="profileTokens" type="number" min="256" max="16000" value="2400"></label>
+    <label>مهلت پاسخ (ثانیه)<input id="profileTimeout" type="number" min="5" max="180" value="75"></label>
+    <label>قیمت ورودی برای یک میلیون توکن (اختیاری)<input id="profileInputPrice" type="number" min="0" max="1000" step="0.001" value="0"></label>
+    <label>قیمت خروجی برای یک میلیون توکن (اختیاری)<input id="profileOutputPrice" type="number" min="0" max="1000" step="0.001" value="0"></label>
+    <label>واحد تعرفه<input id="profileCurrency" maxlength="12" value="USD"></label>
+    </details>
+    <label><input id="profileEnabled" type="checkbox" checked> اتصال فعال باشد</label>
+    <button type="button" class="btn btn--outline" id="testDraft">آزمایش قبل از ذخیره (بدون دادهٔ مدرسه)</button>
+    <button type="button" class="btn btn--outline" id="testSaved">آزمایش و ثبت سلامت اتصال ذخیره‌شده</button>
+    <p>آزمایش شامل سه درخواست ساختگی برای متن، JSON و ابزارخوانی است و ممکن است هزینه داشته باشد. نتیجهٔ موفق یک آزمون، تضمین همیشگی سازگاری نیست.</p>
+    <button class="btn btn--primary" type="submit"><i class="cil-save" aria-hidden="true"></i> ذخیره اتصال</button>
+  </form>
+</section>
+<section class="card ai-settings"><h2>مدل پیش‌فرض هر کاربرد و حریم خصوصی</h2>
+<label>اسناد<select id="documentsAssignment"></select></label>
+<label>دستیار<select id="agentAssignment"></select></label>
+<label><input type="checkbox" id="documentsRemote"> اجازهٔ سرویس اینترنتی برای اسناد، با رضایت هر درخواست</label>
+<label><input type="checkbox" id="agentRemote"> اجازهٔ سرویس اینترنتی برای دستیار، با رضایت هر درخواست</label>
+<label><input type="checkbox" id="anonymousDocuments"> برای طرح سند فقط نمونهٔ placeholder ارسال شود؛ نام/مبلغ واقعی در سرور جایگذاری شود</label>
+<label>سقف درخواست روزانهٔ کل سامانه<input id="dailyRequests" type="number" min="1" max="10000" value="1000"></label>
+<p>متن شرحی که خود کاربر می‌نویسد ممکن است اطلاعات شخصی داشته باشد. هیچ جایگزینی خودکار از مدل محلی به اینترنتی انجام نمی‌شود. مدل انتخابی هر کاربر می‌تواند بر پیش‌فرض مدیر مقدم باشد.</p>
+<button id="savePolicy" type="button" class="btn btn--primary">ذخیرهٔ سیاست و پیش‌فرض‌ها</button>
+</section>
+<section class="card ai-settings"><h2>سلامت و مصرف</h2><div id="profileHealth"></div><div id="usageSummary"></div><details><summary>۱۰۰ درخواست اخیر (بدون متن و کلید)</summary><pre id="usageRows" style="white-space:pre-wrap"></pre></details><p>هزینه فقط با تعرفهٔ واردشده و usage اعلام‌شدهٔ سرویس تخمین زده می‌شود؛ مبلغ صورتحساب قطعی نیست. تاریخچهٔ مصرف حداکثر ۳۰ روز نگهداری می‌شود.</p></section>
+<section class="card ai-settings"><h2>سابقه و بازیابی</h2><select id="settingsHistory"></select><button id="restoreSettings" type="button" class="btn btn--outline">بازگرداندن نسخهٔ منتخب</button><p>حداکثر ۲۰ نسخهٔ تنظیمات، شامل کلیدهای رمزگذاری‌شده نگهداری می‌شود. کلیدها به شکل باز در صفحه یا خروجی نمایش داده نمی‌شوند. اگر کلید امنیتی برنامه را عوض کرده‌اید و رمزگشایی ممکن نیست، کلید API هر اتصال را دوباره وارد کنید؛ انتقال پایگاه به سیستم جدید باید همراه حفاظت و انتقال کلید رمزگذاری برنامه باشد.</p></section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='ai_documents_settings.js') }}" defer></script>{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block title %}انضباط و امتیازها{% endblock %}
+{% block page_title %}⚖️ انضباط و امتیازها{% endblock %}
+{% block head %}<style>@media print{@page{size:A4 landscape;margin:7mm}}</style>{% endblock %}
+{% block header_buttons %}<span class="header-badge">{{ records|length|format_number }} رکورد</span>{% endblock %}
+{% block content %}
+<section class="form-card no-print">
+  <div class="section-heading"><div><h2>ثبت امتیاز جدید</h2><p class="muted-text">برای دانش‌آموز یا معلم امتیاز مثبت یا منفی ثبت کنید.</p></div><span class="badge">قابل حذف و حسابرسی</span></div>
+  <form method="post" action="{{ url_for('discipline') }}">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+    <div class="form-row">
+      <div class="field-group"><label for="target_type">نوع هدف <span class="required-star">*</span></label><select id="target_type" name="target_type" required><option value="دانش‌آموز">دانش‌آموز</option><option value="معلم">معلم</option></select></div>
+      <div class="field-group"><label for="target_code">فرد <span class="required-star">*</span></label><select id="target_code" name="target_code" required><option value="">انتخاب فرد</option></select></div>
+      <div class="field-group"><label for="type">نوع امتیاز <span class="required-star">*</span></label><select id="type" name="type" required><option value="مثبت">✅ مثبت</option><option value="منفی">❌ منفی</option></select></div>
+      <div class="field-group"><label for="points">تعداد امتیاز <span class="required-star">*</span></label><input id="points" type="number" name="points" min="1" max="10" value="1" required></div>
+      <div class="field-group"><label for="date">تاریخ شمسی <span class="required-star">*</span></label><input id="date" type="text" name="date" value="{{ today }}" required data-jdate></div>
+    </div>
+    <div class="form-row"><div class="field-group" style="flex-basis:100%"><label for="description">توضیحات</label><textarea id="description" name="description" placeholder="شرح کوتاه رویداد…"></textarea></div></div>
+    <div class="form-actions"><button class="btn-submit" type="submit"><i class="cil-save" aria-hidden="true"></i> ثبت امتیاز</button></div>
+  </form>
+</section>
+<section class="card">
+  <div class="section-heading"><div><h2>تاریخچه امتیازها</h2><p class="muted-text">برای هر رکورد امکان حذف وجود دارد.</p></div></div>
+  <div class="table-wrapper"><table><thead><tr><th>ردیف</th><th>تاریخ</th><th>هدف</th><th>کد</th><th>نوع</th><th>امتیاز</th><th>توضیحات</th><th class="no-print">عملیات</th></tr></thead><tbody>
+  {% for r in records %}<tr><td>{{ loop.index }}</td><td>{{ r.date or 'ثبت نشده' }}</td><td>{{ r.target_type or 'ثبت نشده' }}</td><td>{{ r.target_code or 'ثبت نشده' }}</td><td>{% if r.type == 'مثبت' %}<span class="status-pill status-pill--ok"><i class="cil-check" aria-hidden="true"></i> مثبت</span>{% else %}<span class="status-pill status-pill--off"><i class="cil-x" aria-hidden="true"></i> منفی</span>{% endif %}</td><td><strong>{{ r.points or 0 }}</strong></td><td style="text-align:right;white-space:normal">{{ r.description or 'ثبت نشده' }}</td><td class="no-print"><form method="post" action="{{ url_for('delete_discipline', id=r.id) }}" onsubmit="return confirm('این رکورد انضباطی حذف شود؟')"><input type="hidden" name="_csrf_token" value="{{ csrf_token() }}"><button class="btn btn--danger" type="submit"><i class="cil-trash" aria-hidden="true"></i> حذف</button></form></td></tr>{% else %}<tr><td colspan="8" class="empty-state"><i class="cil-inbox" aria-hidden="true"></i> هنوز رکورد انضباطی ثبت نشده است.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const students = [{% for s in students %}{code: {{ s.code|tojson }}, name: {{ (s.first_name ~ ' ' ~ s.last_name)|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}];
+  const teachers = [{% for t in teachers %}{code: {{ t.code|tojson }}, name: {{ (t.first_name ~ ' ' ~ t.last_name)|tojson }}}{% if not loop.last %},{% endif %}{% endfor %}];
+  const type = document.getElementById('target_type'), target = document.getElementById('target_code');
+  function refresh(){ target.innerHTML='<option value="">انتخاب فرد</option>'; const list=type.value==='معلم'?teachers:students; list.forEach(function(item){const o=document.createElement('option');o.value=item.code;o.textContent=item.name+' · '+item.code;target.appendChild(o);}); }
+  type.addEventListener('change',refresh); refresh();
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; font-src data:"><title>آمار مدرسه</title><style>
+@font-face{font-family:Vazirmatn;src:url(data:font/ttf;base64,{{ embedded_font }})}
+{{ embedded_css|safe }}
+body{font-family:Vazirmatn,sans-serif;margin:0;direction:rtl;color:#172b3a}p{orphans:3;widows:3}h1,h2{break-after:avoid}
+@page{size:A4 {{ orientation }};margin:{{ school_statistics_layout.margin.top }}mm {{ school_statistics_layout.margin.right }}mm {{ school_statistics_layout.margin.bottom }}mm {{ school_statistics_layout.margin.left }}mm;@bottom-center{content:{{ print_footer_css|safe }} counter(page);font-family:Vazirmatn;font-size:8pt}}
+.stats-page{font-size:{{ school_statistics_layout.font_size }}pt;line-height:{{ school_statistics_layout.line_height }}}
+{{ school_statistics_layout|report_element_css|safe }}
+</style></head><body>
+<div class="stats-page" data-hide-header="{{ 0 if school_statistics_layout.show_header else 1 }}" data-hide-hero="{{ 0 if school_statistics_layout.sections.hero else 1 }}" data-hide-breakdowns="{{ 0 if school_statistics_layout.sections.breakdowns else 1 }}">
+ <header class="stats-hero" data-report-element="hero"><div><h1>{{ metadata[0] }}</h1><p>{{ metadata[1] }}</p></div></header>
+ <section class="stats-print-context"><p>{{ metadata[2] }}</p><p>{{ metadata[3] }}</p></section>
+ {% if detail %}
+ <table class="stats-table"><thead><tr><th>ردیف</th><th>نام</th><th>کد</th><th>پایه</th><th>کلاس</th><th>معلم</th><th>جنسیت</th></tr></thead><tbody>
+ {% for student in student_rows %}<tr><td>{{ loop.index }}</td><td>{{ student.name }}</td><td>{{ student.code }}</td><td>{{ student.grade }}</td><td>{{ student.class_name }}</td><td>{{ student.teacher_name }}</td><td>{{ student.gender }}</td></tr>{% else %}<tr><td colspan="7">هیچ دانش‌آموزی با این شرایط وجود ندارد.</td></tr>{% endfor %}
+ </tbody></table>
+ {% else %}<section class="frequency-card" data-report-element="breakdowns">{% set interactive=false %}{% include 'partials/statistics_table.html' %}</section><p class="stats-muted">جمع کل از ردیف‌های اصلی محاسبه شده است؛ جمع‌های جزئی دوباره شمرده نشده‌اند. سهم از جمعیت {{ population }} نفری محدوده است، نه فقط ردیف‌های انتخابی.</p>{% endif %}
+ {% if school_statistics_layout.show_footer %}<footer class="stats-print-footer">{{ config.SCHOOL_NAME }} · استخراج: {{ extracted_at }}</footer>{% endif %}
+</div></body></html>

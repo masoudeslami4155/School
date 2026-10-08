@@ -1,0 +1,438 @@
+{% extends 'base.html' %}
+{% block title %}داشبورد مدرسه{% endblock %}
+{% block page_title %}داشبورد مدرسه{% endblock %}
+{% block head %}
+    <script>document.documentElement.classList.add('dashboard-page');{% if current_role != 'teacher' and students %}document.documentElement.classList.add('has-bulk');{% endif %}</script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+{% endblock %}
+{% block content %}
+{% include 'partials/student_print_controls.html' %}
+<div class="school-dashboard">
+
+    {% if 'quick_actions' in ui_preferences.dashboard_cards and dashboard_quick_actions %}
+    <section class="dashboard-section dashboard-actions" aria-label="اقدام‌های سریع">
+        <div class="quick-actions dashboard-quick-actions">
+            {% for action in dashboard_quick_actions %}
+            <a class="quick-action{% if action.primary %} quick-action--primary{% endif %}" href="{{ url_for(action.endpoint) }}" data-quick-action="{{ action.key }}">
+                <span class="quick-action__icon" aria-hidden="true"><i class="{{ action.icon }}"></i></span>
+                <span class="quick-action__copy"><strong>{{ action.label }}</strong><small>{{ action.description }}</small></span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if 'data_quality' in ui_preferences.dashboard_cards and current_role != 'teacher' and summary.incomplete_students %}
+    <section class="dashboard-section dashboard-data-quality" aria-label="کیفیت داده‌ها">
+        <a class="notice notice--link notice--compact dashboard-data-notice" href="{{ url_for('data_quality') }}">
+            <span class="notice__icon" aria-hidden="true"><i class="cil-warning" aria-hidden="true"></i></span>
+            <div class="notice__body">
+                <strong>{{ summary.incomplete_students|format_number|fa_digits }} پروندهٔ دانش‌آموزی نیازمند تکمیل</strong>
+                <div class="notice__details">
+                    {% if summary.gender_missing %}<span class="notice-chip">جنسیت {{ summary.gender_missing|format_number|fa_digits }}</span>{% endif %}
+                    {% if summary.sida_missing %}<span class="notice-chip">کلاس سیدا {{ summary.sida_missing|format_number|fa_digits }}</span>{% endif %}
+                    {% if summary.class_missing %}<span class="notice-chip">کلاس مدرسه {{ summary.class_missing|format_number|fa_digits }}</span>{% endif %}
+                    {% if summary.teacher_missing %}<span class="notice-chip">معلم {{ summary.teacher_missing|format_number|fa_digits }}</span>{% endif %}
+                </div>
+            </div>
+            <span class="notice__cta">گزارش کامل <i class="cil-arrow-left" aria-hidden="true"></i></span>
+        </a>
+    </section>
+    {% endif %}
+
+    {% set attendance_ready = summary.attendance_marked %}
+    {% if 'overview' in ui_preferences.dashboard_cards %}
+    <details class="dashboard-disclosure dashboard-overview dashboard-section">
+        <summary class="dashboard-disclosure__summary">
+            <span class="dashboard-disclosure__title"><i class="cil-chart" aria-hidden="true"></i><strong>نمای کلی مدرسه</strong></span>
+            <span class="dashboard-disclosure__meta">حضور امروز {% if attendance_ready %}{{ summary.attendance_rate|fa_digits }}٪{% else %}ثبت‌نشده{% endif %}</span>
+        </summary>
+        <div class="stat-grid dashboard-overview__content">
+            <a class="stat-card stat-card--blue stat-card--link" href="#students-heading" aria-label="مشاهده فهرست دانش‌آموزان فعال">
+                <span class="stat-card__icon" aria-hidden="true"><i class="cil-users" aria-hidden="true"></i></span>
+                <span class="stat-card__body">
+                    <span class="stat-card__label">دانش‌آموزان فعال</span>
+                    <span class="stat-card__value">{{ summary.total_active|format_number|fa_digits }}</span>
+                    <span class="stat-card__note">فهرست کامل در همین صفحه</span>
+                </span>
+                <span class="stat-card__cta" aria-hidden="true">مشاهدهٔ فهرست <i class="cil-arrow-left" aria-hidden="true"></i></span>
+            </a>
+            <a class="stat-card stat-card--teal stat-card--link" href="{{ url_for('attendance_students') }}" aria-label="{% if attendance_ready %}مشاهده حضور و غیاب امروز{% else %}ثبت حضور و غیاب امروز{% endif %}">
+                <span class="stat-card__icon" aria-hidden="true"><i class="cil-check-circle" aria-hidden="true"></i></span>
+                <span class="stat-card__body">
+                    <span class="stat-card__label">نرخ حضور امروز</span>
+                    <span class="stat-card__value">{% if attendance_ready %}{{ summary.attendance_rate|fa_digits }}٪{% else %}—{% endif %}</span>
+                    <span class="stat-card__note">
+                        {% if attendance_ready %}حاضر {{ summary.attendance_present|format_number|fa_digits }} · غایب {{ summary.attendance_absent|format_number|fa_digits }}{% if summary.attendance_other %} · سایر {{ summary.attendance_other|format_number|fa_digits }}{% endif %}{% else %}امروز هنوز ثبت نشده است{% endif %}
+                    </span>
+                </span>
+                <span class="stat-card__cta" aria-hidden="true">{% if attendance_ready %}مشاهدهٔ حضور و غیاب{% else %}ثبت حضور و غیاب{% endif %} <i class="cil-arrow-left" aria-hidden="true"></i></span>
+            </a>
+            {% if current_role != 'teacher' %}
+            <a class="stat-card stat-card--purple stat-card--link" href="{{ url_for('class_management') }}" aria-label="کلاس‌بندی هوشمند">
+                <span class="stat-card__icon" aria-hidden="true"><i class="cil-school" aria-hidden="true"></i></span>
+                <span class="stat-card__body">
+                    <span class="stat-card__label">کلاس‌های مدرسه</span>
+                    <span class="stat-card__value">{{ summary.class_count|format_number|fa_digits }}</span>
+                    <span class="stat-card__note">کلاس‌های دارای دانش‌آموز فعال</span>
+                </span>
+                <span class="stat-card__cta" aria-hidden="true">کلاس‌بندی هوشمند <i class="cil-arrow-left" aria-hidden="true"></i></span>
+            </a>
+            <a class="stat-card stat-card--orange stat-card--link" href="{{ url_for('teachers') }}" aria-label="فهرست کارکنان">
+                <span class="stat-card__icon" aria-hidden="true"><i class="cil-briefcase" aria-hidden="true"></i></span>
+                <span class="stat-card__body">
+                    <span class="stat-card__label">معلمان منتسب</span>
+                    <span class="stat-card__value">{{ summary.teacher_count|format_number|fa_digits }}</span>
+                    <span class="stat-card__note">معلمان دارای دانش‌آموز فعال</span>
+                </span>
+                <span class="stat-card__cta" aria-hidden="true">فهرست کارکنان <i class="cil-arrow-left" aria-hidden="true"></i></span>
+            </a>
+            {% endif %}
+        </div>
+    </details>
+    {% endif %}
+
+    {% set urgent_count = event_alerts|selectattr('urgent')|list|length + task_alerts|selectattr('urgent')|list|length %}
+    {% set upcoming_count = event_alerts|length + task_alerts|length %}
+    {% if upcoming_count == 0 %}{% set upcoming_count = reminders|length %}{% endif %}
+    {% set tasks_with_alarms = task_alerts|selectattr('alarm_at_iso')|list %}
+    {% if ('reminders' in ui_preferences.dashboard_cards and (event_alerts or task_alerts or reminders)) or urgent_count %}
+    <details class="dashboard-disclosure dashboard-upcoming dashboard-section" {% if urgent_count %}open{% endif %}>
+        <summary class="dashboard-disclosure__summary">
+            <span class="dashboard-disclosure__title"><i class="cil-clock" aria-hidden="true"></i><strong>رویدادها و یادآورهای نزدیک</strong></span>
+            <span class="dashboard-disclosure__meta">{{ upcoming_count|fa_digits }} مورد در بازهٔ نزدیک{% if urgent_count %} · {{ urgent_count|fa_digits }} فوری{% endif %}</span>
+        </summary>
+        <div class="dashboard-upcoming__body">
+            {% if event_alerts or task_alerts %}
+            <div class="event-alert-list" aria-label="رویدادها و کارهای نزدیک">
+                {% for event in event_alerts %}
+                <article class="event-alert-item{% if event.urgent %} event-alert-item--urgent{% elif event.important %} event-alert-item--important{% endif %}" data-event-target="{{ event.target_iso }}" data-event-priority="{{ event.priority or 'عادی' }}">
+                    <div class="event-alert-item__top"><span class="event-alert-priority">رویداد · {{ event.priority or 'عادی' }}</span><strong>{{ event.title }}</strong></div>
+                    <div class="event-alert-item__meta"><span><i class="cil-calendar" aria-hidden="true"></i> {{ event.date|fa_digits }}</span><span><i class="cil-clock" aria-hidden="true"></i> {{ event.time_label|fa_digits }}</span>{% if event.type %}<span>{{ event.type }}</span>{% endif %}</div>
+                    {% if event.important %}<div class="event-countdown" data-countdown>در حال محاسبه...</div>{% endif %}
+                </article>
+                {% endfor %}
+                {% for task in task_alerts %}
+                <article class="event-alert-item{% if task.urgent %} event-alert-item--urgent{% elif task.important %} event-alert-item--important{% endif %}" data-event-target="{{ task.target_iso }}" data-event-priority="{{ task.priority or 'عادی' }}">
+                    <div class="event-alert-item__top"><span class="event-alert-priority">کار · {{ task.priority or 'عادی' }}</span><strong>{{ task.title }}</strong></div>
+                    <div class="event-alert-item__meta"><span><i class="cil-calendar" aria-hidden="true"></i> {{ task.date|fa_digits }}</span><span><i class="cil-clock" aria-hidden="true"></i> {{ task.time_label|fa_digits }}</span>{% if task.category %}<span>{{ task.category }}</span>{% endif %}</div>
+                    {% if task.important %}<div class="event-countdown" data-countdown>در حال محاسبه...</div>{% endif %}
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="dashboard-reminders">
+                {% for reminder in reminders %}
+                <article class="reminder-card{% if reminder.date == today_jalali %} reminder-card--today{% endif %}">
+                    <span class="reminder-card__day">{% if reminder.date == today_jalali %}امروز{% else %}فردا{% endif %}</span>
+                    <div class="reminder-card__body"><strong>{{ reminder.title }}</strong><small>{{ reminder.date|fa_digits }}{% if reminder.type %} · {{ reminder.type }}{% endif %}</small></div>
+                </article>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <div class="dashboard-upcoming__actions">
+                {% if current_role != 'teacher' %}<a class="btn btn--link" href="{{ url_for('calendar') }}"><i class="cil-calendar" aria-hidden="true"></i> بازکردن تقویم</a>{% endif %}
+                {% if tasks_with_alarms %}<button class="btn btn--muted" id="enableDashboardNotifications" type="button"><i class="cil-bell" aria-hidden="true"></i> فعال‌سازی اعلان مرورگر</button><span id="notificationPermissionStatus" class="notification-permission-status" role="status" aria-live="polite"></span>{% endif %}
+            </div>
+        </div>
+    </details>
+    {% endif %}
+    {% set active_filter_count = [selected_filters.q, selected_filters.grade, selected_filters.class_name, selected_filters.sida_class, selected_filters.gender, selected_filters.teacher_code]|reject('none')|reject('equalto','')|list|length %}
+    <section class="dashboard-section dashboard-search-section" aria-labelledby="student-search-heading">
+        <details class="filter-panel filter-panel--collapsible dashboard-advanced-filters" {% if filters_applied %}open{% endif %}>
+            <summary class="filter-panel__header">
+                <span class="filter-panel__title"><strong id="student-search-heading"><i class="cil-search" aria-hidden="true"></i> جست‌وجو و فیلتر دانش‌آموزان</strong>
+                {% if active_filter_count %}<span class="filter-panel__badge">{{ active_filter_count|fa_digits }} مورد فعال</span>{% endif %}</span>
+                <span class="filter-panel__hint">{% if current_role == 'teacher' %}جست‌وجو، پایه، کلاس و جنسیت{% else %}جست‌وجو، پایه، کلاس، جنسیت و معلم{% endif %}</span>
+            </summary>
+            <form class="dashboard-search-form" action="{{ url_for('index') }}" method="get">
+                <div class="filter-grid">
+                    <div class="filter-field filter-field--search dashboard-search-main">
+                        <label for="q">نام، کد دانش‌آموزی یا پایه را جست‌وجو کنید</label>
+                        <div class="dashboard-search-controls">
+                            <input id="q" name="q" type="search" value="{{ selected_filters.q }}" placeholder="نام یا کد دانش‌آموزی…" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="filter-field">
+                        <label for="grade">پایه</label>
+                        <select id="grade" name="grade">
+                            <option value="">همه پایه‌ها</option>
+                            {% for option in filter_options.grades %}
+                                <option value="{{ option.value }}" {% if selected_filters.grade == option.value %}selected{% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label for="class_name">کلاس مدرسه</label>
+                        <select id="class_name" name="class_name">
+                            <option value="">همه کلاس‌ها</option>
+                            {% for option in filter_options.classes %}
+                                <option value="{{ option.value }}" {% if selected_filters.class_name == option.value %}selected{% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label for="sida_class">کلاس سیدا</label>
+                        <select id="sida_class" name="sida_class">
+                            <option value="">همه کلاس‌های سیدا</option>
+                            {% for option in filter_options.sida_classes %}
+                                <option value="{{ option.value }}" {% if selected_filters.sida_class == option.value %}selected{% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="filter-field">
+                        <label for="gender">جنسیت</label>
+                        <select id="gender" name="gender">
+                            <option value="">همه</option>
+                            {% for option in filter_options.genders %}
+                                <option value="{{ option.value }}" {% if selected_filters.gender == option.value %}selected{% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% if current_role != 'teacher' %}
+                    <div class="filter-field">
+                        <label for="teacher_code">معلم</label>
+                        <select id="teacher_code" name="teacher_code">
+                            <option value="">همه معلمان</option>
+                            {% for option in filter_options.teachers %}
+                                <option value="{{ option.value }}" {% if selected_filters.teacher_code == option.value %}selected{% endif %}>{{ option.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    <div class="filter-actions">
+                        <button class="btn btn--primary dashboard-search-submit" type="submit"><i class="cil-search" aria-hidden="true"></i> جست‌وجو و اعمال فیلترها</button>
+                        {% if filters_applied %}<a class="btn btn--muted dashboard-search-clear" href="{{ url_for('index') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن</a>{% endif %}
+                        <span class="filter-actions__divider" aria-hidden="true"></span>
+                        <a class="btn btn--link" target="_blank" rel="noopener" href="{{ url_for('print_filtered_students', q=selected_filters.q, grade=selected_filters.grade, class_name=selected_filters.class_name, sida_class=selected_filters.sida_class, gender=selected_filters.gender, teacher_code=selected_filters.teacher_code) }}"><i class="cil-print" aria-hidden="true"></i> چاپ فهرست</a>
+                        <a class="btn btn--link" target="_blank" rel="noopener" href="{{ url_for('report_print_layouts', document='wall_cards', q=selected_filters.q, grade=selected_filters.grade, class_name=selected_filters.class_name, sida_class=selected_filters.sida_class, gender=selected_filters.gender, teacher_code=selected_filters.teacher_code) }}"><i class="cil-contact" aria-hidden="true"></i> کارت دیواری</a>
+                        <a class="btn btn--link" href="{{ url_for('student_columns', q=selected_filters.q, grade=selected_filters.grade, class_name=selected_filters.class_name, sida_class=selected_filters.sida_class, gender=selected_filters.gender, teacher_code=selected_filters.teacher_code) }}"><i class="cil-list" aria-hidden="true"></i> جدول ستون‌های دلخواه</a>
+                    </div>
+                </div>
+            </form>
+        </details>
+    </section>
+
+    <section class="dashboard-section" aria-labelledby="students-heading">
+        <div class="results-bar">
+            <div class="results-bar__count" id="students-heading" tabindex="-1">
+                <strong>{{ summary.filtered_count|format_number|fa_digits }}</strong> دانش‌آموز نمایش داده می‌شود
+                <small>از مجموع {{ summary.total_active|format_number|fa_digits }} دانش‌آموز فعال</small>
+            </div>
+            <div class="results-bar__tools">
+                {% if filters_applied %}
+                <div class="filter-chips" aria-label="فیلترهای فعال">
+                    {% if selected_filters.q %}<span class="filter-chip">جست‌وجو: {{ selected_filters.q }}</span>{% endif %}
+                    {% if selected_filters.grade %}<span class="filter-chip">پایه: {{ selected_filters.grade if selected_filters.grade != '__empty__' else 'ثبت نشده' }}</span>{% endif %}
+                    {% if selected_filters.class_name %}<span class="filter-chip">کلاس: {{ selected_filters.class_name if selected_filters.class_name != '__empty__' else 'ثبت نشده' }}</span>{% endif %}
+                    {% if selected_filters.sida_class %}<span class="filter-chip">سیدا: {{ selected_filters.sida_class if selected_filters.sida_class != '__empty__' else 'ثبت نشده' }}</span>{% endif %}
+                    {% if selected_filters.gender %}<span class="filter-chip">جنسیت: {{ selected_filters.gender if selected_filters.gender != '__empty__' else 'ثبت نشده' }}</span>{% endif %}
+                    {% if selected_filters.teacher_code %}<span class="filter-chip">معلم انتخاب‌شده</span>{% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if students %}
+        <div class="student-list" data-view="{{ student_view }}">
+            <div class="student-grid">
+                {% for s in students %}
+                    {% include 'partials/student_card.html' %}
+                {% endfor %}
+            </div>
+
+            <div class="table-wrap student-table-wrap" aria-label="فهرست جدولی کامل دانش‌آموزان">
+                <div class="student-table-toolbar no-print">
+                    <span class="student-table-toolbar__results" data-table-result role="status" aria-live="polite">فهرست دانش‌آموزان</span>
+                    <div class="student-table-toolbar__pages" aria-label="صفحه‌بندی جدول">
+                        <button class="btn btn--outline" type="button" data-table-page-previous disabled>قبلی</button>
+                        <span data-table-page-status aria-live="polite">۱ / ۱</span>
+                        <button class="btn btn--outline" type="button" data-table-page-next disabled>بعدی</button>
+                    </div>
+                </div>
+                <table class="student-table" data-default-sort="{{ ui_preferences.student_table_sort }}" data-default-direction="{{ ui_preferences.student_table_sort_direction }}" data-page-size="{{ ui_preferences.student_table_page_size }}">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="student-table__pick">انتخاب</th>
+                            {% for field_key, field_label in student_table_display_fields %}
+                            <th scope="col" class="student-table__column student-table__column--width-{{ ui_preferences.student_table_column_widths[field_key] }}{% if field_key == 'photo' %} student-table__photo{% endif %}{% if field_key in ui_preferences.student_table_pinned %} student-table__column--pinned{% endif %}" data-table-heading="{{ field_key }}"{% if field_key in ('name', 'code', 'grade', 'class_name', 'sida_class', 'gender', 'teacher', 'status') %} data-table-sort-key="{{ field_key }}" aria-sort="{% if ui_preferences.student_table_sort == field_key %}{{ 'ascending' if ui_preferences.student_table_sort_direction == 'asc' else 'descending' }}{% else %}none{% endif %}"{% endif %}>
+                                {% if field_key in ('name', 'code', 'grade', 'class_name', 'sida_class', 'gender', 'teacher', 'status') %}<button class="student-table__sort" type="button" data-table-sort="{{ field_key }}">{{ field_label }} <span aria-hidden="true">↕</span></button>{% else %}{{ field_label }}{% endif %}
+                            </th>
+                            {% endfor %}
+                            <th scope="col" class="student-table__actions">اقدامات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        {% set student_name = ((s.first_name or 'بدون نام') ~ ' ' ~ (s.last_name or ''))|trim %}
+                        {% set student_teacher_name = ((s.teacher_first or '') ~ ' ' ~ (s.teacher_last or ''))|trim %}
+                        <tr class="student-row" data-student-id="{{ s.id }}" data-sort-name="{{ student_name }}" data-sort-code="{{ s.code or '' }}" data-sort-grade="{{ s.grade or '' }}" data-sort-class_name="{{ s.class_name or '' }}" data-sort-sida_class="{{ s.sida_class or '' }}" data-sort-gender="{{ s.gender or '' }}" data-sort-teacher="{{ student_teacher_name }}" data-sort-status="فعال">
+                            <td class="student-table__pick">
+                                {% if current_role != 'teacher' %}
+                                <label class="student-card__pick" title="انتخاب برای عملیات گروهی">
+                                    <input type="checkbox" class="student-checkbox" value="{{ s.id }}" aria-label="انتخاب {{ student_name }}">
+                                </label>
+                                {% endif %}
+                            </td>
+                            {% for field_key, field_label in student_table_display_fields %}
+                            {% set pinned_class = ' student-table__column--pinned' if field_key in ui_preferences.student_table_pinned else '' %}
+                            {% set width_class = ' student-table__column--width-' ~ ui_preferences.student_table_column_widths[field_key] %}
+                            {% if field_key == 'photo' %}<td data-table-field="{{ field_key }}" class="student-table__column student-table__photo{{ width_class }}{{ pinned_class }}">{% if s.photo %}<img src="{{ url_for('static', filename='uploads/' ~ s.photo) }}" alt="">{% else %}<span class="student-table__ph" aria-hidden="true">{{ (s.first_name or '؟')[:1] }}</span>{% endif %}</td>
+                            {% elif field_key == 'name' %}<td data-table-field="{{ field_key }}" class="student-table__column student-table__name{{ width_class }}{{ pinned_class }}">{{ student_name }}</td>
+                            {% elif field_key == 'teacher' %}<td data-table-field="{{ field_key }}" class="student-table__column{{ width_class }}{{ pinned_class }}{% if not student_teacher_name %} is-missing{% endif %}">{% if student_teacher_name %}{{ student_teacher_name }}{% else %}ثبت نشده{% endif %}</td>
+                            {% elif field_key == 'status' %}<td data-table-field="{{ field_key }}" class="student-table__column{{ width_class }}{{ pinned_class }}"><span class="student-card__status">فعال</span></td>
+                            {% else %}{% set field_value = s[field_key] %}<td data-table-field="{{ field_key }}" class="student-table__column{{ width_class }}{{ pinned_class }}{% if not field_value %} is-missing{% endif %}">{{ field_value or 'ثبت نشده' }}</td>{% endif %}
+                            {% endfor %}
+                            <td class="student-table__actions">
+                                <a class="btn btn--primary" href="{{ url_for('student_profile', id=s.id) }}"><i class="cil-file" aria-hidden="true"></i> پرونده کامل</a>
+                                <a class="btn btn--link" href="{{ url_for('print_student', id=s.id) }}" target="_blank" rel="noopener"><i class="cil-print" aria-hidden="true"></i> چاپ</a>
+                                {% if current_role != 'teacher' %}
+                                <a class="btn btn--muted" href="{{ url_for('student_certificate', student_id=s.id) }}"><i class="cil-description" aria-hidden="true"></i> گواهی تحصیل</a>
+                                <a class="btn btn--muted" href="{{ url_for('edit_student', id=s.id) }}"><i class="cil-pencil" aria-hidden="true"></i> ویرایش</a>
+                                <a class="btn btn--danger" href="{{ url_for('confirm_delete_student', id=s.id) }}"><i class="cil-sync" aria-hidden="true"></i> تغییر وضعیت</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="student-grid">
+            <div class="empty-state">
+                <span class="empty-state__icon" aria-hidden="true"><i class="cil-inbox" aria-hidden="true"></i></span>
+                <strong>نتیجه‌ای پیدا نشد</strong>
+                <p>فیلترها را تغییر دهید یا اطلاعات ناقص را تکمیل کنید.</p>
+                {% if filters_applied %}<a class="btn btn--primary" href="{{ url_for('index') }}"><i class="cil-x" aria-hidden="true"></i> پاک‌کردن فیلترها</a>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if current_role != 'teacher' and students %}
+        <div class="bulk-actions no-print" id="bulkActions">
+            <div class="bulk-actions__bar">
+                <label class="btn btn--muted bulk-actions__select-all">
+                    <input id="select-all-students" type="checkbox">
+                    <span>انتخاب همه</span>
+                </label>
+                <button type="button" class="btn btn--outline quick-search-inline-toggle" id="quickStudentSearchToggle" aria-expanded="false" aria-controls="quickStudentSearchPanel">
+                    <i class="cil-search" aria-hidden="true"></i><span>جست‌وجوی سریع</span>
+                </button>
+                <span class="selection-count" role="status" aria-live="polite">۰ نفر انتخاب شده</span>
+                <button class="btn btn--link" type="button" id="clear-selection" hidden><i class="cil-x" aria-hidden="true"></i> پاک‌کردن انتخاب</button>
+                <span class="bulk-actions__hint">برای حذف دائمی، ابتدا پرونده را به بخش «سایر» منتقل کنید.</span>
+            </div>
+            <form id="group-form" method="post" action="{{ url_for('group_action') }}" class="bulk-actions__form bulk-float">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="action" id="group-action">
+                <input type="hidden" name="ids" id="selected-ids">
+                <span class="bulk-float__count selection-count">۰ نفر انتخاب شده</span>
+                <span class="bulk-float__sep" aria-hidden="true"></span>
+                <button class="bulk-float__btn bulk-float__btn--success" type="button" data-group-action="graduate" onclick="groupAction('graduate')" disabled title="فارغ‌التحصیل‌کردن" aria-label="فارغ‌التحصیل‌کردن"><i class="cil-education" aria-hidden="true"></i><span class="bulk-action-label">فارغ‌التحصیل</span></button>
+                <button class="bulk-float__btn bulk-float__btn--muted" type="button" data-group-action="dropout" onclick="groupAction('dropout')" disabled title="ثبت ترک‌تحصیل" aria-label="ثبت ترک‌تحصیل"><i class="cil-ban" aria-hidden="true"></i><span class="bulk-action-label">ترک‌تحصیل</span></button>
+                <button class="bulk-float__btn bulk-float__btn--danger" type="button" data-group-action="delete" onclick="groupAction('delete')" disabled title="تغییر وضعیت" aria-label="تغییر وضعیت"><i class="cil-reload" aria-hidden="true"></i><span class="bulk-action-label">تغییر وضعیت</span></button>
+                <button class="bulk-float__btn bulk-float__btn--dark" type="button" data-group-action="print" onclick="groupAction('print')" disabled title="چاپ فهرست" aria-label="چاپ فهرست"><i class="cil-print" aria-hidden="true"></i><span class="bulk-action-label">چاپ</span></button>
+                <button class="bulk-float__btn bulk-float__btn--link" type="button" data-group-action="export" onclick="groupAction('export')" disabled title="خروجی اکسل" aria-label="خروجی اکسل"><i class="cil-cloud-download" aria-hidden="true"></i><span class="bulk-action-label">اکسل</span></button>
+                <button class="bulk-float__btn bulk-float__btn--primary" type="button" data-group-action="wallcards" onclick="groupAction('wallcards')" disabled title="کارت دیواری" aria-label="کارت دیواری"><i class="cil-contact" aria-hidden="true"></i><span class="bulk-action-label">کارت</span></button>
+                <button class="bulk-float__btn bulk-float__btn--muted bulk-float__close" type="button" id="bulkFloatClose" title="بستن انتخاب‌ها" aria-label="بستن انتخاب‌ها"><i class="cil-x" aria-hidden="true"></i></button>
+            </form>
+        </div>
+        {% endif %}
+    </section>
+</div>
+<div class="quick-search-float quick-search-float--panel-only no-print" id="quickStudentSearch">
+    <div class="quick-search-float__panel" id="quickStudentSearchPanel" hidden>
+        <label for="quickStudentSearchInput"><i class="cil-search" aria-hidden="true"></i> جست‌وجوی سریع دانش‌آموز</label>
+        <div class="quick-search-float__field">
+            <input id="quickStudentSearchInput" type="search" placeholder="نام، نام‌خانوادگی یا کد دانش‌آموزی…" autocomplete="off" spellcheck="false">
+            <button type="button" id="quickStudentSearchClear" title="پاک‌کردن جست‌وجو" aria-label="پاک‌کردن جست‌وجو"><i class="cil-x" aria-hidden="true"></i></button>
+        </div>
+        <p id="quickStudentSearchStatus" aria-live="polite">برای شروع، نام دانش‌آموز را بنویسید.</p>
+    </div>
+    {% if current_role == 'teacher' or not students %}
+    <button type="button" class="quick-search-float__toggle" id="quickStudentSearchToggle" aria-expanded="false" aria-controls="quickStudentSearchPanel">
+        <i class="cil-search" aria-hidden="true"></i><span>جست‌وجوی سریع</span>
+    </button>
+    {% endif %}
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const tasks = [
+    {% for task in task_alerts if task.alarm_at_iso %}
+    {id: {{ task.id }}, title: {{ task.title|tojson }}, alarm_at: {{ task.alarm_at_iso|tojson }}, due_at: {{ task.target_iso|tojson }}}{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ];
+  const button = document.getElementById('enableDashboardNotifications');
+  const status = document.getElementById('notificationPermissionStatus');
+  const key = id => 'dash-task-alarm-' + id;
+  const setPermissionStatus = () => {
+    if (!button) return;
+    if (!('Notification' in window)) {
+      button.hidden = true;
+      if (status) status.textContent = 'اعلان مرورگر در این محیط پشتیبانی نمی‌شود.';
+    } else if (Notification.permission === 'granted') {
+      button.hidden = true;
+      if (status) status.textContent = 'اعلان‌های مرورگر فعال است.';
+    } else if (Notification.permission === 'denied') {
+      button.disabled = true;
+      if (status) status.textContent = 'اجازهٔ اعلان در تنظیمات مرورگر مسدود شده است.';
+    } else if (status) {
+      status.textContent = 'اعلان فقط پس از انتخاب شما فعال می‌شود.';
+    }
+  };
+  if (button) {
+    setPermissionStatus();
+    button.addEventListener('click', async () => {
+      if (!('Notification' in window)) return setPermissionStatus();
+      try {
+        await Notification.requestPermission();
+      } catch (error) {
+        if (status) status.textContent = 'مرورگر نتوانست اجازهٔ اعلان را دریافت کند.';
+      }
+      setPermissionStatus();
+    });
+  }
+  function notify(task) {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+    try { if (sessionStorage.getItem(key(task.id))) return; } catch (error) {}
+    try {
+      new Notification('یادآور کار: ' + task.title, {body: 'موعد: ' + (task.due_at || ''), tag: 'dash-task-' + task.id});
+      try { sessionStorage.setItem(key(task.id), '1'); } catch (error) {}
+    } catch (error) {}
+  }
+  function tickAlarms() {
+    const now = Date.now();
+    tasks.forEach(task => {
+      if (!task.alarm_at) return;
+      const at = new Date(task.alarm_at).getTime();
+      if (!Number.isNaN(at) && at <= now && at > now - 180000) notify(task);
+    });
+  }
+  const toFa = n => String(n).replace(/\d/g, digit => '۰۱۲۳۴۵۶۷۸۹'[digit]);
+  function updateCountdowns() {
+    document.querySelectorAll('[data-countdown]').forEach(box => {
+      const item = box.closest('[data-event-target]');
+      if (!item) return;
+      const target = new Date(item.dataset.eventTarget).getTime();
+      if (Number.isNaN(target)) return;
+      let seconds = Math.max(0, Math.floor((target - Date.now()) / 1000));
+      const days = Math.floor(seconds / 86400); seconds %= 86400;
+      const hours = Math.floor(seconds / 3600); seconds %= 3600;
+      const minutes = Math.floor(seconds / 60); const remainder = seconds % 60;
+      box.textContent = (days ? toFa(days) + ' روز و ' : '') + toFa(String(hours).padStart(2, '0')) + ':' + toFa(String(minutes).padStart(2, '0')) + ':' + toFa(String(remainder).padStart(2, '0'));
+      if (target <= Date.now()) box.classList.add('is-past');
+    });
+  }
+  updateCountdowns();
+  window.setInterval(updateCountdowns, 1000);
+  tickAlarms();
+  window.setInterval(tickAlarms, 20000);
+})();
+</script>
+    <script src="{{ url_for('static', filename='index.js') }}" defer></script>
+{% endblock %}

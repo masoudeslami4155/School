@@ -1,0 +1,475 @@
+/* ==========================================================================
+   Liquid-Glass surface layer — v4.47 (performance + contrast rewrite)
+   آفلاین، بدون CDN، بدون تصویر.
+
+   دلایل بازنویسی نسبت به ۴.۴۶:
+     ۱) پس‌زمینهٔ ماگما در نسخهٔ قبل چهار لایهٔ غول‌آسا با blur(70-78px) و
+        mix-blend-mode:screen بود که مداوم انیمیت می‌شد. هر عنصر دارای
+        backdrop-filter مجبور بود در هر فریم پشت خود را دوباره بلور کند؛
+        نتیجه: مصرف شدید CPU/GPU و لگ روی رایانه‌های ضعیف مدرسه.
+     ۲) پس‌زمینه در هر دو تم تیره بود، در حالی که رنگ متن فقط روی گروهی از
+        عناصر سفید می‌شد؛ بقیهٔ متن‌ها تیره روی تیره می‌ماندند و خوانده نمی‌شدند.
+
+   راه حل: پس‌زمینهٔ ثابت (بدون انیمیشن و بدون فیلتر)، متغیرهای رنگ وابسته به
+   تم، و استفاده از backdrop-filter فقط روی چند سطح اصلی (سربرگ/ناوبری/کارت ورود).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   ۱) متغیرهای ظاهری — پیش‌فرض: حالت روز
+   -------------------------------------------------------------------------- */
+:root {
+  --lg-ink: #16233d;
+  --lg-muted: #566277;
+  --lg-heading: #0f1e38;
+
+  --lg-surface-strong: rgba(255, 255, 255, .96);
+  --lg-surface: rgba(255, 255, 255, .92);
+  --lg-surface-soft: rgba(255, 255, 255, .84);
+  --lg-chip: rgba(255, 255, 255, .70);
+
+  --lg-border: rgba(20, 33, 61, .14);
+  --lg-border-soft: rgba(20, 33, 61, .09);
+
+  --lg-shadow: 0 6px 18px rgba(20, 33, 61, .08), inset 0 1px 0 rgba(255, 255, 255, .75);
+  --lg-shadow-hover: 0 10px 24px rgba(20, 33, 61, .12), inset 0 1px 0 rgba(255, 255, 255, .85);
+
+  --lg-field: rgba(255, 255, 255, .94);
+  --lg-field-ink: #16233d;
+  --lg-field-placeholder: rgba(86, 98, 119, .75);
+  --lg-option-bg: #ffffff;
+  --lg-option-ink: #16233d;
+
+  --lg-th-bg: linear-gradient(135deg, #123d57, #0b6374);
+  --lg-th-ink: #ffffff;
+  --lg-row: rgba(255, 255, 255, .62);
+  --lg-row-hover: rgba(11, 99, 116, .10);
+
+  --lg-glow: .55;
+}
+
+html[data-theme="dark"] {
+  --lg-ink: #f3f7ff;
+  --lg-muted: rgba(210, 224, 248, .80);
+  --lg-heading: #ffffff;
+
+  --lg-surface-strong: rgba(24, 34, 58, .96);
+  --lg-surface: rgba(22, 31, 53, .94);
+  --lg-surface-soft: rgba(19, 28, 48, .90);
+  --lg-chip: rgba(255, 255, 255, .10);
+
+  --lg-border: rgba(190, 214, 255, .22);
+  --lg-border-soft: rgba(190, 214, 255, .14);
+
+  --lg-shadow: 0 8px 22px rgba(2, 4, 16, .30), inset 0 1px 0 rgba(255, 255, 255, .12);
+  --lg-shadow-hover: 0 12px 28px rgba(2, 4, 16, .38), inset 0 1px 0 rgba(255, 255, 255, .16);
+
+  --lg-field: rgba(11, 17, 36, .72);
+  --lg-field-ink: #eef4ff;
+  --lg-field-placeholder: rgba(214, 227, 250, .58);
+  --lg-option-bg: #141c33;
+  --lg-option-ink: #eef4ff;
+
+  --lg-th-bg: linear-gradient(135deg, rgba(15, 31, 69, .92), rgba(103, 33, 95, .82));
+  --lg-th-ink: #ffffff;
+  --lg-row: rgba(255, 255, 255, .055);
+  --lg-row-hover: rgba(255, 166, 95, .16);
+
+  --lg-glow: .30;
+}
+
+/* --------------------------------------------------------------------------
+   ۲) پس‌زمینه — ثابت، یک لایه، بدون blur و بدون انیمیشن
+   -------------------------------------------------------------------------- */
+html { background: #e9eff6; }
+html[data-theme="dark"] { background: #120e22; }
+
+body {
+  display: block !important;
+  margin: 0 !important;
+  overflow-x: hidden;
+  background: transparent !important;
+  color: var(--lg-ink);
+}
+
+/* هالهٔ رنگی ثابت و ثابت‌شده به پنجره (viewport). یک لایهٔ کامپوزیت‌شده،
+   بدون فیلتر، بدون blend-mode و بدون انیمیشن → هزینهٔ رندر تقریباً صفر. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 86% 6%, rgba(255, 176, 82, .16), transparent 42%),
+    radial-gradient(circle at 8% 94%, rgba(255, 96, 104, .12), transparent 44%),
+    radial-gradient(circle at 52% 48%, rgba(150, 92, 190, .08), transparent 56%),
+    linear-gradient(180deg, #eef4f9 0%, #e6edf6 100%);
+}
+
+html[data-theme="dark"] body::before {
+  background:
+    radial-gradient(circle at 86% 6%, rgba(255, 170, 60, .22), transparent 40%),
+    radial-gradient(circle at 8% 94%, rgba(255, 70, 96, .18), transparent 42%),
+    radial-gradient(circle at 52% 48%, rgba(124, 60, 158, .16), transparent 56%),
+    linear-gradient(180deg, #150f2a 0%, #120e22 100%);
+}
+
+.app-shell {
+  display: block !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  align-items: initial !important;
+  justify-content: initial !important;
+  position: relative;
+  z-index: 0;
+  background: transparent !important;
+}
+
+/* ریل ناوبری و نوار پایین موبایل ثابت می‌مانند و وارد جریان عادی صفحه نمی‌شوند. */
+.app-shell > .dashboard-nav {
+  position: fixed !important;
+  top: 24px !important;
+  right: var(--sidebar-rail-edge, 24px) !important;
+  bottom: 24px !important;
+  z-index: 65 !important;
+}
+.app-shell > .mobile-bottom-nav {
+  position: fixed !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  z-index: 1000 !important;
+}
+
+main.page-container {
+  display: block !important;
+  min-height: 0 !important;
+  height: auto !important;
+  margin-block-start: 0 !important;
+  padding-block-start: 6px !important;
+  background: transparent !important;
+}
+.page-heading { margin-block-start: 0 !important; }
+.school-dashboard,
+.dashboard-section,
+.vdash__main,
+.vdash__body { align-self: initial !important; }
+.school-dashboard > .dashboard-section:first-child { margin-block-start: 7px !important; }
+.vdash { min-height: 0 !important; }
+.vdash__body { padding-block-start: 14px !important; }
+
+/* --------------------------------------------------------------------------
+   ۳) سطوح شیشه‌ای — بدون backdrop-filter (هزینهٔ رندر بالا) و متناسب با تم
+   -------------------------------------------------------------------------- */
+:where(
+  .topbar, .page-heading, .app-footer, .dashboard-nav, .mobile-bottom-nav,
+  .card, .form-card, .panel, .section-card, .card-box, .feature-card, .data-card,
+  .stat-card, .quick-action, .reminder-card, .student-card, .filter-panel,
+  .notice, .bulk-actions, .table-wrapper, .table-wrap, .table-responsive,
+  .table-container, .vdash, .vdash__header, .vdash__body, .vdash__card,
+  .vdash__panel, .meetings-scene, .meeting-card, .calendar-shell,
+  .calendar-panel, .calendar-card, .report-card, .info-card, .metric-card,
+  .support-card, .service-card, .payment-card, .contact-card, .teacher-card,
+  .task-card, .event-card, .permission-item, .form-section,
+  .event-alert-modal, .event-alert-item, .login-card, .recovery-card,
+  .filter-panel__header, .results-bar, .empty-state, .flash
+) {
+  background: linear-gradient(135deg, var(--lg-surface), var(--lg-surface-soft)) !important;
+  border-color: var(--lg-border) !important;
+  box-shadow: var(--lg-shadow) !important;
+  color: var(--lg-ink) !important;
+}
+
+:where(
+  .card, .form-card, .panel, .section-card, .card-box, .feature-card, .data-card,
+  .stat-card, .quick-action, .reminder-card, .student-card, .filter-panel, .notice,
+  .bulk-actions, .table-wrapper, .table-wrap, .table-responsive, .table-container,
+  .vdash__card, .vdash__panel, .meeting-card, .calendar-shell, .calendar-panel,
+  .calendar-card, .report-card, .info-card, .metric-card, .support-card,
+  .service-card, .payment-card, .contact-card, .teacher-card, .task-card,
+  .event-card, .form-section, .permission-item
+):hover {
+  box-shadow: var(--lg-shadow-hover) !important;
+}
+
+/* کارت‌ها/برچسب‌های صفحه‌محور (کلاس‌هایی مثل alert-card و gcal-*) */
+:where(
+  main.page-container [class^="card-"],
+  main.page-container [class$="-card"],
+  main.page-container [class*="-card "],
+  .gcal, .gcal-occasions, .gcal-summary, .gcal-summary-item,
+  .gcal-list, .gcal-list-day, .calendar-form, .task-form,
+  .alert-card, .gcal-add, .gcal-occ-row, .teacher-list-toolbar,
+  .login-side, .recovery-shell
+) {
+  background: linear-gradient(135deg, var(--lg-surface), var(--lg-surface-soft)) !important;
+  border-color: var(--lg-border) !important;
+  box-shadow: var(--lg-shadow) !important;
+  color: var(--lg-ink) !important;
+}
+
+/* تنها چند سطح اصلی بلور واقعی می‌گیرند؛ تعداد کم = بدون لگ اسکرول. */
+@supports ((-webkit-backdrop-filter: blur(10px)) or (backdrop-filter: blur(10px))) {
+  .topbar,
+  .dashboard-nav,
+  .mobile-bottom-nav,
+  .login-card {
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
+  .topbar { background: var(--lg-surface-strong) !important; }
+  .dashboard-nav,
+  .mobile-bottom-nav { background: var(--lg-surface-strong) !important; }
+}
+
+/* --------------------------------------------------------------------------
+   ۴) خوانایی متن — رنگ‌ها از متغیرهای تم می‌آیند، پس در روز و شب خوانا هستند
+   -------------------------------------------------------------------------- */
+:where(
+  .page-container, .page-container h1, .page-container h2, .page-container h3,
+  .page-container h4, .page-container h5, .page-container h6,
+  .page-container .section-heading h2, .page-container .section-heading h3,
+  .page-container .page-heading h1, .page-container .page-kicker,
+  .school-dashboard, .stat-card, .stat-card__label, .stat-card__value,
+  .stat-card__note, .stat-card__cta, .quick-action, .quick-action__label,
+  .reminder-card, .reminder-card__body strong, .student-card, .student-card h3,
+  .student-card p, .student-card p b, .student-card__meta dd,
+  .student-card__assignment strong, .student-card__meta dt,
+  .results-bar__count strong, .filter-panel__header h2, .vdash__body,
+  .vdash__title, .vdash__table tbody td, .meetings-scene, .form-section h3,
+  .form-section h4, .section-heading h2, .section-heading h3, .section-heading p,
+  .gcal, .gcal-title, .gcal-cell, .gcal-num, .gcal-occasions,
+  .gcal-occasions h2, .gcal-summary, .gcal-summary-item, .gcal-list,
+  .gcal-list-day, .gcal-list-day__head, .gcal-list-item, .calendar-form,
+  .task-form, .alert-card, .alert-card h3, .alert-card li, .gcal-add,
+  .gcal-add h4, .gcal-occ-row, .teacher-list-toolbar, .login-side,
+  .login-brand h2, .login-card label, .recovery-card
+) {
+  color: var(--lg-ink) !important;
+}
+
+:where(
+  .page-container h1, .page-container h2, .page-container h3,
+  .page-container h4, .page-container h5, .page-container h6,
+  .page-container .page-heading h1, .stat-card__value, .vdash__title,
+  .section-heading h2, .section-heading h3, .form-section h3, .form-section h4,
+  .login-brand h2
+) {
+  color: var(--lg-heading) !important;
+}
+
+:where(
+  .page-container p, .page-container small, .page-container dt,
+  .muted-text, .stat-card__label, .stat-card__note, .stat-card__cta,
+  .reminder-card__body small, .student-card__meta dt, .results-bar__count,
+  .filter-panel__hint, .vdash__subtitle, .vdash__label, .vdash__who small,
+  .gcal-title small, .gcal-subtitle, .gcal-more, .gcal-occ-row .occ-tag,
+  .gcal-list-empty, .event-type, .gcal-summary-item small, .page-kicker,
+  .login-brand p, .login-note, .login-links span, .brand small
+) {
+  color: var(--lg-muted) !important;
+}
+
+/* تیترهای سربرگ صفحه روی هر زمینه‌ای خوانا بمانند */
+.page-heading h1 { color: var(--lg-heading) !important; }
+.page-heading .page-kicker { color: var(--lg-muted) !important; }
+
+/* --------------------------------------------------------------------------
+   ۵) فیلدهای فرم، برچسب‌ها و انتخاب‌گرها
+   -------------------------------------------------------------------------- */
+:where(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="submit"]):not([type="button"]),
+  select, textarea, .form-control, .form-select,
+  .vdash__search, .dashboard-nav__search input
+) {
+  background: var(--lg-field) !important;
+  border: 1px solid var(--lg-border) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .10), 0 6px 16px rgba(4, 8, 24, .12) !important;
+  color: var(--lg-field-ink) !important;
+}
+
+:where(input, select, textarea)::placeholder { color: var(--lg-field-placeholder) !important; }
+
+:where(input, select, textarea):focus {
+  border-color: rgba(255, 147, 64, .80) !important;
+  box-shadow: 0 0 0 3px rgba(255, 147, 64, .20) !important;
+  outline: none !important;
+}
+
+:where(select) option { background: var(--lg-option-bg); color: var(--lg-option-ink); }
+:where(label, .field-group label, .filter-field label) { color: var(--lg-ink) !important; }
+
+:where(.form-section, .permission-item, .student-card__meta,
+  .student-card__assignment, .quick-action__icon, .stat-card__icon,
+  .dashboard-nav__search, .notice-chip, .filter-chip, .badge, .status-pill,
+  .student-card__status, .reminder-card__day, .event-countdown) {
+  background: var(--lg-chip) !important;
+  border-color: var(--lg-border-soft) !important;
+  color: var(--lg-ink) !important;
+}
+
+/* --------------------------------------------------------------------------
+   ۶) دکمه‌ها — بدون بلور، با حفظ رنگ تأکیدی
+   -------------------------------------------------------------------------- */
+:where(
+  .btn, .btn-submit, .login-button, input[type="submit"], input[type="button"],
+  button, .topbar-link, .header-badge, .dashboard-nav a, .dashboard-nav summary
+) {
+  border: 1px solid var(--lg-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 20px rgba(4, 8, 24, .16), inset 0 1px 0 rgba(255, 255, 255, .18) !important;
+}
+:where(.btn--primary, .btn-submit, .login-button) {
+  background: linear-gradient(135deg, #ff7e43, #c72a60) !important;
+  color: #fff !important;
+  border-color: rgba(255, 191, 104, .55) !important;
+}
+:where(.btn--success) {
+  background: linear-gradient(135deg, #13ae84, #0a6b85) !important;
+  color: #fff !important;
+}
+:where(.btn--danger) {
+  background: linear-gradient(135deg, #e7455c, #7b1849) !important;
+  color: #fff !important;
+}
+:where(.btn--warning) {
+  background: linear-gradient(135deg, #ffb241, #ad4227) !important;
+  color: #fff !important;
+}
+:where(.btn--dark) {
+  background: linear-gradient(135deg, #26324d, #131c2f) !important;
+  color: #fff !important;
+}
+:where(.btn--muted, .btn--outline, .btn--link, .btn--ghost) {
+  background: var(--lg-surface-soft) !important;
+  color: var(--lg-ink) !important;
+}
+:where(.btn, .topbar-link, .dashboard-nav a, .dashboard-nav summary):hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 147, 64, .60) !important;
+  box-shadow: 0 14px 28px rgba(255, 83, 64, .20), inset 0 1px 0 rgba(255, 255, 255, .24) !important;
+}
+:where(button:disabled, input:disabled, select:disabled, textarea:disabled) { opacity: .56; }
+
+/* --------------------------------------------------------------------------
+   ۷) جدول‌ها — زمینهٔ درست در هر تم، بدون بلور
+   -------------------------------------------------------------------------- */
+:where(.table-wrapper, .table-wrap, .table-responsive, .table-container) { overflow: auto; }
+:where(table) { background: transparent !important; color: var(--lg-ink) !important; }
+:where(table thead th, .vdash__table thead th) {
+  background: var(--lg-th-bg) !important;
+  border-color: var(--lg-border) !important;
+  color: var(--lg-th-ink) !important;
+}
+:where(table tbody td, .vdash__table tbody td) {
+  background: var(--lg-row) !important;
+  border-color: var(--lg-border-soft) !important;
+  color: var(--lg-ink) !important;
+}
+:where(table tbody tr:nth-child(even) td) { background: var(--lg-row) !important; }
+:where(table tbody tr:hover td) { background: var(--lg-row-hover) !important; }
+
+/* --------------------------------------------------------------------------
+   ۸) ناوبری
+   -------------------------------------------------------------------------- */
+.dashboard-nav {
+  background: var(--lg-surface-strong) !important;
+  border-inline-end: 1px solid var(--lg-border) !important;
+}
+.dashboard-nav a,
+.dashboard-nav summary { background: var(--lg-chip) !important; color: var(--lg-ink) !important; }
+.dashboard-nav__home {
+  background: linear-gradient(135deg, #ff7e43, #c72a60) !important;
+  color: #fff !important;
+}
+.mobile-bottom-nav { border-color: var(--lg-border) !important; }
+.mobile-bottom-nav__item {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  color: var(--lg-muted) !important;
+}
+.mobile-bottom-nav__item.is-active { color: #ff9a3d !important; }
+
+/* --------------------------------------------------------------------------
+   ۹) صفحه ورود و بازیابی رمز
+   -------------------------------------------------------------------------- */
+.login-page,
+.recovery-shell { background: transparent !important; }
+.login-visual { background: transparent !important; }
+.login-card,
+.recovery-card {
+  background: linear-gradient(135deg, var(--lg-surface-strong), var(--lg-surface)) !important;
+}
+
+/* --------------------------------------------------------------------------
+   ۱۰) چاپ — حذف کامل شیشه و هاله، زمینهٔ سفید
+   -------------------------------------------------------------------------- */
+@media print {
+  html, body, .app-shell, .page-container { background: #fff !important; color: #111 !important; }
+  body::before { display: none !important; }
+  .app-shell > .dashboard-nav,
+  .app-shell > .mobile-bottom-nav { position: static !important; }
+  :where(
+    .topbar, .page-heading, .app-footer, .card, .form-card, .panel, .section-card,
+    .card-box, .feature-card, .data-card, .stat-card, .quick-action, .reminder-card,
+    .student-card, .filter-panel, .notice, .bulk-actions, .table-wrapper, .table-wrap,
+    .table-responsive, .table-container, .vdash, .vdash__header, .vdash__body,
+    .vdash__card, .vdash__panel, .meetings-scene, .form-section, .permission-item,
+    .event-alert-modal, .event-alert-item, .login-card, .recovery-card
+  ) {
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  :where(input, select, textarea) {
+    background: #fff !important;
+    color: #111 !important;
+    box-shadow: none !important;
+  }
+  :where(table thead th) { background: #e8e8e8 !important; color: #111 !important; }
+  :where(table tbody td) { background: #fff !important; color: #111 !important; }
+  .page-heading h1 { color: #111 !important; }
+  .stat-card__label, .stat-card__note, .quick-action__label { color: #374151 !important; }
+}
+
+/* --------------------------------------------------------------------------
+   ۱۱) واکنش‌گرایی و دسترس‌پذیری حرکتی
+   -------------------------------------------------------------------------- */
+@media (max-width: 700px) {
+  main.page-container { padding-block-start: 3px !important; }
+  .app-shell > .dashboard-nav { top: 8px !important; bottom: 8px !important; }
+  .school-dashboard > .dashboard-section:first-child { margin-block-start: 4px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, .card, .panel, .stat-card, .student-card, .quick-action, .reminder-card,
+  .filter-panel, .table-wrapper { transition: none !important; }
+  .btn:hover, .card:hover, .feature-card:hover { transform: none !important; }
+}
+
+/* The mobile menu is controlled by one shared toggle. Keep these rules last so
+   the glass layer cannot hide the opened navigation behind the bottom bar. */
+@media (max-width: 768px) {
+  .app-shell > .dashboard-nav:not(.is-expanded) {
+    display: none !important;
+  }
+  .app-shell > .dashboard-nav.is-expanded {
+    display: flex !important;
+    visibility: visible !important;
+    position: fixed !important;
+    inset: 0 0 0 auto !important;
+    width: min(82vw, 310px) !important;
+    height: 100dvh !important;
+    z-index: 1050 !important;
+    border-radius: 16px 0 0 16px !important;
+  }
+  .app-shell > .sidebar-overlay:not([hidden]) {
+    display: block !important;
+    z-index: 1040 !important;
+  }
+}

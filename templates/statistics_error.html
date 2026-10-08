@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block title %}بررسی انتخاب‌های آمار{% endblock %}
+{% block content %}<section class="panel" style="padding:2rem"><h1>گزارش آماده نشد</h1><p role="alert">{{ message }}</p><p>انتخاب‌ها را اصلاح کنید؛ هیچ خروجی گسترده‌تر از درخواست شما تولید نشده است.</p><button type="button" class="btn btn--outline" onclick="history.back()">بازگشت و اصلاح انتخاب‌ها</button> <a class="btn btn--outline" href="{{ url_for('statistics') }}">صفحهٔ آمار</a></section>{% endblock %}
