@@ -12,6 +12,13 @@ ROOT = Path(__file__).resolve().parent.parent
 # فقط برای یافتن مسیر ریشه؛ ماژول برنامه import نمی‌شود تا هیچ فایلی ساخته نشود.
 sys.path.insert(0, str(ROOT))
 
+# چاپ امن روی کنسول‌های ویندوزی (cp1252)؛ مثل بقیهٔ آزمون‌های این پروژه
+for stream in (sys.stdout, sys.stderr):
+    try:
+        stream.reconfigure(encoding='utf-8', errors='replace')
+    except (AttributeError, ValueError):
+        pass
+
 LATIN_DIGITS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 
 ACTIVE_DOCS = (
