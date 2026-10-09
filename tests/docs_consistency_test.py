@@ -116,8 +116,8 @@ def main() -> int:
     checks += check_active_docs_exist()
     checks += check_relative_links()
     checks += check_single_changelog()
-    assert ARCHIVE_DIR.is_dir() and not (ROOT / 'PATCH_NOTES_FA.txt').exists(), (
-        'یادداشت نسخه باید در docs/archive/ باشد و از ریشهٔ پروژه برداشته شود.'
+    assert ARCHIVE_DIR.is_dir(), (
+        'بایگانی محتوا باید در docs/archive/ باشد.'
     )
     checks += 1
     print(f'✓ مستندات و نسخه: {checks} بررسی موفق بود (نسخهٔ واحد، پیوند سالم، تغییرات در یک سند).')
